@@ -25,7 +25,7 @@ The repository follows a clean Next.js App Router structure:
 ```
 ├── app/
 │   ├── globals.css         # Tailwind v4 configuration, theme tokens (light/dark)
-│   ├── layout.tsx          # RootLayout with Inter font, ThemeProvider, QueryProvider, Toaster
+│   ├── layout.tsx          # RootLayout with Satoshi & Integral CF fonts, ThemeProvider, QueryProvider, Header, Toaster
 │   ├── page.tsx            # Starter home page & component showcase
 │   ├── error.tsx           # Global error boundary (client component)
 │   ├── not-found.tsx       # 404 handler (server component)
@@ -33,6 +33,8 @@ The repository follows a clean Next.js App Router structure:
 │   ├── sitemap.ts          # Dynamic SEO sitemap.xml generator
 │   └── icon.svg            # Favicon SVG
 ├── components/
+│   ├── header/             # Header components (TopBanner, Navbar, Header)
+│   ├── home/               # Homepage components (HeroSection, BrandBanner)
 │   ├── providers/          # Application providers (QueryProvider, ThemeProvider)
 │   ├── ui/                 # Atomic shadcn/ui primitives (Button, Dialog, Card, Input, etc.)
 │   └── ErrorBoundary.tsx   # Isolated component error boundary with retry fallback
