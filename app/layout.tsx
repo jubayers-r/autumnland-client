@@ -1,13 +1,22 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import QueryProvider from "@/components/providers/QueryProvider";
 import ThemeProvider from "@/components/providers/ThemeProvider";
 import { Toaster } from "@/components/ui/sonner";
+import { Header } from "@/components/header/Header";
 
-const inter = Inter({
-  subsets: ["latin"],
+const satoshi = localFont({
+  src: "../public/fonts/Satoshi-Variable.ttf",
   variable: "--font-sans",
+  display: "swap",
+});
+
+const integralCF = localFont({
+  src: "../public/fonts/FSP DEMO - ntgrl CF xtr Bld.woff",
+  variable: "--font-heading",
+  display: "swap",
+  weight: "800 900",
 });
 
 export const viewport: Viewport = {
@@ -22,23 +31,23 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "http://localhost:5173"),
   title: {
-    default: "Next.js Frontend Starter",
-    template: "%s | Next.js Starter",
+    default: "AUTUMN LAND | Modern Fashion & Style",
+    template: "%s | AUTUMN LAND",
   },
   description:
-    "Zero-friction Next.js 16 frontend starter template with Tailwind CSS v4, shadcn/ui, TanStack Query, and Zustand.",
+    "Browse through our diverse range of meticulously crafted garments, designed to bring out your individuality and cater to your sense of style.",
   openGraph: {
-    title: "Next.js Frontend Starter",
+    title: "AUTUMN LAND | Modern Fashion & Style",
     description:
-      "Zero-friction Next.js 16 frontend starter template with Tailwind CSS v4, shadcn/ui, TanStack Query, and Zustand.",
+      "Browse through our diverse range of meticulously crafted garments, designed to bring out your individuality and cater to your sense of style.",
     type: "website",
     locale: "en_US",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Next.js Frontend Starter",
+    title: "AUTUMN LAND | Modern Fashion & Style",
     description:
-      "Zero-friction Next.js 16 frontend starter template with Tailwind CSS v4, shadcn/ui, TanStack Query, and Zustand.",
+      "Browse through our diverse range of meticulously crafted garments, designed to bring out your individuality and cater to your sense of style.",
   },
   robots: {
     index: true,
@@ -48,16 +57,21 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning className={`${inter.variable} h-full antialiased`}>
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={`${satoshi.variable} ${integralCF.variable} h-full antialiased`}
+    >
       <body className="min-h-full flex flex-col font-sans bg-background text-foreground">
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
+          defaultTheme="light"
           enableSystem
           disableTransitionOnChange
         >
           <QueryProvider>
-            {children}
+            <Header />
+            <div className="flex-1 flex flex-col">{children}</div>
             <Toaster richColors position="top-right" />
           </QueryProvider>
         </ThemeProvider>
