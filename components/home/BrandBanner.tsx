@@ -12,35 +12,37 @@ const BRANDS = [
     src: "/assets/header/header-brand-logos/Group.png",
     width: 166,
     height: 33,
+    logoClass: "h-5 sm:h-6 lg:h-7",
   },
   {
     name: "Zara",
     src: "/assets/header/header-brand-logos/zara-logo-1 1.png",
     width: 91,
     height: 38,
+    logoClass: "h-5.5 sm:h-7 lg:h-8.5",
   },
   {
     name: "Gucci",
     src: "/assets/header/header-brand-logos/gucci-logo-1 1.png",
     width: 156,
     height: 36,
+    logoClass: "h-5 sm:h-6 lg:h-7",
   },
   {
     name: "Prada",
     src: "/assets/header/header-brand-logos/prada-logo-1 1.png",
     width: 194,
     height: 32,
+    logoClass: "h-4.5 sm:h-5.5 lg:h-6.5",
   },
   {
     name: "Calvin Klein",
     src: "/assets/header/header-brand-logos/Group-1.png",
     width: 207,
     height: 33,
+    logoClass: "h-4.5 sm:h-5.5 lg:h-6.5",
   },
 ];
-
-// Double the items per set to ensure continuous coverage across all viewport widths up to 4K
-const BRAND_SET = [...BRANDS, ...BRANDS];
 
 export function BrandBanner({ className }: BrandBannerProps) {
   return (
@@ -61,23 +63,20 @@ export function BrandBanner({ className }: BrandBannerProps) {
         .animate-marquee-track {
           display: flex;
           width: max-content;
-          animation: marqueeScroll 30s linear infinite;
+          animation: marqueeScroll 20s linear infinite;
           will-change: transform;
-        }
-        .animate-marquee-track:hover {
-          animation-play-state: paused;
         }
       `}</style>
 
-      {/* Infinite Horizontal Marquee with Constant X-Axis Gap */}
+      {/* Infinite Horizontal Marquee: exactly 5 logos on desktop (20vw each), 3 on mobile (33.333vw each), no hover stopping */}
       <div className="relative w-full overflow-hidden flex items-center">
         <div className="animate-marquee-track flex items-center">
-          {/* First Set: Constant X-axis gap and matching right pad */}
-          <div className="flex shrink-0 items-center gap-10 sm:gap-14 lg:gap-20 xl:gap-24 pr-10 sm:pr-14 lg:pr-20 xl:pr-24">
-            {BRAND_SET.map((brand, idx) => (
+          {/* First Set of 5 Logos */}
+          <div className="flex shrink-0 items-center">
+            {BRANDS.map((brand) => (
               <div
-                key={`brand-1-${brand.name}-${idx}`}
-                className="shrink-0 flex items-center justify-center"
+                key={`brand-1-${brand.name}`}
+                className="w-[33.333vw] lg:w-[20vw] shrink-0 flex items-center justify-center px-3 sm:px-5 lg:px-6"
               >
                 <Image
                   src={brand.src}
@@ -85,21 +84,21 @@ export function BrandBanner({ className }: BrandBannerProps) {
                   width={brand.width}
                   height={brand.height}
                   priority
-                  className="h-5 sm:h-6 lg:h-7 xl:h-8 w-auto object-contain select-none opacity-100 brightness-0 invert"
+                  className={cn(
+                    "w-auto object-contain select-none opacity-100 brightness-0 invert pointer-events-none",
+                    brand.logoClass
+                  )}
                 />
               </div>
             ))}
           </div>
 
-          {/* Second Set: Exact identical copy for flawless seamless looping */}
-          <div
-            className="flex shrink-0 items-center gap-10 sm:gap-14 lg:gap-20 xl:gap-24 pr-10 sm:pr-14 lg:pr-20 xl:pr-24"
-            aria-hidden="true"
-          >
-            {BRAND_SET.map((brand, idx) => (
+          {/* Second Duplicate Set of 5 Logos for Seamless Infinite Loop */}
+          <div className="flex shrink-0 items-center" aria-hidden="true">
+            {BRANDS.map((brand) => (
               <div
-                key={`brand-2-${brand.name}-${idx}`}
-                className="shrink-0 flex items-center justify-center"
+                key={`brand-2-${brand.name}`}
+                className="w-[33.333vw] lg:w-[20vw] shrink-0 flex items-center justify-center px-3 sm:px-5 lg:px-6"
               >
                 <Image
                   src={brand.src}
@@ -107,7 +106,10 @@ export function BrandBanner({ className }: BrandBannerProps) {
                   width={brand.width}
                   height={brand.height}
                   priority
-                  className="h-5 sm:h-6 lg:h-7 xl:h-8 w-auto object-contain select-none opacity-100 brightness-0 invert"
+                  className={cn(
+                    "w-auto object-contain select-none opacity-100 brightness-0 invert pointer-events-none",
+                    brand.logoClass
+                  )}
                 />
               </div>
             ))}
