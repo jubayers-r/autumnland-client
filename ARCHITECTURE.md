@@ -33,6 +33,7 @@ The repository follows a clean Next.js App Router structure:
 │   ├── sitemap.ts          # Dynamic SEO sitemap.xml generator
 │   └── icon.svg            # Favicon SVG
 ├── components/
+│   ├── footer/             # Footer components (Footer, Newsletter, PaymentBadges, SocialLinks)
 │   ├── header/             # Header components (TopBanner, Navbar, Header)
 │   ├── home/               # Homepage components (HeroSection, BrandBanner)
 │   ├── providers/          # Application providers (QueryProvider, ThemeProvider)
