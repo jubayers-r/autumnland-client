@@ -53,31 +53,44 @@ test.describe("Header & Navigation Component", () => {
     await expect(page.getByRole("link", { name: "Formal Style" })).toBeVisible();
   });
 
-  test("renders mobile navigation with hamburger trigger and expandable search", async ({
-    page,
-  }) => {
+  test("renders mobile navigation with search bar and transitions on scroll", async ({ page }) => {
     // Set mobile viewport
     await page.setViewportSize({ width: 375, height: 667 });
     await page.goto("/");
 
-    // Logo
+    // Unscrolled: Logo, Hamburger, Cart, Account, and Search Bar are all present
     await expect(page.getByRole("link", { name: "AUTUMN LAND" })).toBeVisible();
-
-    // Hamburger button
     const menuBtn = page.getByRole("button", { name: "Open navigation menu" });
     await expect(menuBtn).toBeVisible();
 
-    // Search toggle button
-    const searchToggle = page.getByRole("button", { name: "Toggle search bar" });
-    await expect(searchToggle).toBeVisible();
-
-    // Toggle search
-    await searchToggle.click();
     const searchInput = page.getByPlaceholder("Search for products...").filter({ visible: true });
     await expect(searchInput).toBeVisible();
 
+    await expect(page.getByRole("link", { name: "Shopping Cart" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "User Account" })).toBeVisible();
+
+    // Capture unscrolled mobile navbar
+    await page.screenshot({ path: "test-results/mobile-navbar-unscrolled.png" });
+
+    // Scroll down to test sticky compact scroll state (Image 2 concept)
+    await page.evaluate(() => {
+      window.scrollTo(0, 150);
+      window.dispatchEvent(new Event("scroll"));
+    });
+    await page.waitForTimeout(300);
+
+    // Capture scrolled mobile navbar
+    await page.screenshot({ path: "test-results/mobile-navbar-scrolled.png" });
+
+    // On scroll: Hamburger, Search, and Cart remain visible
+    await expect(page.getByRole("button", { name: "Open navigation menu" })).toBeVisible();
+    await expect(
+      page.getByPlaceholder("Search for products...").filter({ visible: true })
+    ).toBeVisible();
+    await expect(page.getByRole("link", { name: "Shopping Cart" })).toBeVisible();
+
     // Open mobile menu drawer
-    await menuBtn.click();
+    await page.getByRole("button", { name: "Open navigation menu" }).click();
     await expect(page.getByRole("link", { name: "All Collections" })).toBeVisible();
     await expect(page.getByRole("link", { name: "Casual" })).toBeVisible();
     await expect(page.getByRole("link", { name: "Formal" })).toBeVisible();
