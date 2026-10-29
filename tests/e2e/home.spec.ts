@@ -1,38 +1,83 @@
 import { test, expect } from "@playwright/test";
 
-test.describe("Frontend Starter Landing Page", () => {
-  test("renders starter hero card, badges, and theme toggle", async ({ page }) => {
+test.describe("Landing Page Hero & Brand Banner", () => {
+  test("renders hero headline, copy, and Shop Now CTA", async ({ page }) => {
     await page.goto("/");
 
-    // Verify main card heading
-    await expect(page.getByRole("heading", { name: "Frontend Starter" })).toBeVisible();
+    // Verify hero heading
+    const heading = page.getByRole("heading", {
+      name: /FIND CLOTHES THAT MATCHES YOUR STYLE/i,
+    });
+    await expect(heading).toBeVisible();
 
-    // Verify template description
+    // Verify subtext
     await expect(
-      page.getByText(
-        "Zero-friction template optimized for developer speed and LLM-driven pair programming."
-      )
+      page.getByText(/Browse through our diverse range of meticulously crafted garments/i)
     ).toBeVisible();
 
-    // Verify theme toggle is present
-    const themeToggle = page.getByRole("button", { name: "Toggle theme" });
-    await expect(themeToggle).toBeVisible();
+    // Verify Shop Now CTA button
+    const shopNowBtn = page.getByRole("link", { name: "Shop Now" });
+    await expect(shopNowBtn).toBeVisible();
+    await expect(shopNowBtn).toHaveAttribute("href", "/shop");
   });
 
-  test("triggers toast notification on button click", async ({ page }) => {
+  test("renders social proof statistics on desktop", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
     await page.goto("/");
 
-    // Click toast trigger button
-    const toastButton = page.getByRole("button", {
-      name: "Test Toast Notification",
-    });
-    await expect(toastButton).toBeVisible();
-    await toastButton.click();
+    await expect(page.getByText("200+").filter({ visible: true })).toBeVisible();
+    await expect(page.getByText("International Brands").filter({ visible: true })).toBeVisible();
+    await expect(page.getByText("2,000+").filter({ visible: true })).toBeVisible();
+    await expect(page.getByText("High-Quality Products").filter({ visible: true })).toBeVisible();
+    await expect(page.getByText("30,000+").filter({ visible: true })).toBeVisible();
+    await expect(page.getByText("Happy Customers").filter({ visible: true })).toBeVisible();
+  });
 
-    // Verify Sonner toast pops up
-    await expect(page.getByText("Template is operational!")).toBeVisible();
+  test("renders partner brands in the brand strip", async ({ page }) => {
+    await page.goto("/");
+
+    await expect(page.getByRole("img", { name: "Versace logo" }).first()).toBeVisible();
+    await expect(page.getByRole("img", { name: "Zara logo" }).first()).toBeVisible();
+    await expect(page.getByRole("img", { name: "Gucci logo" }).first()).toBeVisible();
+    await expect(page.getByRole("img", { name: "Prada logo" }).first()).toBeVisible();
+    await expect(page.getByRole("img", { name: "Calvin Klein logo" }).first()).toBeVisible();
+  });
+
+  test("renders mobile-responsive hero layout and statistics", async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 667 });
+    await page.goto("/");
+
+    // Heading is visible on mobile
     await expect(
-      page.getByText("Next.js 16.4.3, React 19, Tailwind v4, and shadcn are ready to build.")
+      page.getByRole("heading", {
+        name: /FIND CLOTHES THAT MATCHES YOUR STYLE/i,
+      })
     ).toBeVisible();
+
+    // Shop Now button is full width on mobile
+    const shopNowBtn = page.getByRole("link", { name: "Shop Now" });
+    await expect(shopNowBtn).toBeVisible();
+
+    // All 3 statistics render properly on mobile
+    await expect(page.getByText("200+").filter({ visible: true })).toBeVisible();
+    await expect(page.getByText("2,000+").filter({ visible: true })).toBeVisible();
+    await expect(page.getByText("30,000+").filter({ visible: true })).toBeVisible();
+  });
+
+  test("captures preview screenshots and verifies active marquee animation", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto("/");
+
+    const marqueeTrack = page.locator(".animate-marquee-track");
+    await expect(marqueeTrack).toBeVisible();
+
+    const animName = await marqueeTrack.evaluate((el) => window.getComputedStyle(el).animationName);
+    expect(animName).toBe("marqueeScroll");
+
+    await page.screenshot({ path: "test-results/desktop-preview.png" });
+
+    await page.setViewportSize({ width: 375, height: 812 });
+    await page.goto("/");
+    await page.screenshot({ path: "test-results/mobile-preview.png", fullPage: true });
   });
 });
