@@ -1,1 +1,13 @@
+if git remote | grep -q "^origin$"; then
+  if git ls-remote --exit-code --heads origin main >/dev/null 2>&1; then
+    echo "🔄 Syncing latest changes from origin/main..."
+    if ! git pull --no-edit origin main; then
+      echo ""
+      echo "❌ Error: Failed to cleanly merge from origin/main (conflicts detected)."
+      echo "👉 Please resolve the conflicts, commit your changes, and push again."
+      exit 1
+    fi
+    echo "✅ Successfully synced with origin/main."
+  fi
+fi
 bun run validate:full
