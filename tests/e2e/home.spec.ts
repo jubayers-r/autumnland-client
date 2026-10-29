@@ -1,6 +1,21 @@
-import { test, expect } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 
 test.describe("Landing Page Hero & Brand Banner", () => {
+  test("applies Satoshi and Integral CF local fonts across headings and body", async ({ page }) => {
+    await page.goto("/");
+    const bodyFont = await page.evaluate(() => window.getComputedStyle(document.body).fontFamily);
+    const h1Font = await page.evaluate(
+      () => window.getComputedStyle(document.querySelector("h1")!).fontFamily
+    );
+    const brandLogoFont = await page.evaluate(
+      () => window.getComputedStyle(document.querySelector('header a[href="/"]')!).fontFamily
+    );
+
+    expect(bodyFont.toLowerCase()).toContain("satoshi");
+    expect(h1Font.toLowerCase()).toContain("integralcf");
+    expect(brandLogoFont.toLowerCase()).toContain("integralcf");
+  });
+
   test("renders hero headline, copy, and Shop Now CTA", async ({ page }) => {
     await page.goto("/");
 
@@ -30,7 +45,9 @@ test.describe("Landing Page Hero & Brand Banner", () => {
     await expect(page.getByText("2,000+").filter({ visible: true })).toBeVisible();
     await expect(page.getByText("High-Quality Products").filter({ visible: true })).toBeVisible();
     await expect(page.getByText("30,000+").filter({ visible: true })).toBeVisible();
-    await expect(page.getByText("Happy Customers").filter({ visible: true })).toBeVisible();
+    await expect(
+      page.getByText("Happy Customers", { exact: true }).filter({ visible: true })
+    ).toBeVisible();
   });
 
   test("renders partner brands in the brand strip", async ({ page }) => {
