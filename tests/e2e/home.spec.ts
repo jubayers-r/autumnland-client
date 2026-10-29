@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 
 test.describe("Landing Page Hero & Brand Banner", () => {
   test("applies Satoshi and Integral CF local fonts across headings and body", async ({ page }) => {
