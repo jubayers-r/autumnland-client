@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 
 test.describe("Header & Navigation Component", () => {
   test("renders announcement banner and dismisses on close button click", async ({ page }) => {
