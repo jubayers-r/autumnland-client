@@ -28,7 +28,7 @@ export function TestimonialsSection({
   className,
   testimonials = TESTIMONIALS,
 }: TestimonialsSectionProps) {
-  // Sarah M. is at index 1 so that index 0 peeks 1/3 to the left under blur on initial load
+  // Sarah M. is at index 1 so that index 0 peeks to the left under blur on initial load
   const [currentIndex, setCurrentIndex] = React.useState(1);
   const windowWidth = useWindowWidth();
 
@@ -39,33 +39,25 @@ export function TestimonialsSection({
   const visibleCount = windowWidth < 640 ? 1 : windowWidth < 1024 ? 2 : 3;
   const gap = visibleCount === 1 ? 16 : 20;
 
-  // Max width boundary for storefront content
+  // Max width boundary matching the entire storefront (1440px with responsive padding)
   const maxContentBoundary = 1440;
+  const contentPadding = windowWidth < 640 ? 16 : windowWidth < 1024 ? 24 : 48;
   const viewportWidth = Math.min(windowWidth, maxContentBoundary);
+  const contentWidth = Math.max(280, viewportWidth - 2 * contentPadding);
 
-  // Card width calculation:
-  // Desktop: 3 full cards + 2 * (1/3 peek) + gaps = 3.667 * C + gaps <= viewportWidth
-  // Mobile: 1 centered card + subtle edge peeks
-  const peekRatio = visibleCount === 1 ? 0.2 : 0.333;
-  const cardWidth = React.useMemo(() => {
-    if (visibleCount === 1) {
-      return Math.min(360, Math.max(280, windowWidth - 56));
-    }
-    const totalUnits = visibleCount + 2 * peekRatio;
-    const rawCardWidth = (viewportWidth - (visibleCount + 1) * gap) / totalUnits;
-    return Math.max(260, Math.floor(rawCardWidth));
-  }, [visibleCount, peekRatio, viewportWidth, gap, windowWidth]);
+  // Broaden cards to fill the exact page container width
+  const cardWidth = Math.max(
+    260,
+    Math.floor((contentWidth - (visibleCount - 1) * gap) / visibleCount)
+  );
 
-  // Center content width (exact width of the visibleCount cards + gaps)
-  const centerWidth = visibleCount * cardWidth + (visibleCount - 1) * gap;
-
-  // Margin from screen edge to the start of the first active card
-  const sideMargin = Math.max(16, Math.floor((windowWidth - centerWidth) / 2));
+  // Exact page boundary margin from screen edge to the content container
+  const sideMargin = Math.max(contentPadding, Math.floor((windowWidth - contentWidth) / 2));
 
   // Step size from one card to the next
   const step = cardWidth + gap;
 
-  // Translate track so that card at currentIndex starts at sideMargin
+  // Translate track so that card at currentIndex starts exactly at the page boundary
   const translateX = sideMargin - currentIndex * step;
 
   const maxIndex = Math.max(0, testimonials.length - visibleCount);
@@ -114,11 +106,8 @@ export function TestimonialsSection({
       aria-label="Customer Reviews"
       className={cn("w-full py-12 sm:py-16 lg:py-20 relative overflow-hidden", className)}
     >
-      {/* Header Container: Aligned with the center 3 cards */}
-      <div
-        className="mx-auto px-4 sm:px-0 mb-7 sm:mb-9 lg:mb-10"
-        style={{ width: `${centerWidth}px`, maxWidth: "100%" }}
-      >
+      {/* Header Container: Starts from the same boundary as the whole page */}
+      <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 mb-7 sm:mb-9 lg:mb-10">
         <div className="flex items-end justify-between gap-4">
           <h2 className="font-heading font-black text-3xl sm:text-4xl lg:text-[48px] leading-[1.08] tracking-tight uppercase text-foreground">
             OUR HAPPY CUSTOMERS
@@ -156,16 +145,16 @@ export function TestimonialsSection({
         onTouchEnd={handleTouchEnd}
         className="relative w-full overflow-hidden focus-visible:outline-none py-2"
       >
-        {/* Left Margin Blur Overlay: Extends from left screen edge to the margin layer on desktop */}
+        {/* Left Margin Blur Overlay: Extends from left screen edge to the page boundary */}
         <div
-          className="pointer-events-none absolute left-0 top-0 bottom-0 z-20 hidden lg:block bg-gradient-to-r from-background via-background/70 to-transparent backdrop-blur-[0.5px]"
+          className="pointer-events-none absolute left-0 top-0 bottom-0 z-20 hidden sm:block bg-gradient-to-r from-background via-background/70 to-transparent backdrop-blur-[0.5px]"
           style={{ width: `${sideMargin}px` }}
           aria-hidden="true"
         />
 
-        {/* Right Margin Blur Overlay: Extends from right margin layer to right screen edge on desktop */}
+        {/* Right Margin Blur Overlay: Extends from right page boundary to right screen edge */}
         <div
-          className="pointer-events-none absolute right-0 top-0 bottom-0 z-20 hidden lg:block bg-gradient-to-l from-background via-background/70 to-transparent backdrop-blur-[0.5px]"
+          className="pointer-events-none absolute right-0 top-0 bottom-0 z-20 hidden sm:block bg-gradient-to-l from-background via-background/70 to-transparent backdrop-blur-[0.5px]"
           style={{ width: `${sideMargin}px` }}
           aria-hidden="true"
         />
