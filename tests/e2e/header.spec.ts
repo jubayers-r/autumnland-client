@@ -21,8 +21,8 @@ test.describe("Header & Navigation Component", () => {
     await page.setViewportSize({ width: 1280, height: 800 });
     await page.goto("/");
 
-    // Logo
-    const logo = page.getByRole("link", { name: "AUTUMN LAND" });
+    // Logo within header
+    const logo = page.locator("header").getByRole("link", { name: "AUTUMN LAND" });
     await expect(logo).toBeVisible();
 
     // Nav links
