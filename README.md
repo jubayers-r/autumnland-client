@@ -22,7 +22,7 @@ A modern, high-performance **Next.js 16 + TypeScript 6 + Bun + Tailwind CSS v4 +
 - **Resilient Error Boundaries**: Route-level isolation via [`app/error.tsx`](./app/error.tsx) and component-level subtree isolation via [`components/ErrorBoundary.tsx`](./components/ErrorBoundary.tsx).
 - **Git Hooks Protection (Husky)**: Two-tier validation pipeline:
   - **Pre-commit**: Ultra-fast lint, typecheck, style formatting, and Bun unit tests (~1.5s).
-  - **Pre-push**: Full Playwright E2E browser tests and Next.js production build (~3s).
+  - **Pre-push**: Automatically pulls and syncs with `origin/main` (halts on merge conflicts), followed by Playwright E2E browser tests and Next.js production build (~3s).
 - **Production Security Headers**: Defense-in-depth HTTP headers (CSP, HSTS, X-Frame-Options, Sniff protection) in [`next.config.ts`](./next.config.ts).
 - **Dynamic SEO & Metadata**: Programmatic [`app/robots.ts`](./app/robots.ts) and [`app/sitemap.ts`](./app/sitemap.ts) with OpenGraph and Twitter card metadata in [`app/layout.tsx`](./app/layout.tsx).
 - **Dark Mode Built-in**: Full light/dark/system theme switching powered by `next-themes` and a ready-to-use `ModeToggle`.

@@ -1,8 +1,10 @@
 import { defineConfig, devices } from "@playwright/test";
 
+const PORT = process.env.PORT || 5174;
+
 /**
  * Playwright E2E configuration for Next.js 16 + Bun
- * Runs against localhost:5173 with automatic webServer boot.
+ * Runs isolated against localhost:5174 with automatic webServer boot.
  */
 export default defineConfig({
   testDir: "./tests/e2e",
@@ -12,7 +14,7 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   reporter: "list",
   use: {
-    baseURL: "http://localhost:5173",
+    baseURL: `http://localhost:${PORT}`,
     trace: "on-first-retry",
     screenshot: "only-on-failure",
   },
@@ -23,9 +25,9 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: "bun run dev",
-    url: "http://localhost:5173",
-    reuseExistingServer: !process.env.CI,
+    command: `bun x next dev -p ${PORT}`,
+    url: `http://localhost:${PORT}`,
+    reuseExistingServer: false,
     timeout: 60 * 1000,
   },
 });

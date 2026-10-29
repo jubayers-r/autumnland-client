@@ -15,7 +15,7 @@
 ## Automated Git Hooks (Husky)
 
 - **Pre-commit Hook (`.husky/pre-commit`)**: Automatically executes `bun run validate:quick` (~1.5s) on every `git commit`. Checks types, linting, code style, and unit tests without browser or build lag.
-- **Pre-push Hook (`.husky/pre-push`)**: Automatically executes `bun run validate:full` (~3s) on every `git push`. Runs Playwright browser E2E tests and Next.js production build before anything leaves your machine.
+- **Pre-push Hook (`.husky/pre-push`)**: Automatically pulls and merges latest changes from `origin/main` before pushing. If merge conflicts occur, the push is immediately halted so you can resolve and commit them. If cleanly merged, it runs `bun run validate:full` (Playwright E2E browser tests and Next.js build) before sending code to GitHub.
 - If any check fails, the commit or push is halted immediately.
 
 ## Two-Speed AI Verification Discipline
