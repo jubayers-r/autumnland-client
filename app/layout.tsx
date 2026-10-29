@@ -1,11 +1,11 @@
-import type { Metadata, Viewport } from "next";
-import localFont from "next/font/local";
-import "./globals.css";
+import { Footer } from "@/components/footer";
+import { Header } from "@/components/header/Header";
 import QueryProvider from "@/components/providers/QueryProvider";
 import ThemeProvider from "@/components/providers/ThemeProvider";
 import { Toaster } from "@/components/ui/sonner";
-import { Header } from "@/components/header/Header";
-import { Footer } from "@/components/footer";
+import type { Metadata, Viewport } from "next";
+import localFont from "next/font/local";
+import "./globals.css";
 
 const satoshi = localFont({
   src: "../public/fonts/Satoshi-Variable.ttf",
