@@ -161,9 +161,9 @@
 }
 
 @utility font-heading {
-  font-family: var(--font-integral), var(--font-heading), sans-serif;
+  font-family: var(--font-integral), sans-serif;
 }
 
 @utility font-sans {
-  font-family: var(--font-satoshi), var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-satoshi), sans-serif;
 }

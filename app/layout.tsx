@@ -62,7 +62,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       suppressHydrationWarning
       className={`${satoshi.variable} ${integralCF.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col font-sans bg-background text-foreground">
+      <body
+        className={`${satoshi.className} min-h-full flex flex-col font-sans bg-background text-foreground`}
+      >
         <ThemeProvider
           attribute="class"
           defaultTheme="light"
