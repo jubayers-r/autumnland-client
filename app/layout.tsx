@@ -5,18 +5,18 @@ import QueryProvider from "@/components/providers/QueryProvider";
 import ThemeProvider from "@/components/providers/ThemeProvider";
 import { Toaster } from "@/components/ui/sonner";
 import { Header } from "@/components/header/Header";
+import { Footer } from "@/components/footer";
 
 const satoshi = localFont({
   src: "../public/fonts/Satoshi-Variable.ttf",
-  variable: "--font-sans",
+  variable: "--font-satoshi",
   display: "swap",
 });
 
 const integralCF = localFont({
   src: "../public/fonts/FSP DEMO - ntgrl CF xtr Bld.woff",
-  variable: "--font-heading",
+  variable: "--font-integral",
   display: "swap",
-  weight: "800 900",
 });
 
 export const viewport: Viewport = {
@@ -72,6 +72,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <QueryProvider>
             <Header />
             <div className="flex-1 flex flex-col">{children}</div>
+            <Footer />
             <Toaster richColors position="top-right" />
           </QueryProvider>
         </ThemeProvider>
