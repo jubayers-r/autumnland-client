@@ -22,28 +22,28 @@ This document is the canonical design blueprint for this frontend application. A
 # ==============================================================================
 
 design_specification:
-  status: "DEFAULT" # Set to "CUSTOM" when values are provided, or leave as "DEFAULT"
+  status: "CUSTOM"
 
-  # Aesthetic Archetype (e.g., Clean Minimalist SaaS, High-Density FinTech Dashboard, Playful Consumer, Bold Brutalist, Elegant Luxury)
-  aesthetic_archetype: DEFAULT
+  # Aesthetic Archetype
+  aesthetic_archetype: "Bold Modern E-Commerce"
 
-  # Brand Color Palette (Hex, OKLCH, or descriptive color name)
-  primary_color: DEFAULT # e.g., "#3b82f6" (Blue) or "oklch(0.55 0.22 260)"
-  secondary_color: DEFAULT # e.g., "#64748b" (Slate)
-  accent_color: DEFAULT # e.g., "#10b981" (Emerald) or "#f59e0b" (Amber)
-  destructive_color: DEFAULT # e.g., "#ef4444" (Rose/Red) or DEFAULT
+  # Brand Color Palette
+  primary_color: "#000000" # Deep black used for primary CTA buttons, hero banner, and newsletter box
+  secondary_color: "#F0F0F0" # Very light grey used for the large "Browse by Dress Style" background and image backdrops
+  accent_color: "#FF3333" # Vibrant coral/red used for sale badges ("-20%", "-30%") and promotional tags
+  destructive_color: "#DC2626" # Standard warning/destructive red
 
   # Typography
-  font_family: DEFAULT # e.g., "Inter", "Geist Sans", "Plus Jakarta Sans", or DEFAULT
-  heading_style: DEFAULT # e.g., "Bold & Tracking-tight", "Uppercase Monospace", or DEFAULT
+  font_family: "FSP DEMO Integral CF, Satoshi, sans-serif" # Heavy display sans for headlines paired with clean geometric body sans
+  heading_style: "ExtraBold, Uppercase & Tracking-tight"
 
   # Surface & Geometry
-  corner_radius: DEFAULT # Options: "none" (0px), "subtle" (6px), "modern" (10px - default), "pill" (9999px)
-  card_elevation: DEFAULT # Options: "flat-bordered" (default), "subtle-shadow", "glassmorphic"
+  corner_radius: "pill" # Fully rounded pill buttons ("Shop Now", "View All") paired with heavily rounded content cards (16px–24px)
+  card_elevation: "flat-bordered" # Flat surfaces with thin, subtle border outlines (seen on customer review cards)
 
   # Tone & Atmosphere
-  visual_tone: DEFAULT # e.g., "High-contrast technical, crisp borders, subtle transitions"
-  default_theme: DEFAULT # Options: "system" (default), "dark", "light"
+  visual_tone: "High-contrast monochrome, punchy bold headlines, clean product showcase"
+  default_theme: "light"
 ```
 
 ---
