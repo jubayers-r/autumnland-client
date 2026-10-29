@@ -44,6 +44,9 @@ const BRANDS = [
   },
 ];
 
+// Double the items per set to ensure continuous, seamlessly spaced coverage (8 logos visible on biggest screens)
+const BRAND_SET = [...BRANDS, ...BRANDS];
+
 export function BrandBanner({ className }: BrandBannerProps) {
   return (
     <section
@@ -63,20 +66,20 @@ export function BrandBanner({ className }: BrandBannerProps) {
         .animate-marquee-track {
           display: flex;
           width: max-content;
-          animation: marqueeScroll 20s linear infinite;
+          animation: marqueeScroll 25s linear infinite;
           will-change: transform;
         }
       `}</style>
 
-      {/* Infinite Horizontal Marquee: exactly 5 logos on desktop (20vw each), 3 on mobile (33.333vw each), no hover stopping */}
+      {/* Infinite Horizontal Marquee: 8 logos visible on biggest screen (12.5vw each), 3 on mobile (33.333vw each), no hover stopping */}
       <div className="relative w-full overflow-hidden flex items-center">
         <div className="animate-marquee-track flex items-center">
-          {/* First Set of 5 Logos */}
+          {/* First Set of 10 Logos */}
           <div className="flex shrink-0 items-center">
-            {BRANDS.map((brand) => (
+            {BRAND_SET.map((brand, idx) => (
               <div
-                key={`brand-1-${brand.name}`}
-                className="w-[33.333vw] lg:w-[20vw] shrink-0 flex items-center justify-center px-3 sm:px-5 lg:px-6"
+                key={`brand-1-${brand.name}-${idx}`}
+                className="w-[33.333vw] sm:w-[25vw] md:w-[20vw] lg:w-[12.5vw] shrink-0 flex items-center justify-center px-3 sm:px-4 lg:px-5"
               >
                 <Image
                   src={brand.src}
@@ -93,12 +96,12 @@ export function BrandBanner({ className }: BrandBannerProps) {
             ))}
           </div>
 
-          {/* Second Duplicate Set of 5 Logos for Seamless Infinite Loop */}
+          {/* Second Duplicate Set of 10 Logos for Seamless Infinite Loop */}
           <div className="flex shrink-0 items-center" aria-hidden="true">
-            {BRANDS.map((brand) => (
+            {BRAND_SET.map((brand, idx) => (
               <div
-                key={`brand-2-${brand.name}`}
-                className="w-[33.333vw] lg:w-[20vw] shrink-0 flex items-center justify-center px-3 sm:px-5 lg:px-6"
+                key={`brand-2-${brand.name}-${idx}`}
+                className="w-[33.333vw] sm:w-[25vw] md:w-[20vw] lg:w-[12.5vw] shrink-0 flex items-center justify-center px-3 sm:px-4 lg:px-5"
               >
                 <Image
                   src={brand.src}
