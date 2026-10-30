@@ -167,3 +167,48 @@
 @utility font-sans {
   font-family: var(--font-satoshi), sans-serif;
 }
+
+/* Browse by Dress Style Responsive Grid */
+.browse-style-row-1,
+.browse-style-row-2 {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .browse-style-row-1,
+  .browse-style-row-2 {
+    gap: 1.25rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .browse-style-row-1 {
+    grid-template-columns: 407fr 684fr;
+  }
+  .browse-style-row-2 {
+    grid-template-columns: 684fr 407fr;
+  }
+}
+
+/* Browse by Dress Style image alignments:
+   Keeps 2nd (Formal) & 3rd (Party) models properly right-sided on mobile/tablet (instead of centered),
+   matching the 1st (Casual) and 4th (Gym) cards with generous breathing room for labels.
+*/
+.dress-style-img-formal {
+  object-position: 72% top;
+}
+
+.dress-style-img-party {
+  object-position: 76% top;
+}
+
+@media (min-width: 1024px) {
+  .dress-style-img-formal {
+    object-position: right top;
+  }
+  .dress-style-img-party {
+    object-position: right top;
+  }
+}
