@@ -27,6 +27,8 @@ The repository follows a clean Next.js App Router structure:
 │   ├── globals.css         # Tailwind v4 configuration, theme tokens (light/dark)
 │   ├── layout.tsx          # RootLayout with Satoshi & Integral CF fonts, ThemeProvider, QueryProvider, Header, Toaster
 │   ├── page.tsx            # Starter home page & component showcase
+│   ├── shop/
+│   │   └── product/[id]/   # Product detail page with dynamic routing & SSG/PPR
 │   ├── error.tsx           # Global error boundary (client component)
 │   ├── not-found.tsx       # 404 handler (server component)
 │   ├── robots.ts           # Dynamic SEO robots.txt generator
@@ -36,19 +38,22 @@ The repository follows a clean Next.js App Router structure:
 │   ├── footer/             # Footer components (Footer, Newsletter, PaymentBadges, SocialLinks)
 │   ├── header/             # Header components (TopBanner, Navbar, Header)
 │   ├── home/               # Homepage components (HeroSection, BrandBanner, ProductSection, ProductCard, BrowseByDressStyle, TestimonialsSection)
+│   ├── product/            # Product detail components (ProductDetailGallery, ProductDetailOrder)
 │   ├── providers/          # Application providers (QueryProvider, ThemeProvider)
 │   ├── ui/                 # Atomic shadcn/ui primitives (Button, Dialog, Card, Input, etc.)
 │   └── ErrorBoundary.tsx   # Isolated component error boundary with retry fallback
 ├── lib/
 │   ├── api.ts              # Native fetcher with typed ApiError handling
 │   ├── env.ts              # Runtime environment validation with Zod
+│   ├── products.ts         # Product data service & backend-ready API abstraction
 │   ├── store.ts            # Global client UI store (Zustand)
 │   └── utils.ts            # Core cn() class merger (clsx + tailwind-merge)
 ├── tests/
-│   ├── unit/               # Instant Bun test specs (state, api, env validation)
+│   ├── unit/               # Instant Bun test specs (state, api, env, products validation)
 │   └── e2e/                # Playwright end-to-end browser test specs
 ├── types/
-│   └── index.ts            # Shared application types
+│   ├── index.ts            # Shared application types
+│   └── product.ts          # Product domain models & interfaces
 └── public/                 # Static public assets (SVGs, favicon)
 ```
 
