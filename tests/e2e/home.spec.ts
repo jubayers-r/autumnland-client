@@ -91,10 +91,60 @@ test.describe("Landing Page Hero & Brand Banner", () => {
     const animName = await marqueeTrack.evaluate((el) => window.getComputedStyle(el).animationName);
     expect(animName).toBe("marqueeScroll");
 
-    await page.screenshot({ path: "test-results/desktop-preview.png" });
+    await page.screenshot({ path: "test-results/desktop-preview.png", fullPage: true });
 
     await page.setViewportSize({ width: 375, height: 812 });
     await page.goto("/");
     await page.screenshot({ path: "test-results/mobile-preview.png", fullPage: true });
+  });
+
+  test("renders New Arrivals and Top Selling sections with products, ratings and prices", async ({
+    page,
+  }) => {
+    // Tablet viewport screenshot
+    await page.setViewportSize({ width: 768, height: 1024 });
+    await page.goto("/");
+    await page.locator("#new-arrivals").screenshot({ path: "test-results/tablet-preview.png" });
+
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto("/");
+
+    // Headings
+    const newArrivalsHeading = page.getByRole("heading", { name: "NEW ARRIVALS" });
+    const topSellingHeading = page.getByRole("heading", { name: "TOP SELLING" });
+    await expect(newArrivalsHeading).toBeVisible();
+    await expect(topSellingHeading).toBeVisible();
+
+    // Products in New Arrivals
+    await expect(page.getByText("T-shirt with Tape Details")).toBeVisible();
+    await expect(page.getByText("Skinny Fit Jeans")).toBeVisible();
+    await expect(page.getByText("Checkered Shirt")).toBeVisible();
+    await expect(page.getByText("Sleeve Striped T-shirt")).toBeVisible();
+
+    // Prices and discount badges in New Arrivals
+    await expect(page.getByText("$120")).toBeVisible();
+    await expect(page.getByText("$240")).toBeVisible();
+    await expect(page.getByText("$260")).toBeVisible();
+    await expect(page.getByText("-20%").first()).toBeVisible();
+    await expect(page.getByText("$180")).toBeVisible();
+    await expect(page.getByText("$130")).toBeVisible();
+    await expect(page.getByText("$160")).toBeVisible();
+    await expect(page.getByText("-30%")).toBeVisible();
+
+    // Products in Top Selling
+    await expect(page.getByText("Vertical Striped Shirt")).toBeVisible();
+    await expect(page.getByText("Courage Graphic T-shirt")).toBeVisible();
+    await expect(page.getByText("Loose Fit Bermuda Shorts")).toBeVisible();
+    await expect(page.getByText("Faded Skinny Jeans")).toBeVisible();
+
+    // Prices in Top Selling
+    await expect(page.getByText("$212")).toBeVisible();
+    await expect(page.getByText("$145")).toBeVisible();
+    await expect(page.getByText("$80")).toBeVisible();
+    await expect(page.getByText("$210")).toBeVisible();
+
+    // View All CTA buttons
+    const viewAllButtons = page.getByRole("link", { name: "View All" });
+    await expect(viewAllButtons).toHaveCount(2);
   });
 });
