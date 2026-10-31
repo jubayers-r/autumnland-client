@@ -35,7 +35,7 @@ The repository follows a clean Next.js App Router structure:
 ├── components/
 │   ├── footer/             # Footer components (Footer, Newsletter, PaymentBadges, SocialLinks)
 │   ├── header/             # Header components (TopBanner, Navbar, Header)
-│   ├── home/               # Homepage components (HeroSection, BrandBanner, TestimonialsSection)
+│   ├── home/               # Homepage components (HeroSection, BrandBanner, ProductSection, ProductCard, BrowseByDressStyle, TestimonialsSection)
 │   ├── providers/          # Application providers (QueryProvider, ThemeProvider)
 │   ├── ui/                 # Atomic shadcn/ui primitives (Button, Dialog, Card, Input, etc.)
 │   └── ErrorBoundary.tsx   # Isolated component error boundary with retry fallback
