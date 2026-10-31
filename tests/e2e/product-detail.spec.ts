@@ -46,6 +46,7 @@ test.describe("Product Details Page & Navigation", () => {
     // Gallery thumbnails (3 thumbnails)
     const thumbnails = page.locator("button[aria-label*='View thumbnail']");
     await expect(thumbnails).toHaveCount(3);
+    await expect(thumbnails.first()).toHaveAttribute("aria-current", "true");
 
     // Click second thumbnail to swap active image
     await thumbnails.nth(1).click();
@@ -77,6 +78,49 @@ test.describe("Product Details Page & Navigation", () => {
     // Add to Cart toast trigger
     const addToCartBtn = page.getByRole("button", { name: "Add to Cart" });
     await addToCartBtn.click();
+
+    // Verify Product Tabs
+    const reviewsTab = page.getByRole("tab", { name: "Rating & Reviews" });
+    const detailsTab = page.getByRole("tab", { name: "Product Details" });
+    const faqsTab = page.getByRole("tab", { name: "FAQs" });
+
+    await expect(reviewsTab).toBeVisible();
+    await expect(detailsTab).toBeVisible();
+    await expect(faqsTab).toBeVisible();
+    await expect(reviewsTab).toHaveAttribute("aria-selected", "true");
+
+    // Verify Reviews section content from design mockup
+    await expect(page.getByText(/All Reviews/i)).toBeVisible();
+    await expect(page.getByText("Samantha D.")).toBeVisible();
+    await expect(page.getByText("Alex M.")).toBeVisible();
+    await expect(page.getByText("Ethan R.")).toBeVisible();
+
+    // Verify Tab Switching to Product Details
+    await detailsTab.click();
+    await expect(page.getByText("Product Specifications")).toBeVisible();
+    await expect(page.getByText("100% Combed Heavyweight Organic Cotton")).toBeVisible();
+
+    // Verify Tab Switching to FAQs
+    await faqsTab.click();
+    await expect(page.getByText("Frequently Asked Questions")).toBeVisible();
+
+    // Switch back to Reviews
+    await reviewsTab.click();
+    await expect(page.getByText("Samantha D.")).toBeVisible();
+
+    // Verify Write a Review modal flow
+    const writeReviewBtn = page.getByRole("button", { name: "Write a Review" });
+    await writeReviewBtn.click();
+    await expect(page.getByRole("heading", { name: "Write a Review" })).toBeVisible();
+
+    await page.getByLabel("Your Name *").fill("Jordan Reed");
+    await page
+      .getByLabel("Your Review *")
+      .fill("Sensational design and heavyweight fabric. Absolutely pristine quality!");
+    await page.getByRole("button", { name: "Submit Review" }).click();
+
+    // Verify new review appears in list
+    await expect(page.getByText("Jordan Reed")).toBeVisible();
 
     // Capture desktop and mobile preview screenshots
     await page.screenshot({ path: "test-results/product-detail-desktop.png" });
