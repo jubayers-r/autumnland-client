@@ -4,6 +4,7 @@ import * as React from "react";
 import { Check, Minus, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { useCartStore } from "@/lib/cart-store";
 import type { ProductDetail } from "@/types/product";
 
 interface ProductDetailOrderProps {
@@ -20,7 +21,18 @@ export function ProductDetailOrder({ product }: ProductDetailOrderProps) {
 
   const formattedRating = Number.isInteger(rating) ? `${rating}.0` : `${rating}`;
 
+  const addItem = useCartStore((state) => state.addItem);
+
   const handleAddToCart = () => {
+    addItem({
+      productId: product.id,
+      title: product.title,
+      price: product.price,
+      imageSrc: product.images[0],
+      size: selectedSize,
+      color: selectedColor.name,
+      quantity,
+    });
     toast.success("Added to Cart!", {
       description: `${title} (${selectedSize}, ${selectedColor.name}) × ${quantity}`,
     });

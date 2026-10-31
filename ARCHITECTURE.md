@@ -27,6 +27,8 @@ The repository follows a clean Next.js App Router structure:
 │   ├── globals.css         # Tailwind v4 configuration, theme tokens (light/dark)
 │   ├── layout.tsx          # RootLayout with Satoshi & Integral CF fonts, ThemeProvider, QueryProvider, Header, Toaster
 │   ├── page.tsx            # Starter home page & component showcase
+│   ├── cart/
+│   │   └── page.tsx        # Shopping cart view with item list and order summary
 │   ├── shop/
 │   │   └── product/[id]/   # Product detail page with dynamic routing & SSG/PPR
 │   ├── error.tsx           # Global error boundary (client component)
@@ -35,25 +37,32 @@ The repository follows a clean Next.js App Router structure:
 │   ├── sitemap.ts          # Dynamic SEO sitemap.xml generator
 │   └── icon.svg            # Favicon SVG
 ├── components/
+│   ├── cart/               # Shopping cart components (CartItemCard, CartItemList, OrderSummary)
 │   ├── footer/             # Footer components (Footer, Newsletter, PaymentBadges, SocialLinks)
 │   ├── header/             # Header components (TopBanner, Navbar, Header)
 │   ├── home/               # Homepage components (HeroSection, BrandBanner, ProductSection, ProductCard, BrowseByDressStyle, TestimonialsSection)
-│   ├── product/            # Product detail components (ProductDetailGallery, ProductDetailOrder)
+│   ├── product/            # Product detail components (ProductDetailGallery, ProductDetailOrder, ProductSectionTabs, ProductReviewsSection, ProductDetailsContent, ProductFaqsContent)
+│   │   ├── reviews/        # Product review primitives (ProductReviewsSection, ReviewCard, ReviewFilterDialog, WriteReviewDialog, ReviewStarRating)
+│   │   └── tabs/           # Product info tabs (ProductSectionTabs, ProductDetailsContent, ProductFaqsContent)
 │   ├── providers/          # Application providers (QueryProvider, ThemeProvider)
 │   ├── ui/                 # Atomic shadcn/ui primitives (Button, Dialog, Card, Input, etc.)
 │   └── ErrorBoundary.tsx   # Isolated component error boundary with retry fallback
 ├── lib/
 │   ├── api.ts              # Native fetcher with typed ApiError handling
+│   ├── cart-store.ts       # Shopping cart Zustand store (items, promo codes, subtotal/total calculations)
 │   ├── env.ts              # Runtime environment validation with Zod
 │   ├── products.ts         # Product data service & backend-ready API abstraction
+│   ├── reviews-data.ts     # Curated reference reviews matching design specifications
+│   ├── reviews-service.ts  # Decoupled review API service layer with sorting, filtering, and pagination
 │   ├── store.ts            # Global client UI store (Zustand)
 │   └── utils.ts            # Core cn() class merger (clsx + tailwind-merge)
 ├── tests/
-│   ├── unit/               # Instant Bun test specs (state, api, env, products validation)
-│   └── e2e/                # Playwright end-to-end browser test specs
+│   ├── unit/               # Instant Bun test specs (state, api, env, products, reviews validation)
+│   └── e2e/                # Playwright end-to-end browser test specs (cart, header, footer, home, product-detail, product-reviews)
 ├── types/
 │   ├── index.ts            # Shared application types
-│   └── product.ts          # Product domain models & interfaces
+│   ├── product.ts          # Product domain models & interfaces
+│   └── review.ts           # Review domain models, API filter/sort contracts, and pagination schemas
 └── public/                 # Static public assets (SVGs, favicon)
 ```
 
@@ -73,7 +82,7 @@ Configured in `tsconfig.json` and `components.json`:
 ## Data Flow & State Management
 
 1. **Server State**: Managed via TanStack Query (`useQuery`, `useMutation`) using the native `fetcher` in `lib/api.ts`. Global error toasts are pre-configured in `QueryProvider`.
-2. **Client State**: Managed via Zustand (`lib/store.ts`) for global UI state (sidebar, modals, client filters) without `<Provider>` wrapping.
+2. **Client State**: Managed via Zustand (`lib/store.ts` for transient UI modals/sidebar, and `lib/cart-store.ts` for client cart state and discount calculations) without `<Provider>` wrapping.
 3. **Form State**: Managed via React Hook Form with Zod schemas for client-side type-safe validation before triggering mutations.
 4. **Local UI State**: Managed via React hooks (`useState`, `useReducer`) or Radix primitive state machines.
 
