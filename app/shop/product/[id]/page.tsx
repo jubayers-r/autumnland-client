@@ -6,6 +6,7 @@ import { ChevronRight } from "lucide-react";
 import { getProductById, MOCK_PRODUCT_DETAILS } from "@/lib/products";
 import { ProductDetailGallery } from "@/components/product/ProductDetailGallery";
 import { ProductDetailOrder } from "@/components/product/ProductDetailOrder";
+import { ProductSectionTabs } from "@/components/product";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -90,6 +91,11 @@ export default async function ProductPage({ params }: ProductPageProps) {
           <ProductDetailGallery images={product.images} title={product.title} />
           <ProductDetailOrder product={product} />
         </div>
+
+        {/* Product Details, Reviews, FAQs Section with functioning tabs */}
+        <section className="mt-12 sm:mt-16 lg:mt-20">
+          <ProductSectionTabs product={product} />
+        </section>
       </div>
     </main>
   );
