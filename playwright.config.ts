@@ -27,7 +27,7 @@ export default defineConfig({
   webServer: {
     command: `bun x next dev -p ${PORT}`,
     url: `http://localhost:${PORT}`,
-    reuseExistingServer: false,
+    reuseExistingServer: true,
     timeout: 60 * 1000,
   },
 });
