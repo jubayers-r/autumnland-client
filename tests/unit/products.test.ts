@@ -90,4 +90,37 @@ describe("Product showcase components and datasets", () => {
       expect(p.price).toBeGreaterThan(0);
     });
   });
+
+  it("provides comprehensive product details mock for each product including one-life-graphic-t-shirt", async () => {
+    const { getProductById, MOCK_PRODUCT_DETAILS } = await import("@/lib/products");
+
+    expect(MOCK_PRODUCT_DETAILS).toBeDefined();
+
+    // Verify all 8 home products have valid detail entries
+    for (const p of [...NEW_ARRIVALS, ...TOP_SELLING]) {
+      const detail = await getProductById(p.id);
+      expect(detail).toBeDefined();
+      expect(detail).not.toBeNull();
+      expect(detail!.id).toBe(p.id);
+      expect(detail!.images.length).toBeGreaterThanOrEqual(1);
+      expect(detail!.colors.length).toBeGreaterThanOrEqual(1);
+      expect(detail!.sizes.length).toBeGreaterThanOrEqual(1);
+      expect(detail!.breadcrumbs.length).toBeGreaterThanOrEqual(2);
+      expect(detail!.description.length).toBeGreaterThan(10);
+    }
+
+    // Verify the reference demo product "one-life-graphic-t-shirt"
+    const oneLife = await getProductById("one-life-graphic-t-shirt");
+    expect(oneLife).not.toBeNull();
+    expect(oneLife!.title).toBe("ONE LIFE GRAPHIC T-SHIRT");
+    expect(oneLife!.price).toBe(260);
+    expect(oneLife!.originalPrice).toBe(300);
+    expect(oneLife!.discount).toBe("-40%");
+    expect(oneLife!.colors.length).toBe(3);
+    expect(oneLife!.sizes).toContain("Large");
+
+    // Verify non-existent product returns null
+    const nonExistent = await getProductById("unknown-product-xyz");
+    expect(nonExistent).toBeNull();
+  });
 });
