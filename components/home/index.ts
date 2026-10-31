@@ -6,3 +6,6 @@ export { DRESS_STYLES, type DressStyleItem } from "./dress-style-data";
 export { TestimonialsSection } from "./TestimonialsSection";
 export { TestimonialCard } from "./TestimonialCard";
 export { TESTIMONIALS, type Testimonial } from "./testimonials-data";
+export { ProductSection } from "./ProductSection";
+export { ProductCard } from "./ProductCard";
+export { NEW_ARRIVALS, TOP_SELLING, type Product } from "./products-data";
