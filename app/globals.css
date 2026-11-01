@@ -4,11 +4,18 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@font-face {
+  font-family: "HeadingDashFallback";
+  src: local("Arial Black"), local("Impact"), local("Helvetica-Bold"), local("sans-serif");
+  font-weight: 700 900;
+  unicode-range: U+002D, U+2010, U+2011, U+2012, U+2013, U+2014;
+}
+
 @theme inline {
   --font-sans:
     var(--font-satoshi), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
     Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-heading: var(--font-integral), sans-serif;
+  --font-heading: "HeadingDashFallback", var(--font-integral), sans-serif;
 
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -161,7 +168,7 @@
 }
 
 @utility font-heading {
-  font-family: var(--font-integral), sans-serif;
+  font-family: "HeadingDashFallback", var(--font-integral), sans-serif;
 }
 
 @utility font-sans {
