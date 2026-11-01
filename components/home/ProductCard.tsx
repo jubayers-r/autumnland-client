@@ -68,8 +68,8 @@ export function ProductCard({ product, className, priority = false }: ProductCar
           className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/50 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-1"
         />
 
-        {/* Quick Add to Cart Button */}
-        <div className="absolute inset-x-2.5 bottom-2.5 sm:inset-x-3.5 sm:bottom-3.5 z-10 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 group-focus-within:opacity-100 group-focus-within:translate-y-0 transition-all duration-200">
+        {/* Quick Add to Cart Button (Desktop hover) */}
+        <div className="hidden md:block absolute inset-x-2.5 bottom-2.5 sm:inset-x-3.5 sm:bottom-3.5 z-10 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 group-focus-within:opacity-100 group-focus-within:translate-y-0 transition-all duration-200">
           <button
             type="button"
             onClick={handleQuickAddToCart}
@@ -157,6 +157,19 @@ export function ProductCard({ product, className, priority = false }: ProductCar
           )}
         </div>
       </Link>
+
+      {/* Mobile Quick Add to Cart button (easy 1-tap for phone users) */}
+      <div className="mt-2.5 md:hidden w-full relative z-10">
+        <button
+          type="button"
+          onClick={handleQuickAddToCart}
+          aria-label={`Add ${title} to cart`}
+          className="w-full h-8 xs:h-9 rounded-full bg-black text-white dark:bg-white dark:text-black hover:bg-black/85 dark:hover:bg-white/85 flex items-center justify-center gap-1.5 font-medium text-xs shadow-xs active:scale-[0.98] transition-all cursor-pointer focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
+        >
+          <ShoppingCart className="w-3.5 h-3.5" />
+          <span>Add to Cart</span>
+        </button>
+      </div>
     </article>
   );
 }
