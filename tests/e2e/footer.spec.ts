@@ -99,26 +99,29 @@ test.describe("Footer & Newsletter Section", () => {
     await expect(page.getByTitle("Google Pay")).toBeVisible();
   });
 
-  test("renders mobile-responsive footer layout and captures screenshots", async ({ page }) => {
-    // Mobile Viewport (375x812)
+  test("hides footer and newsletter on mobile screen while keeping it visible on desktop", async ({
+    page,
+  }) => {
+    // Mobile Viewport (375x812) - Footer and newsletter are hidden
     await page.setViewportSize({ width: 375, height: 812 });
     await page.goto("/");
 
     const footer = page.locator("footer");
-    await expect(footer).toBeVisible();
+    await expect(footer).toBeHidden();
 
-    // Newsletter is stacked on mobile
     const newsletterHeading = page.getByRole("heading", {
       name: /STAY UPTO DATE ABOUT OUR LATEST OFFERS/i,
     });
-    await expect(newsletterHeading).toBeVisible();
+    await expect(newsletterHeading).toBeHidden();
 
     // Capture mobile full-page screenshot
     await page.screenshot({ path: "test-results/mobile-footer.png", fullPage: true });
 
-    // Desktop Viewport (1280x800)
+    // Desktop Viewport (1280x800) - Footer and newsletter are visible
     await page.setViewportSize({ width: 1280, height: 800 });
     await page.goto("/");
+    await expect(footer).toBeVisible();
+    await expect(newsletterHeading).toBeVisible();
     await page.screenshot({ path: "test-results/desktop-footer.png", fullPage: true });
   });
 });

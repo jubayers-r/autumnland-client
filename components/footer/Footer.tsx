@@ -45,7 +45,7 @@ export function Footer({ className, showNewsletter = true }: FooterProps) {
     <footer
       aria-label="Site Footer"
       className={cn(
-        "w-full relative text-foreground transition-colors",
+        "hidden md:block w-full relative text-foreground transition-colors",
         showNewsletter ? "mt-24 sm:mt-32 lg:mt-36" : "mt-12 sm:mt-16",
         className
       )}
