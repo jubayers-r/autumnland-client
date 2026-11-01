@@ -1,9 +1,5 @@
-import * as React from "react";
-import type { Metadata } from "next";
-import Link from "next/link";
-import { notFound } from "next/navigation";
-import { ChevronRight } from "lucide-react";
-import { getProductById, MOCK_PRODUCT_DETAILS } from "@/lib/products";
+import { ProductSection, TOP_SELLING, YOU_MIGHT_ALSO_LIKE } from "@/components/home";
+import { ProductSectionTabs } from "@/components/product";
 import { ProductDetailGallery } from "@/components/product/ProductDetailGallery";
 import { ProductDetailOrder } from "@/components/product/ProductDetailOrder";
 import {
@@ -14,6 +10,12 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { getProductById, MOCK_PRODUCT_DETAILS } from "@/lib/products";
+import { ChevronRight } from "lucide-react";
+import type { Metadata } from "next";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import * as React from "react";
 
 interface ProductPageProps {
   params: Promise<{ id: string }>;
@@ -49,6 +51,15 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   if (!product) {
     notFound();
+  }
+
+  // Prepare related products (filter out current product if viewing one of them)
+  const relatedProducts = YOU_MIGHT_ALSO_LIKE.filter((p) => p.id !== product.id);
+  if (relatedProducts.length < 4) {
+    const fallback = TOP_SELLING.find(
+      (p) => p.id !== product.id && !relatedProducts.some((r) => r.id === p.id)
+    );
+    if (fallback) relatedProducts.push(fallback);
   }
 
   return (
@@ -90,7 +101,21 @@ export default async function ProductPage({ params }: ProductPageProps) {
           <ProductDetailGallery images={product.images} title={product.title} />
           <ProductDetailOrder product={product} />
         </div>
+
+        {/* Product Details, Reviews, FAQs Section with functioning tabs */}
+        <section className="mt-12 sm:mt-16 lg:mt-20">
+          <ProductSectionTabs product={product} />
+        </section>
       </div>
+
+      {/* You Might Also Like Section */}
+      <ProductSection
+        id="you-might-also-like"
+        title="YOU MIGHT ALSO LIKE"
+        products={relatedProducts}
+        showViewAll={false}
+        className="pt-4 sm:pt-8 lg:pt-10 pb-12 sm:pb-16 lg:pb-24"
+      />
     </main>
   );
 }

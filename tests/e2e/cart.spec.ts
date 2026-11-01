@@ -153,14 +153,14 @@ test.describe("Shopping Cart Flow & Responsiveness", () => {
     await page.setViewportSize({ width: 1280, height: 900 });
     await page.goto("/cart");
     await page.screenshot({
-      path: "C:/Users/Jubayer/.gemini/antigravity/brain/255ade13-9243-4b63-a611-80b1f50940e6/cart_desktop.png",
+      path: "test-results/cart_desktop.png",
       fullPage: false,
     });
 
     await page.setViewportSize({ width: 375, height: 812 });
     await page.goto("/cart");
     await page.screenshot({
-      path: "C:/Users/Jubayer/.gemini/antigravity/brain/255ade13-9243-4b63-a611-80b1f50940e6/cart_mobile.png",
+      path: "test-results/cart_mobile.png",
       fullPage: false,
     });
   });

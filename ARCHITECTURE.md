@@ -41,7 +41,9 @@ The repository follows a clean Next.js App Router structure:
 │   ├── footer/             # Footer components (Footer, Newsletter, PaymentBadges, SocialLinks)
 │   ├── header/             # Header components (TopBanner, Navbar, Header)
 │   ├── home/               # Homepage components (HeroSection, BrandBanner, ProductSection, ProductCard, BrowseByDressStyle, TestimonialsSection)
-│   ├── product/            # Product detail components (ProductDetailGallery, ProductDetailOrder)
+│   ├── product/            # Product detail components (ProductDetailGallery, ProductDetailOrder, ProductSectionTabs, ProductReviewsSection, ProductDetailsContent, ProductFaqsContent)
+│   │   ├── reviews/        # Product review primitives (ProductReviewsSection, ReviewCard, ReviewFilterDialog, WriteReviewDialog, ReviewStarRating)
+│   │   └── tabs/           # Product info tabs (ProductSectionTabs, ProductDetailsContent, ProductFaqsContent)
 │   ├── providers/          # Application providers (QueryProvider, ThemeProvider)
 │   ├── ui/                 # Atomic shadcn/ui primitives (Button, Dialog, Card, Input, etc.)
 │   └── ErrorBoundary.tsx   # Isolated component error boundary with retry fallback
@@ -50,14 +52,17 @@ The repository follows a clean Next.js App Router structure:
 │   ├── cart-store.ts       # Shopping cart Zustand store (items, promo codes, subtotal/total calculations)
 │   ├── env.ts              # Runtime environment validation with Zod
 │   ├── products.ts         # Product data service & backend-ready API abstraction
+│   ├── reviews-data.ts     # Curated reference reviews matching design specifications
+│   ├── reviews-service.ts  # Decoupled review API service layer with sorting, filtering, and pagination
 │   ├── store.ts            # Global client UI store (Zustand)
 │   └── utils.ts            # Core cn() class merger (clsx + tailwind-merge)
 ├── tests/
-│   ├── unit/               # Instant Bun test specs (state, api, env, products, cart validation)
-│   └── e2e/                # Playwright end-to-end browser test specs (cart, header, footer, home, product-detail)
+│   ├── unit/               # Instant Bun test specs (state, api, env, products, reviews validation)
+│   └── e2e/                # Playwright end-to-end browser test specs (cart, header, footer, home, product-detail, product-reviews)
 ├── types/
 │   ├── index.ts            # Shared application types
-│   └── product.ts          # Product domain models & interfaces
+│   ├── product.ts          # Product domain models & interfaces
+│   └── review.ts           # Review domain models, API filter/sort contracts, and pagination schemas
 └── public/                 # Static public assets (SVGs, favicon)
 ```
 

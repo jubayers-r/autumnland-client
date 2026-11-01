@@ -8,4 +8,4 @@ export { TestimonialCard } from "./TestimonialCard";
 export { TESTIMONIALS, type Testimonial } from "./testimonials-data";
 export { ProductSection } from "./ProductSection";
 export { ProductCard } from "./ProductCard";
-export { NEW_ARRIVALS, TOP_SELLING, type Product } from "./products-data";
+export { NEW_ARRIVALS, TOP_SELLING, YOU_MIGHT_ALSO_LIKE, type Product } from "./products-data";

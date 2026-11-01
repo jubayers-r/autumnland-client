@@ -26,7 +26,7 @@ export function BrowseByDressStyle({ className, items = DRESS_STYLES }: BrowseBy
       {/* Outer Rounded Container with light grey background (#F0F0F0) and 40px radius */}
       <div className="w-full bg-[#F0F0F0] dark:bg-[#1A1A1A] rounded-[20px] sm:rounded-[28px] lg:rounded-[40px] px-6 py-10 sm:px-10 sm:py-14 lg:px-16 lg:py-16 transition-colors">
         {/* Section Heading: Integral CF ExtraBold, Uppercase */}
-        <h2 className="font-heading font-black text-3xl sm:text-4xl lg:text-[48px] leading-[1.1] tracking-tight uppercase text-center text-foreground mb-7 sm:mb-10 lg:mb-16 max-w-[280px] sm:max-w-none mx-auto select-none">
+        <h2 className="font-heading font-black text-3xl sm:text-4xl lg:text-[48px] leading-[1.1] tracking-tight uppercase text-center text-foreground mb-7 sm:mb-10 lg:mb-16 max-w-[280px] sm:max-w-none mx-auto">
           BROWSE BY DRESS STYLE
         </h2>
 

@@ -8,8 +8,10 @@ interface ProductSectionProps {
   id: string;
   title: string;
   products: Product[];
-  viewAllHref?: string;
+  viewAllHref?: string | null;
+  showViewAll?: boolean;
   className?: string;
+  titleClassName?: string;
   priority?: boolean;
 }
 
@@ -18,7 +20,9 @@ export function ProductSection({
   title,
   products,
   viewAllHref = "/shop",
+  showViewAll = true,
   className,
+  titleClassName,
   priority = false,
 }: ProductSectionProps) {
   return (
@@ -30,32 +34,39 @@ export function ProductSection({
         className
       )}
     >
-      {/* Section Title: Integral CF ExtraBold, Centered */}
-      <h2 className="font-heading font-black text-[32px] sm:text-4xl lg:text-[48px] leading-tight tracking-tight uppercase text-center text-foreground mb-6 sm:mb-9 lg:mb-14 select-none">
+      {/* Section Title: Integral CF ExtraBold, Centered, single-line on phone */}
+      <h2
+        className={cn(
+          "font-heading font-black text-[20px] xs:text-2xl sm:text-3xl md:text-4xl lg:text-[48px] leading-tight tracking-tight uppercase text-center text-foreground mb-6 sm:mb-9 lg:mb-14",
+          titleClassName
+        )}
+      >
         {title}
       </h2>
 
-      {/* Product List: 2 cards fitting within screen on mobile, 4-column Grid on Desktop */}
+      {/* Product List: 2 cards per row on mobile (2 rows = 4 cards), 4-column Grid on Desktop */}
       <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4 md:gap-4 lg:gap-6 w-full">
         {products.map((product, index) => (
           <ProductCard
             key={product.id}
             product={product}
             priority={priority && index < 2}
-            className={index >= 2 ? "hidden md:flex" : "flex"}
+            className="flex"
           />
         ))}
       </div>
 
       {/* View All Pill Button */}
-      <div className="mt-6 sm:mt-9 lg:mt-12 flex justify-center">
-        <Link
-          href={viewAllHref}
-          className="w-full sm:w-[218px] h-[46px] sm:h-[52px] rounded-full border border-black/10 dark:border-white/10 bg-background text-foreground flex items-center justify-center font-medium text-sm sm:text-base hover:bg-black/5 dark:hover:bg-white/5 transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
-        >
-          View All
-        </Link>
-      </div>
+      {showViewAll && viewAllHref && (
+        <div className="mt-6 sm:mt-9 lg:mt-12 flex justify-center">
+          <Link
+            href={viewAllHref}
+            className="w-full sm:w-[218px] h-[46px] sm:h-[52px] rounded-full border border-black/10 dark:border-white/10 bg-background text-foreground flex items-center justify-center font-medium text-sm sm:text-base hover:bg-black/5 dark:hover:bg-white/5 transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            View All
+          </Link>
+        </div>
+      )}
     </section>
   );
 }
