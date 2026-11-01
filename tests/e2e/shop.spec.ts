@@ -275,4 +275,99 @@ test.describe("Shop & Category Catalog Page", () => {
     await expect(formalBtn).toHaveClass(/font-bold/);
     await expect(casualBtn).not.toHaveClass(/font-bold/);
   });
+
+  test("clicking on /shop anytime resets all filters and shows full default state", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1280, height: 850 });
+    // Go to filtered URL
+    await page.goto("/shop?category=jeans&minPrice=100&sort=newest");
+    await expect(page.getByText("Skinny Fit Jeans").first()).toBeVisible();
+
+    // Click Shop in navbar
+    const shopNavBtn = page.getByRole("button", { name: "Shop", exact: true });
+    await shopNavBtn.click();
+
+    // Should be at /shop with default 9 products
+    await expect(page).toHaveURL("/shop");
+    await expect(page.getByText(/Showing 1-9 of \d+ Products/i)).toBeVisible();
+    await expect(page.getByText("Gradient Graphic T-shirt").first()).toBeVisible();
+  });
+
+  test("filters catalog by Brands section with multi-selection", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 850 });
+    await page.goto("/shop");
+
+    const filtersSidebar = page.getByRole("complementary", {
+      name: "Product filters",
+    });
+
+    // Select Versace
+    const versaceBtn = filtersSidebar.getByRole("button", { name: "Versace" });
+    await versaceBtn.click();
+
+    // Verify only Versace products are shown
+    await expect(page.getByText("Sleeve Striped T-shirt").first()).toBeVisible();
+    await expect(page.getByText("Courage Graphic T-shirt").first()).toBeVisible();
+    await expect(page.getByText("Polo with Tipping Details")).not.toBeVisible();
+  });
+
+  test("navigates to /brands page, renders marquee logos, and filters by brand on click", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1280, height: 850 });
+    await page.goto("/");
+
+    // Click Brands in desktop navbar
+    const brandsNavLink = page.getByRole("link", { name: "Brands", exact: true });
+    await brandsNavLink.click();
+
+    // Arrives at /brands page
+    await expect(page).toHaveURL("/brands");
+    await expect(page.getByRole("heading", { name: "OUR BRAND PARTNERS" })).toBeVisible();
+
+    // Verify all 5 brands are displayed
+    await expect(page.getByRole("heading", { name: "Versace" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Zara" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Gucci" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Prada" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Calvin Klein" })).toBeVisible();
+
+    // Click Gucci card
+    const gucciCard = page.getByRole("link", { name: /Gucci/i });
+    await gucciCard.click();
+
+    // Arrives at /shop?brand=Gucci
+    await expect(page).toHaveURL(/brand=Gucci/);
+    await expect(page.getByRole("heading", { name: "GUCCI" })).toBeVisible();
+    await expect(page.getByText("Black Striped T-shirt").first()).toBeVisible();
+    await expect(page.getByText("One Life Graphic T-shirt").first()).toBeVisible();
+  });
+
+  test("sonner toast resets staying timer and stays visible across rapid continuous clicks", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1280, height: 850 });
+    await page.goto("/shop");
+
+    const firstCard = page.locator("[data-product-card]").first();
+    const addBtn = firstCard.getByRole("button", { name: /Add.*to cart/i });
+
+    // Click 1
+    await addBtn.click({ force: true });
+    const toast = page.locator("[data-sonner-toast]").first();
+    await expect(toast).toBeVisible();
+
+    // Click 2 (previously toggled off, now remains visible)
+    await addBtn.click({ force: true });
+    await expect(toast).toBeVisible();
+
+    // Click 3
+    await addBtn.click({ force: true });
+    await expect(toast).toBeVisible();
+
+    // Click 4
+    await addBtn.click({ force: true });
+    await expect(toast).toBeVisible();
+  });
 });

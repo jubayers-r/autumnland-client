@@ -21,6 +21,7 @@ export function ShopView() {
   const isOnSale = urlFilter === "sale";
   const urlCategory = searchParams.get("category");
   const urlDressStyle = searchParams.get("dressStyle");
+  const urlBrand = searchParams.get("brand");
   const rawSort = (searchParams.get("sort") || searchParams.get("sortBy")) as CatalogSortOption;
   const sortBy: CatalogSortOption = [
     "popular",
@@ -49,6 +50,17 @@ export function ShopView() {
     [urlCategory]
   );
 
+  const brands = React.useMemo(
+    () =>
+      urlBrand
+        ? urlBrand
+            .split(",")
+            .map((b) => b.trim())
+            .filter(Boolean)
+        : [],
+    [urlBrand]
+  );
+
   const dressStyles = React.useMemo(() => {
     if (urlDressStyle) {
       return urlDressStyle
@@ -59,11 +71,11 @@ export function ShopView() {
     if (["casual", "formal", "party", "gym"].includes(urlCategory?.toLowerCase() || "")) {
       return [urlCategory!];
     }
-    if (isOnSale || sortBy === "newest") {
+    if (isOnSale || sortBy === "newest" || brands.length > 0) {
       return [];
     }
     return ["Casual"];
-  }, [urlDressStyle, urlCategory, isOnSale, sortBy]);
+  }, [urlDressStyle, urlCategory, isOnSale, sortBy, brands]);
 
   const sizes = React.useMemo(
     () =>
@@ -91,6 +103,8 @@ export function ShopView() {
     () => ({
       category: categories[0] || null,
       categories,
+      brand: brands[0] || null,
+      brands,
       minPrice: urlMinPrice,
       maxPrice: urlMaxPrice,
       color: colors[0] || null,
@@ -100,7 +114,7 @@ export function ShopView() {
       dressStyle: dressStyles[0] || null,
       dressStyles,
     }),
-    [categories, urlMinPrice, urlMaxPrice, colors, sizes, dressStyles]
+    [categories, brands, urlMinPrice, urlMaxPrice, colors, sizes, dressStyles]
   );
 
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = React.useState<boolean>(false);
@@ -125,6 +139,7 @@ export function ShopView() {
     return getCatalogProductsSync({
       categories: filters.categories,
       dressStyles: filters.dressStyles,
+      brands: filters.brands,
       minPrice: filters.minPrice,
       maxPrice: filters.maxPrice,
       colors: filters.colors,
@@ -140,6 +155,7 @@ export function ShopView() {
   // Calculate active filter count for badges
   const activeFilterCount =
     filters.categories.length +
+    filters.brands.length +
     filters.colors.length +
     filters.sizes.length +
     (filters.dressStyles.length > 0 &&
@@ -158,6 +174,9 @@ export function ShopView() {
 
     if (nextFilters.categories.length > 0) {
       params.set("category", nextFilters.categories.join(","));
+    }
+    if (nextFilters.brands.length > 0) {
+      params.set("brand", nextFilters.brands.join(","));
     }
     if (nextFilters.dressStyles.length > 0) {
       params.set("dressStyle", nextFilters.dressStyles.join(","));
@@ -198,6 +217,8 @@ export function ShopView() {
     const resetState: FilterState = {
       category: null,
       categories: [],
+      brand: null,
+      brands: [],
       minPrice: null,
       maxPrice: null,
       color: null,
@@ -219,18 +240,23 @@ export function ShopView() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  // Derive dynamic page title (e.g. "On Sale", "New Arrivals", "Casual", "T-shirts", etc.)
+  // Derive dynamic page title (e.g. "On Sale", "New Arrivals", "Gucci", "Casual", "T-shirts", etc.)
   const pageTitle = isOnSale
     ? "On Sale"
-    : sortBy === "newest" && filters.categories.length === 0 && filters.dressStyles.length === 0
+    : sortBy === "newest" &&
+        filters.categories.length === 0 &&
+        filters.dressStyles.length === 0 &&
+        filters.brands.length === 0
       ? "New Arrivals"
-      : filters.categories.length > 0
-        ? filters.categories.join(", ")
-        : filters.dressStyles.length > 0
-          ? filters.dressStyles.join(", ")
-          : urlSearch
-            ? `Search: "${urlSearch}"`
-            : "Casual";
+      : filters.brands.length > 0 && filters.categories.length === 0
+        ? filters.brands.join(", ")
+        : filters.categories.length > 0
+          ? filters.categories.join(", ")
+          : filters.dressStyles.length > 0
+            ? filters.dressStyles.join(", ")
+            : urlSearch
+              ? `Search: "${urlSearch}"`
+              : "Casual";
 
   const startIndex =
     catalogData.totalCount > 0 ? (catalogData.page - 1) * catalogData.pageSize + 1 : 0;

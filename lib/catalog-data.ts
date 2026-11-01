@@ -6,6 +6,7 @@ export interface CatalogProduct {
   category: "T-shirts" | "Shorts" | "Shirts" | "Hoodie" | "Jeans";
   dressStyle: "Casual" | "Formal" | "Party" | "Gym";
   dressStyles: ("Casual" | "Formal" | "Party" | "Gym")[];
+  brand: "Versace" | "Zara" | "Gucci" | "Prada" | "Calvin Klein";
   rating: number;
   ratingCount?: number;
   price: number;
@@ -22,6 +23,8 @@ export interface CatalogProduct {
 export const FILTER_CATEGORIES = ["T-shirts", "Shorts", "Shirts", "Hoodie", "Jeans"] as const;
 
 export const FILTER_DRESS_STYLES = ["Casual", "Formal", "Party", "Gym"] as const;
+
+export const FILTER_BRANDS = ["Versace", "Zara", "Gucci", "Prada", "Calvin Klein"] as const;
 
 export interface FilterColorOption {
   name: string;
@@ -68,6 +71,7 @@ export const CATALOG_PRODUCTS: CatalogProduct[] = [
     category: "T-shirts",
     dressStyle: "Casual",
     dressStyles: ["Casual", "Party"],
+    brand: "Zara",
     rating: 3.5,
     ratingCount: 38,
     price: 145,
@@ -87,6 +91,7 @@ export const CATALOG_PRODUCTS: CatalogProduct[] = [
     category: "T-shirts",
     dressStyle: "Casual",
     dressStyles: ["Casual", "Formal"],
+    brand: "Calvin Klein",
     rating: 4.5,
     ratingCount: 42,
     price: 180,
@@ -106,6 +111,7 @@ export const CATALOG_PRODUCTS: CatalogProduct[] = [
     category: "T-shirts",
     dressStyle: "Casual",
     dressStyles: ["Casual", "Party", "Gym"],
+    brand: "Gucci",
     rating: 5.0,
     ratingCount: 56,
     price: 120,
@@ -127,6 +133,7 @@ export const CATALOG_PRODUCTS: CatalogProduct[] = [
     category: "Jeans",
     dressStyle: "Casual",
     dressStyles: ["Casual", "Party"],
+    brand: "Calvin Klein",
     rating: 3.5,
     ratingCount: 30,
     price: 240,
@@ -148,6 +155,7 @@ export const CATALOG_PRODUCTS: CatalogProduct[] = [
     category: "Shirts",
     dressStyle: "Casual",
     dressStyles: ["Casual", "Formal"],
+    brand: "Zara",
     rating: 4.5,
     ratingCount: 48,
     price: 180,
@@ -167,6 +175,7 @@ export const CATALOG_PRODUCTS: CatalogProduct[] = [
     category: "T-shirts",
     dressStyle: "Casual",
     dressStyles: ["Casual", "Gym"],
+    brand: "Versace",
     rating: 4.5,
     ratingCount: 35,
     price: 130,
@@ -188,6 +197,7 @@ export const CATALOG_PRODUCTS: CatalogProduct[] = [
     category: "Shirts",
     dressStyle: "Casual",
     dressStyles: ["Casual", "Formal"],
+    brand: "Prada",
     rating: 5.0,
     ratingCount: 62,
     price: 212,
@@ -209,6 +219,7 @@ export const CATALOG_PRODUCTS: CatalogProduct[] = [
     category: "T-shirts",
     dressStyle: "Casual",
     dressStyles: ["Casual", "Party"],
+    brand: "Versace",
     rating: 4.0,
     ratingCount: 29,
     price: 145,
@@ -228,6 +239,7 @@ export const CATALOG_PRODUCTS: CatalogProduct[] = [
     category: "Shorts",
     dressStyle: "Casual",
     dressStyles: ["Casual", "Gym"],
+    brand: "Zara",
     rating: 3.0,
     ratingCount: 22,
     price: 80,
@@ -247,6 +259,7 @@ export const CATALOG_PRODUCTS: CatalogProduct[] = [
     category: "T-shirts",
     dressStyle: "Casual",
     dressStyles: ["Casual", "Party"],
+    brand: "Gucci",
     rating: 4.5,
     ratingCount: 45,
     price: 260,
@@ -268,6 +281,7 @@ export const CATALOG_PRODUCTS: CatalogProduct[] = [
     category: "T-shirts",
     dressStyle: "Casual",
     dressStyles: ["Casual", "Formal", "Party"],
+    brand: "Calvin Klein",
     rating: 4.0,
     ratingCount: 26,
     price: 212,
@@ -289,6 +303,7 @@ export const CATALOG_PRODUCTS: CatalogProduct[] = [
     category: "T-shirts",
     dressStyle: "Casual",
     dressStyles: ["Casual", "Gym"],
+    brand: "Prada",
     rating: 4.5,
     ratingCount: 32,
     price: 120,
@@ -308,6 +323,7 @@ export const CATALOG_PRODUCTS: CatalogProduct[] = [
     category: "Jeans",
     dressStyle: "Casual",
     dressStyles: ["Casual", "Party"],
+    brand: "Calvin Klein",
     rating: 4.5,
     ratingCount: 39,
     price: 210,
@@ -327,6 +343,7 @@ export const CATALOG_PRODUCTS: CatalogProduct[] = [
     category: "Hoodie",
     dressStyle: "Casual",
     dressStyles: ["Casual", "Gym"],
+    brand: "Versace",
     rating: 4.7,
     ratingCount: 41,
     price: 170,

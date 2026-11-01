@@ -70,6 +70,20 @@ describe("Catalog Data and Filtering Service", () => {
     });
   });
 
+  it("filters accurately by single or multiple brands", async () => {
+    const versace = await getCatalogProducts({ brand: "Versace", limit: 30 });
+    expect(versace.products.length).toBeGreaterThan(0);
+    versace.products.forEach((p) => {
+      expect(p.brand).toBe("Versace");
+    });
+
+    const multiBrand = await getCatalogProducts({ brands: ["Gucci", "Zara"], limit: 30 });
+    expect(multiBrand.products.length).toBeGreaterThan(0);
+    multiBrand.products.forEach((p) => {
+      expect(["Gucci", "Zara"]).toContain(p.brand);
+    });
+  });
+
   it("filters accurately by price range bounds", async () => {
     const result = await getCatalogProducts({ minPrice: 100, maxPrice: 150, limit: 30 });
     expect(result.products.length).toBeGreaterThan(0);

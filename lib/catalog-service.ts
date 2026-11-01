@@ -7,6 +7,8 @@ export interface CatalogFilterParams {
   categories?: string[] | null;
   dressStyle?: string | null;
   dressStyles?: string[] | null;
+  brand?: string | null;
+  brands?: string[] | null;
   minPrice?: number | null;
   maxPrice?: number | null;
   color?: string | null;
@@ -41,6 +43,8 @@ export function getCatalogProductsSync(params: CatalogFilterParams = {}): Catalo
     categories,
     dressStyle,
     dressStyles,
+    brand,
+    brands,
     minPrice,
     maxPrice,
     color,
@@ -64,7 +68,7 @@ export function getCatalogProductsSync(params: CatalogFilterParams = {}): Catalo
     );
   }
 
-  // 1. Filter by category (single or multi-select)
+  // 2. Filter by category (single or multi-select)
   const activeCategories = Array.from(
     new Set([...(categories || []), ...(category ? [category] : [])])
   )
@@ -75,7 +79,18 @@ export function getCatalogProductsSync(params: CatalogFilterParams = {}): Catalo
     filtered = filtered.filter((p) => activeCategories.includes(p.category.toLowerCase()));
   }
 
-  // 2. Filter by dress style (single or multi-select)
+  // 3. Filter by brand (single or multi-select)
+  const activeBrands = Array.from(new Set([...(brands || []), ...(brand ? [brand] : [])]))
+    .filter(Boolean)
+    .map((b) => b.trim().toLowerCase());
+
+  if (activeBrands.length > 0) {
+    filtered = filtered.filter((p) =>
+      activeBrands.some((b) => p.brand.toLowerCase() === b.toLowerCase())
+    );
+  }
+
+  // 4. Filter by dress style (single or multi-select)
   const activeDressStyles = Array.from(
     new Set([...(dressStyles || []), ...(dressStyle ? [dressStyle] : [])])
   )
@@ -89,14 +104,15 @@ export function getCatalogProductsSync(params: CatalogFilterParams = {}): Catalo
     });
   }
 
-  // 3. Filter by search query
+  // 5. Filter by search query
   if (searchQuery && searchQuery.trim()) {
     const q = searchQuery.trim().toLowerCase();
     filtered = filtered.filter(
       (p) =>
         p.title.toLowerCase().includes(q) ||
         p.category.toLowerCase().includes(q) ||
-        p.dressStyle.toLowerCase().includes(q)
+        p.dressStyle.toLowerCase().includes(q) ||
+        p.brand.toLowerCase().includes(q)
     );
   }
 

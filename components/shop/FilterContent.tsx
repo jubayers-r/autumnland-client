@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import {
   CATALOG_MAX_PRICE,
   CATALOG_MIN_PRICE,
+  FILTER_BRANDS,
   FILTER_CATEGORIES,
   FILTER_COLORS,
   FILTER_DRESS_STYLES,
@@ -16,6 +17,8 @@ import {
 export interface FilterState {
   category?: string | null;
   categories: string[];
+  brand?: string | null;
+  brands: string[];
   minPrice: number | null;
   maxPrice: number | null;
   color?: string | null;
@@ -48,18 +51,34 @@ export function FilterContent({
   const [isColorsOpen, setIsColorsOpen] = React.useState(true);
   const [isSizeOpen, setIsSizeOpen] = React.useState(true);
   const [isDressStyleOpen, setIsDressStyleOpen] = React.useState(true);
+  const [isBrandsOpen, setIsBrandsOpen] = React.useState(true);
 
   const currentMin = filters.minPrice ?? minBound;
   const currentMax = filters.maxPrice ?? maxBound;
 
   const hasActiveFilters =
     filters.categories.length > 0 ||
+    (filters.brands && filters.brands.length > 0) ||
     filters.colors.length > 0 ||
     filters.sizes.length > 0 ||
     (filters.dressStyles.length > 0 &&
       (filters.dressStyles.length > 1 || !filters.dressStyles.includes("Casual"))) ||
     filters.minPrice !== null ||
     filters.maxPrice !== null;
+
+  // Toggle helpers for multi-select
+  const toggleBrand = (b: string) => {
+    const activeBrands = filters.brands || [];
+    const isSelected = activeBrands.some((brand) => brand.toLowerCase() === b.toLowerCase());
+    const nextBrands = isSelected
+      ? activeBrands.filter((brand) => brand.toLowerCase() !== b.toLowerCase())
+      : [...activeBrands, b];
+
+    onFilterChange({
+      brands: nextBrands,
+      brand: nextBrands.length === 1 ? nextBrands[0] : null,
+    });
+  };
 
   // Toggle helpers for multi-select
   const toggleCategory = (cat: string) => {
@@ -321,6 +340,58 @@ export function FilterContent({
                   )}
                 >
                   <span>{style}</span>
+                  {/* White tick inside a rounded black circle when selected */}
+                  {isSelected && (
+                    <span className="w-5 h-5 rounded-full bg-black text-white dark:bg-white dark:text-black flex items-center justify-center shrink-0 shadow-2xs">
+                      <Check className="w-3 h-3 stroke-[3]" />
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </nav>
+        )}
+      </div>
+
+      {/* Divider */}
+      <hr className="border-t border-black/10 dark:border-white/10 my-5" />
+
+      {/* 5. Brands Accordion */}
+      <div>
+        <button
+          type="button"
+          onClick={() => setIsBrandsOpen(!isBrandsOpen)}
+          className="flex items-center justify-between w-full text-left font-bold text-xl text-foreground cursor-pointer py-1"
+          aria-expanded={isBrandsOpen}
+        >
+          <span>Brands</span>
+          {isBrandsOpen ? (
+            <ChevronUp className="w-5 h-5 text-foreground" />
+          ) : (
+            <ChevronDown className="w-5 h-5 text-foreground" />
+          )}
+        </button>
+
+        {isBrandsOpen && (
+          <nav aria-label="Brands" className="flex flex-col gap-3 pt-4 pb-1">
+            {FILTER_BRANDS.map((b) => {
+              const isSelected = (filters.brands || []).some(
+                (brand) => brand.toLowerCase() === b.toLowerCase()
+              );
+
+              return (
+                <button
+                  key={b}
+                  type="button"
+                  onClick={() => toggleBrand(b)}
+                  className={cn(
+                    "flex items-center justify-between w-full text-base transition-colors py-1 cursor-pointer group text-left",
+                    isSelected
+                      ? "font-bold text-foreground"
+                      : "text-black/60 dark:text-white/60 hover:text-foreground"
+                  )}
+                >
+                  <span>{b}</span>
                   {/* White tick inside a rounded black circle when selected */}
                   {isSelected && (
                     <span className="w-5 h-5 rounded-full bg-black text-white dark:bg-white dark:text-black flex items-center justify-center shrink-0 shadow-2xs">

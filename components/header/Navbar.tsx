@@ -162,7 +162,7 @@ export function Navbar({ className }: NavbarProps) {
           </SheetClose>
           <SheetClose asChild>
             <Link
-              href="/#brands"
+              href="/brands"
               className="px-3 py-2 text-base font-medium rounded-lg hover:bg-secondary transition-colors"
             >
               Top Brands
@@ -390,13 +390,14 @@ export function Navbar({ className }: NavbarProps) {
           <div className="flex items-center gap-5 lg:gap-8 text-sm lg:text-base font-normal text-foreground shrink-0">
             {/* Shop Hover Dropdown */}
             <div className="relative group py-2">
-              <button
-                type="button"
+              <Link
+                href="/shop"
+                role="button"
                 className="flex items-center gap-1 hover:text-muted-foreground transition-colors focus:outline-none rounded px-1 text-sm lg:text-base font-normal text-foreground"
               >
                 <span>Shop</span>
                 <ChevronDown className="size-4 text-foreground/70 transition-transform duration-200 group-hover:rotate-180" />
-              </button>
+              </Link>
 
               {/* Bridge & Dropdown Menu Container */}
               <div className="absolute top-full left-0 pt-2 opacity-0 translate-y-1 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto transition-all duration-200 z-50">
@@ -452,7 +453,7 @@ export function Navbar({ className }: NavbarProps) {
             >
               New Arrivals
             </Link>
-            <Link href="/#brands" className="hover:text-muted-foreground transition-colors">
+            <Link href="/brands" className="hover:text-muted-foreground transition-colors">
               Brands
             </Link>
           </div>

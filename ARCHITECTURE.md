@@ -27,6 +27,8 @@ The repository follows a clean Next.js App Router structure:
 │   ├── globals.css         # Tailwind v4 configuration, theme tokens (light/dark)
 │   ├── layout.tsx          # RootLayout with Satoshi & Integral CF fonts, ThemeProvider, QueryProvider, Header, Toaster
 │   ├── page.tsx            # Starter home page & component showcase
+│   ├── brands/
+│   │   └── page.tsx        # Brand partner showcase with marquee logos and direct catalog filtering
 │   ├── cart/
 │   │   └── page.tsx        # Shopping cart view with item list and order summary
 │   ├── shop/
@@ -51,6 +53,7 @@ The repository follows a clean Next.js App Router structure:
 │   └── ErrorBoundary.tsx   # Isolated component error boundary with retry fallback
 ├── lib/
 │   ├── api.ts              # Native fetcher with typed ApiError handling
+│   ├── brands-data.ts      # Partner fashion brand metadata and marquee logo assets
 │   ├── cart-store.ts       # Shopping cart Zustand store (items, promo codes, subtotal/total calculations)
 │   ├── catalog-data.ts     # Curated catalog dataset matching design mockups (Casual, Formal, Party, Gym)
 │   ├── catalog-service.ts  # Decoupled catalog service layer with filters, sorting, and pagination
