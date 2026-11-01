@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { Minus, Plus, Trash2 } from "lucide-react";
 import type { CartItem } from "@/lib/cart-store";
 import { useCartStore } from "@/lib/cart-store";
@@ -11,18 +12,21 @@ interface CartItemCardProps {
 }
 
 export function CartItemCard({ item }: CartItemCardProps) {
-  const { id, title, imageSrc, price, size, color, quantity } = item;
+  const { id, productId, title, imageSrc, price, size, color, quantity } = item;
   const updateQuantity = useCartStore((state) => state.updateQuantity);
   const removeItem = useCartStore((state) => state.removeItem);
 
+  // Link to the actual product details page for this item
+  const productHref = productId ? `/shop/product/${productId}` : "/shop";
+
   return (
-    <article
-      data-cart-item
-      data-item-id={id}
-      className="flex items-center gap-3.5 sm:gap-4 w-full select-none"
-    >
-      {/* Product Image Backdrop (#F0EEED) */}
-      <div className="w-[100px] h-[100px] sm:w-[124px] sm:h-[124px] rounded-[14px] bg-[#F0EEED] dark:bg-[#1A1A1A] overflow-hidden flex items-center justify-center shrink-0 p-1.5 sm:p-2 transition-colors">
+    <article data-cart-item data-item-id={id} className="flex items-center gap-3.5 sm:gap-4 w-full">
+      {/* Product Image Backdrop (#F0EEED) - Clickable link to product page */}
+      <Link
+        href={productHref}
+        aria-label={`View details for ${title}`}
+        className="w-[100px] h-[100px] sm:w-[124px] sm:h-[124px] rounded-[14px] bg-[#F0EEED] dark:bg-[#1A1A1A] overflow-hidden flex items-center justify-center shrink-0 p-1.5 sm:p-2 transition-transform hover:scale-[1.02] focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
+      >
         <Image
           src={imageSrc}
           alt={title}
@@ -30,14 +34,19 @@ export function CartItemCard({ item }: CartItemCardProps) {
           height={124}
           className="w-full h-full object-contain"
         />
-      </div>
+      </Link>
 
       {/* Item Details Column */}
       <div className="flex-1 flex flex-col justify-between min-w-0 h-[100px] sm:h-[124px] py-0.5">
-        {/* Top: Title & Delete Trash Icon */}
+        {/* Top: Title (Clickable link to product page) & Delete Trash Icon */}
         <div className="flex items-start justify-between gap-2">
           <h3 className="font-bold text-base sm:text-xl text-foreground font-sans truncate">
-            {title}
+            <Link
+              href={productHref}
+              className="hover:underline hover:opacity-85 transition-all focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring rounded-xs"
+            >
+              {title}
+            </Link>
           </h3>
           <button
             type="button"
