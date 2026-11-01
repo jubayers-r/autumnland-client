@@ -143,6 +143,11 @@ test.describe("Landing Page Hero & Brand Banner", () => {
     await expect(page.getByText("$80")).toBeVisible();
     await expect(page.getByText("$210")).toBeVisible();
 
+    // Verify sales count with rating: "50 sold | rating"
+    await expect(page.getByText("1120 sold").first()).toBeVisible();
+    await expect(page.getByText("1100 sold").first()).toBeVisible();
+    await expect(page.getByText("4.5/5").first()).toBeVisible();
+
     // View All CTA buttons
     const viewAllButtons = page.getByRole("link", { name: "View All" });
     await expect(viewAllButtons).toHaveCount(2);
