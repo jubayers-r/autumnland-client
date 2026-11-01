@@ -1,6 +1,12 @@
+"use client";
+
 import * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { ShoppingCart } from "lucide-react";
+import { toast } from "sonner";
+import { useCartStore } from "@/lib/cart-store";
 import { cn } from "@/lib/utils";
 import type { Product } from "./products-data";
 
@@ -11,33 +17,78 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product, className, priority = false }: ProductCardProps) {
+  const router = useRouter();
+  const addItem = useCartStore((state) => state.addItem);
   const { id, title, imageSrc, imageAlt, rating, price, originalPrice, discount, href } = product;
   const formattedRating = Number.isInteger(rating) ? `${rating}.0` : `${rating}`;
+
+  const handleQuickAddToCart = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    addItem({
+      productId: id,
+      title,
+      price,
+      imageSrc,
+      size: "Large",
+      color: "Standard",
+      quantity: 1,
+    });
+
+    toast.success("Added to Cart!", {
+      description: `${title} × 1`,
+      action: {
+        label: "View Cart",
+        onClick: () => router.push("/cart"),
+      },
+    });
+  };
 
   return (
     <article
       data-product-card
       data-product-id={id}
-      className={cn("group flex flex-col w-full", className)}
+      className={cn("group relative flex flex-col w-full", className)}
     >
+      {/* Product Image Backdrop (#F0EEED / dark: #1A1A1A) */}
+      <div className="w-full aspect-square bg-[#F0EEED] dark:bg-[#1A1A1A] rounded-[14px] sm:rounded-[20px] overflow-hidden flex items-center justify-center relative transition-colors">
+        <Image
+          src={imageSrc}
+          alt={imageAlt}
+          width={295}
+          height={298}
+          priority={priority}
+          className="w-full h-full object-contain p-2 sm:p-4 group-hover:scale-105 transition-transform duration-300 ease-out"
+        />
+
+        {/* Backdrop Shadow Gradient on hover */}
+        <div
+          aria-hidden="true"
+          className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/50 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-1"
+        />
+
+        {/* Quick Add to Cart Button */}
+        <div className="absolute inset-x-2.5 bottom-2.5 sm:inset-x-3.5 sm:bottom-3.5 z-10 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 group-focus-within:opacity-100 group-focus-within:translate-y-0 transition-all duration-200">
+          <button
+            type="button"
+            onClick={handleQuickAddToCart}
+            aria-label={`Add ${title} to cart`}
+            className="w-full h-9 sm:h-10 rounded-full bg-black text-white dark:bg-white dark:text-black hover:bg-black/90 dark:hover:bg-white/90 flex items-center justify-center gap-1.5 sm:gap-2 font-medium text-xs sm:text-sm shadow-xl shadow-black/30 dark:shadow-white/10 active:scale-[0.98] transition-all cursor-pointer focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            <ShoppingCart className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2]" />
+            <span>Add to Cart</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Main Card Link wrapping title, rating, and price */}
       <Link
         href={href}
-        className="flex flex-col w-full h-full focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring rounded-[14px] sm:rounded-[20px]"
+        className="flex flex-col w-full flex-1 mt-2.5 sm:mt-4 before:absolute before:inset-0 before:z-0 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring rounded-lg"
       >
-        {/* Product Image Backdrop (#F0EEED / dark: #1A1A1A) */}
-        <div className="w-full aspect-square bg-[#F0EEED] dark:bg-[#1A1A1A] rounded-[14px] sm:rounded-[20px] overflow-hidden flex items-center justify-center relative transition-colors">
-          <Image
-            src={imageSrc}
-            alt={imageAlt}
-            width={295}
-            height={298}
-            priority={priority}
-            className="w-full h-full object-contain p-2 sm:p-4 group-hover:scale-105 transition-transform duration-300 ease-out"
-          />
-        </div>
-
         {/* Product Title */}
-        <h3 className="font-bold text-sm sm:text-base lg:text-xl text-foreground font-sans mt-2.5 sm:mt-4 tracking-tight truncate">
+        <h3 className="font-bold text-sm sm:text-base lg:text-xl text-foreground font-sans tracking-tight truncate group-hover:underline">
           {title}
         </h3>
 
