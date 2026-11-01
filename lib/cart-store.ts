@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
 
 export interface CartItem {
   id: string;
@@ -11,7 +12,16 @@ export interface CartItem {
   quantity: number;
 }
 
-export const INITIAL_CART_ITEMS: CartItem[] = [
+/**
+ * Realistic default cart is empty.
+ * Items are only added when the user explicitly clicks "Add to Cart".
+ */
+export const INITIAL_CART_ITEMS: CartItem[] = [];
+
+/**
+ * Reference items from the initial design mockup (used for testing or mock seeding).
+ */
+export const REFERENCE_CART_ITEMS: CartItem[] = [
   {
     id: "gradient-graphic-t-shirt-large-white",
     productId: "gradient-graphic-t-shirt",
@@ -49,6 +59,8 @@ interface CartState {
   promoCode: string;
   discountPercentage: number;
   deliveryFee: number;
+  _hasHydrated: boolean;
+  setHasHydrated: (hydrated: boolean) => void;
   addItem: (item: Omit<CartItem, "id">) => void;
   removeItem: (id: string) => void;
   updateQuantity: (id: string, delta: number) => void;
@@ -60,90 +72,118 @@ interface CartState {
   getTotal: () => number;
 }
 
-export const useCartStore = create<CartState>((set, get) => ({
-  items: INITIAL_CART_ITEMS,
-  promoCode: "AUTUMN20",
-  discountPercentage: 20,
-  deliveryFee: 15,
+export const useCartStore = create<CartState>()(
+  persist(
+    (set, get) => ({
+      items: INITIAL_CART_ITEMS,
+      promoCode: "",
+      discountPercentage: 0,
+      deliveryFee: 15,
+      _hasHydrated: false,
 
-  addItem: (newItem) => {
-    const id = `${newItem.productId}-${newItem.size.toLowerCase()}-${newItem.color.toLowerCase()}`;
-    set((state) => {
-      const existing = state.items.find((i) => i.id === id);
-      if (existing) {
-        return {
-          items: state.items.map((i) =>
-            i.id === id ? { ...i, quantity: i.quantity + newItem.quantity } : i
-          ),
-        };
-      }
-      return {
-        items: [...state.items, { ...newItem, id }],
-      };
-    });
-  },
+      setHasHydrated: (hydrated) => set({ _hasHydrated: hydrated }),
 
-  removeItem: (id) => {
-    set((state) => ({
-      items: state.items.filter((item) => item.id !== id),
-    }));
-  },
-
-  updateQuantity: (id, delta) => {
-    set((state) => ({
-      items: state.items
-        .map((item) => {
-          if (item.id === id) {
-            const nextQuantity = item.quantity + delta;
-            return nextQuantity > 0 ? { ...item, quantity: nextQuantity } : null;
+      addItem: (newItem) => {
+        const id = `${newItem.productId}-${newItem.size.toLowerCase()}-${newItem.color.toLowerCase()}`;
+        set((state) => {
+          const existing = state.items.find((i) => i.id === id);
+          if (existing) {
+            return {
+              items: state.items.map((i) =>
+                i.id === id ? { ...i, quantity: i.quantity + newItem.quantity } : i
+              ),
+            };
           }
-          return item;
-        })
-        .filter((item): item is CartItem => item !== null),
-    }));
-  },
+          return {
+            items: [...state.items, { ...newItem, id }],
+          };
+        });
+      },
 
-  setQuantity: (id, quantity) => {
-    if (quantity <= 0) {
-      get().removeItem(id);
-      return;
+      removeItem: (id) => {
+        set((state) => ({
+          items: state.items.filter((item) => item.id !== id),
+        }));
+      },
+
+      updateQuantity: (id, delta) => {
+        set((state) => ({
+          items: state.items
+            .map((item) => {
+              if (item.id === id) {
+                const nextQuantity = item.quantity + delta;
+                return nextQuantity > 0 ? { ...item, quantity: nextQuantity } : null;
+              }
+              return item;
+            })
+            .filter((item): item is CartItem => item !== null),
+        }));
+      },
+
+      setQuantity: (id, quantity) => {
+        if (quantity <= 0) {
+          get().removeItem(id);
+          return;
+        }
+        set((state) => ({
+          items: state.items.map((i) => (i.id === id ? { ...i, quantity } : i)),
+        }));
+      },
+
+      applyPromo: (code) => {
+        const cleanCode = code.trim().toUpperCase();
+        if (cleanCode === "AUTUMN20" || cleanCode === "SAVE20") {
+          set({ promoCode: cleanCode, discountPercentage: 20 });
+          return true;
+        }
+        if (cleanCode === "VIP30") {
+          set({ promoCode: cleanCode, discountPercentage: 30 });
+          return true;
+        }
+        return false;
+      },
+
+      clearCart: () => {
+        set({ items: [], promoCode: "", discountPercentage: 0 });
+      },
+
+      getSubtotal: () => {
+        return get().items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+      },
+
+      getDiscountAmount: () => {
+        const subtotal = get().getSubtotal();
+        const discount = (subtotal * get().discountPercentage) / 100;
+        return Math.round(discount);
+      },
+
+      getTotal: () => {
+        const subtotal = get().getSubtotal();
+        if (subtotal === 0) return 0;
+        const discount = get().getDiscountAmount();
+        return subtotal - discount + get().deliveryFee;
+      },
+    }),
+    {
+      name: "autumnland_cart_storage",
+      storage: createJSONStorage(() => {
+        if (typeof window !== "undefined") {
+          return localStorage;
+        }
+        return {
+          getItem: () => null,
+          setItem: () => {},
+          removeItem: () => {},
+        };
+      }),
+      partialize: (state) => ({
+        items: state.items,
+        promoCode: state.promoCode,
+        discountPercentage: state.discountPercentage,
+      }),
+      onRehydrateStorage: () => (state) => {
+        state?.setHasHydrated(true);
+      },
     }
-    set((state) => ({
-      items: state.items.map((i) => (i.id === id ? { ...i, quantity } : i)),
-    }));
-  },
-
-  applyPromo: (code) => {
-    const cleanCode = code.trim().toUpperCase();
-    if (cleanCode === "AUTUMN20" || cleanCode === "SAVE20") {
-      set({ promoCode: cleanCode, discountPercentage: 20 });
-      return true;
-    }
-    if (cleanCode === "VIP30") {
-      set({ promoCode: cleanCode, discountPercentage: 30 });
-      return true;
-    }
-    return false;
-  },
-
-  clearCart: () => {
-    set({ items: [] });
-  },
-
-  getSubtotal: () => {
-    return get().items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  },
-
-  getDiscountAmount: () => {
-    const subtotal = get().getSubtotal();
-    const discount = (subtotal * get().discountPercentage) / 100;
-    return Math.round(discount);
-  },
-
-  getTotal: () => {
-    const subtotal = get().getSubtotal();
-    if (subtotal === 0) return 0;
-    const discount = get().getDiscountAmount();
-    return subtotal - discount + get().deliveryFee;
-  },
-}));
+  )
+);
