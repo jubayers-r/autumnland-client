@@ -61,6 +61,7 @@ export interface CartState {
   selectedItemIds: string[] | null;
   promoCode: string;
   discountPercentage: number;
+  fixedDiscount: number;
   deliveryFee: number;
   _hasHydrated: boolean;
   setHasHydrated: (hydrated: boolean) => void;
@@ -90,6 +91,7 @@ export const useCartStore = create<CartState>()(
       selectedItemIds: null,
       promoCode: "",
       discountPercentage: 0,
+      fixedDiscount: 0,
       deliveryFee: 15,
       _hasHydrated: false,
 
@@ -155,19 +157,29 @@ export const useCartStore = create<CartState>()(
 
       applyPromo: (code) => {
         const cleanCode = code.trim().toUpperCase();
+        if (cleanCode === "TEST") {
+          set({ promoCode: "TEST", discountPercentage: 0, fixedDiscount: 10 });
+          return true;
+        }
         if (cleanCode === "AUTUMN20" || cleanCode === "SAVE20") {
-          set({ promoCode: cleanCode, discountPercentage: 20 });
+          set({ promoCode: cleanCode, discountPercentage: 20, fixedDiscount: 0 });
           return true;
         }
         if (cleanCode === "VIP30") {
-          set({ promoCode: cleanCode, discountPercentage: 30 });
+          set({ promoCode: cleanCode, discountPercentage: 30, fixedDiscount: 0 });
           return true;
         }
         return false;
       },
 
       clearCart: () => {
-        set({ items: [], selectedItemIds: null, promoCode: "", discountPercentage: 0 });
+        set({
+          items: [],
+          selectedItemIds: null,
+          promoCode: "",
+          discountPercentage: 0,
+          fixedDiscount: 0,
+        });
       },
 
       getSelectedItems: () => {
@@ -267,8 +279,9 @@ export const useCartStore = create<CartState>()(
         // 2. Savings from promo code applied to the current items sale price
         const currentPriceSum = selected.reduce((sum, item) => sum + item.price * item.quantity, 0);
         const promoDiscount = Math.round((currentPriceSum * get().discountPercentage) / 100);
+        const fixedDiscount = get().fixedDiscount ?? 0;
 
-        return itemDiscount + promoDiscount;
+        return itemDiscount + promoDiscount + fixedDiscount;
       },
 
       getTotal: () => {
@@ -277,7 +290,7 @@ export const useCartStore = create<CartState>()(
         const subtotal = get().getSubtotal();
         if (subtotal === 0) return 0;
         const discount = get().getDiscountAmount();
-        return subtotal - discount + get().deliveryFee;
+        return Math.max(0, subtotal - discount) + get().deliveryFee;
       },
 
       getSelectedOriginalSubtotal: () => {
@@ -310,6 +323,7 @@ export const useCartStore = create<CartState>()(
         selectedItemIds: state.selectedItemIds,
         promoCode: state.promoCode,
         discountPercentage: state.discountPercentage,
+        fixedDiscount: state.fixedDiscount,
       }),
       onRehydrateStorage: () => (state) => {
         state?.setHasHydrated(true);

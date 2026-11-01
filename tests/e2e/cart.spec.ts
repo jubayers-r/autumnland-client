@@ -257,10 +257,9 @@ test.describe("Shopping Cart Flow & Responsiveness", () => {
     await page.setViewportSize({ width: 375, height: 667 });
     await page.goto("/cart");
 
-    // Sticky bottom bar is visible on mobile cart
+    // Sticky bottom bar is visible on mobile cart with full-width checkout
     const mobileFooter = page.getByTestId("cart-mobile-footer");
     await expect(mobileFooter).toBeVisible();
-    await expect(mobileFooter.getByRole("button", { name: "Gift Order" })).toBeVisible();
     const bottomCheckoutBtn = mobileFooter.getByRole("button", { name: "Go to Checkout" });
     await expect(bottomCheckoutBtn).toBeVisible();
     await expect(bottomCheckoutBtn).toBeEnabled();
@@ -297,5 +296,70 @@ test.describe("Shopping Cart Flow & Responsiveness", () => {
       path: "test-results/cart_mobile_scrolled.png",
       fullPage: false,
     });
+  });
+
+  test("converts promo code to big letters on typing, applies TEST code with $10 reduction, and displays dev helper", async ({
+    page,
+  }) => {
+    await page.addInitScript(
+      (state) => {
+        window.localStorage.setItem("autumnland_cart_storage", JSON.stringify(state));
+      },
+      {
+        state: {
+          items: [
+            {
+              id: "gradient-graphic-t-shirt-large-white",
+              productId: "gradient-graphic-t-shirt",
+              title: "Gradient Graphic T-shirt",
+              imageSrc: "/assets/t-shirt/image 2.png",
+              price: 145,
+              size: "Large",
+              color: "White",
+              quantity: 1,
+            },
+          ],
+          promoCode: "",
+          discountPercentage: 0,
+          fixedDiscount: 0,
+        },
+        version: 0,
+      }
+    );
+
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto("/cart");
+
+    const summary = page.getByRole("region", { name: "Order summary" });
+    // Initial: Subtotal 145, Discount $0, Delivery 15 -> Total $160
+    await expect(summary.getByText("$145")).toBeVisible();
+    await expect(summary.getByText("$160")).toBeVisible();
+
+    // Verify dev helper is visible in development mode
+    const devHelper = page.getByTestId("dev-promo-helper");
+    await expect(devHelper).toBeVisible();
+    await expect(devHelper.getByText("Available code: TEST (-$10)")).toBeVisible();
+    await expect(devHelper.getByRole("button", { name: /Activate "TEST"/i })).toBeVisible();
+
+    // Type in lowercase "test"
+    const promoInput = page.getByPlaceholder("Add promo code");
+    await promoInput.fill("test");
+
+    // Input automatically converts to uppercase "TEST"
+    await expect(promoInput).toHaveValue("TEST");
+
+    // Click Apply button
+    const applyBtn = page.getByRole("button", { name: "Apply" });
+    await applyBtn.click();
+
+    // Verify toast notification for TEST code application
+    const toast = page.locator("[data-sonner-toast]").first();
+    await expect(toast).toBeVisible();
+    await expect(toast.getByText("Promo code 'TEST' applied!")).toBeVisible();
+
+    // Verify $10 discount is applied and reflected in total: 145 - 10 + 15 = $150
+    await expect(summary.getByText("TEST -$10")).toBeVisible();
+    await expect(summary.getByText("-$10", { exact: true })).toBeVisible();
+    await expect(summary.getByText("$150")).toBeVisible();
   });
 });

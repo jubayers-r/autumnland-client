@@ -128,6 +128,15 @@ describe("useCartStore", () => {
     // Subtotal 565 * 30% = 169.5 -> rounds to 170
     expect(useCartStore.getState().getDiscountAmount()).toBe(170);
 
+    // Mock redeem code: TEST reduces $10 flat from total
+    const appliedTest = store.applyPromo("test");
+    expect(appliedTest).toBe(true);
+    expect(useCartStore.getState().promoCode).toBe("TEST");
+    expect(useCartStore.getState().fixedDiscount).toBe(10);
+    expect(useCartStore.getState().getDiscountAmount()).toBe(10);
+    // Subtotal 565 - 10 discount + 15 delivery fee = 570
+    expect(useCartStore.getState().getTotal()).toBe(570);
+
     // Invalid code returns false
     const invalid = store.applyPromo("NONEXISTENT_CODE");
     expect(invalid).toBe(false);
