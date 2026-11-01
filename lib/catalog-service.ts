@@ -169,7 +169,7 @@ export function getCatalogProductsSync(params: CatalogFilterParams = {}): Catalo
   // Pagination calculations
   const totalCount = filtered.length;
   const safePage = Math.max(1, page || 1);
-  const safeLimit = Math.max(1, limit || 9);
+  const safeLimit = Math.max(1, limit || 15);
   const totalPages = Math.max(1, Math.ceil(totalCount / safeLimit));
   const startIndex = (safePage - 1) * safeLimit;
   const paginatedProducts = filtered.slice(startIndex, startIndex + safeLimit);

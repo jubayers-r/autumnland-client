@@ -25,11 +25,11 @@ test.describe("Shop & Category Catalog Page", () => {
     await expect(filtersSidebar.getByText("Colors")).toBeVisible();
     await expect(filtersSidebar.getByText("Size")).toBeVisible();
     await expect(filtersSidebar.getByText("Dress Style")).toBeVisible();
-    await expect(filtersSidebar.getByRole("button", { name: "Apply Filter" })).toBeVisible();
+    await expect(filtersSidebar.getByRole("button", { name: "Apply Filter" })).not.toBeVisible();
 
-    // Verify 9 products displayed on Page 1 matching reference
+    // Verify 15 products displayed on Page 1 (5 rows x 3 columns on desktop)
     const productCards = page.locator("[data-product-card]");
-    await expect(productCards).toHaveCount(9);
+    await expect(productCards).toHaveCount(15);
 
     await expect(page.getByText("Gradient Graphic T-shirt").first()).toBeVisible();
     await expect(page.getByText("Polo with Tipping Details").first()).toBeVisible();
@@ -42,7 +42,7 @@ test.describe("Shop & Category Catalog Page", () => {
     await expect(page.getByText("Loose Fit Bermuda Shorts").first()).toBeVisible();
 
     // Range display
-    await expect(page.getByText(/Showing 1-9 of \d+ Products/i)).toBeVisible();
+    await expect(page.getByText(/Showing 1-15 of \d+ Products/i)).toBeVisible();
 
     // Pagination
     const pagination = page.getByRole("navigation", { name: "Pagination" });
@@ -136,7 +136,7 @@ test.describe("Shop & Category Catalog Page", () => {
       "aria-current",
       "page"
     );
-    await expect(page.getByText(/Showing 10-\d+ of \d+ Products/i)).toBeVisible();
+    await expect(page.getByText(/Showing 16-\d+ of \d+ Products/i)).toBeVisible();
 
     // Click Previous button to return to page 1
     const prevBtn = pagination.getByRole("button", { name: "Previous" });
@@ -145,7 +145,7 @@ test.describe("Shop & Category Catalog Page", () => {
       "aria-current",
       "page"
     );
-    await expect(page.getByText(/Showing 1-9 of \d+ Products/i)).toBeVisible();
+    await expect(page.getByText(/Showing 1-15 of \d+ Products/i)).toBeVisible();
   });
 
   test("renders mobile view with 2-column grid and accessible mobile Add to Cart", async ({
@@ -206,17 +206,21 @@ test.describe("Shop & Category Catalog Page", () => {
       fullPage: false,
     });
 
-    // Select "T-shirts" in drawer
+    // Select "T-shirts" in drawer (real-time filtering without Apply Filter button)
     const tshirtsBtn = sheet.getByRole("button", { name: "T-shirts" });
     await tshirtsBtn.click();
 
-    // Click Apply Filter in drawer
-    const applyBtn = sheet.getByRole("button", { name: "Apply Filter" });
-    await applyBtn.click();
+    // Verify "Apply Filter" button does not exist
+    await expect(sheet.getByRole("button", { name: "Apply Filter" })).not.toBeVisible();
+
+    // Close drawer via close button
+    const closeBtn = sheet.getByRole("button", { name: "Close filters" });
+    await closeBtn.click();
 
     // Drawer closes and filter is applied
     await expect(sheet).not.toBeVisible();
-    await expect(page.getByText("T-shirt with Tape Details").first()).toBeVisible();
+    await expect(page.getByText("Gradient Graphic T-shirt").first()).toBeVisible();
+    await expect(page.getByText("Black Striped T-shirt").first()).toBeVisible();
   });
 
   test("loads /shop?filter=sale with only discounted products and On Sale title", async ({
@@ -302,9 +306,9 @@ test.describe("Shop & Category Catalog Page", () => {
     const shopNavBtn = page.getByRole("button", { name: "Shop", exact: true });
     await shopNavBtn.click();
 
-    // Should be at /shop with default 9 products
+    // Should be at /shop with default 15 products
     await expect(page).toHaveURL("/shop");
-    await expect(page.getByText(/Showing 1-9 of \d+ Products/i)).toBeVisible();
+    await expect(page.getByText(/Showing 1-15 of \d+ Products/i)).toBeVisible();
     await expect(page.getByText("Gradient Graphic T-shirt").first()).toBeVisible();
   });
 

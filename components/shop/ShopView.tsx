@@ -114,14 +114,14 @@ export function ShopView() {
 
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = React.useState<boolean>(false);
 
-  // Responsive pageSize: 9 on desktop (3 cols x 3 rows = 9 items)
-  // On tablet & mobile (< 1024px, 2 cols), use 10 items (or 8) so rows are always even with 0 empty slots
-  const [pageSize, setPageSize] = React.useState<number>(9);
+  // Responsive pageSize: 15 on desktop (3 cols x 5 rows = 15 items)
+  // On tablet & mobile (< 1024px, 2 cols), use 10 items so rows are always even with 0 empty slots
+  const [pageSize, setPageSize] = React.useState<number>(15);
 
   React.useEffect(() => {
     const updateSize = () => {
       if (typeof window !== "undefined") {
-        setPageSize(window.innerWidth < 1024 ? 10 : 9);
+        setPageSize(window.innerWidth < 1024 ? 10 : 15);
       }
     };
     updateSize();
@@ -267,7 +267,6 @@ export function ShopView() {
         <FilterSidebar
           filters={filters}
           onFilterChange={handleFilterChange}
-          onApply={handleApplyFilters}
           onReset={handleResetFilters}
         />
 

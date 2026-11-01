@@ -8,18 +8,11 @@ import { FilterContent, type FilterState } from "./FilterContent";
 interface FilterSidebarProps {
   filters: FilterState;
   onFilterChange: (next: Partial<FilterState>) => void;
-  onApply: () => void;
   onReset: () => void;
   className?: string;
 }
 
-export function FilterSidebar({
-  filters,
-  onFilterChange,
-  onApply,
-  onReset,
-  className,
-}: FilterSidebarProps) {
+export function FilterSidebar({ filters, onFilterChange, onReset, className }: FilterSidebarProps) {
   return (
     <aside
       aria-label="Product filters"
@@ -37,12 +30,7 @@ export function FilterSidebar({
 
         {/* Filter Accordions and Controls */}
         <div className="pt-5">
-          <FilterContent
-            filters={filters}
-            onFilterChange={onFilterChange}
-            onApply={onApply}
-            onReset={onReset}
-          />
+          <FilterContent filters={filters} onFilterChange={onFilterChange} onReset={onReset} />
         </div>
       </div>
     </aside>

@@ -103,7 +103,7 @@ export function Navbar({ className }: NavbarProps) {
           </SheetClose>
           <SheetClose asChild>
             <Link
-              href="/shop?category=casual"
+              href="/shop?dressStyle=Casual"
               className="px-3 py-2 text-base font-medium rounded-lg hover:bg-secondary transition-colors"
             >
               Casual
@@ -111,7 +111,7 @@ export function Navbar({ className }: NavbarProps) {
           </SheetClose>
           <SheetClose asChild>
             <Link
-              href="/shop?category=formal"
+              href="/shop?dressStyle=Formal"
               className="px-3 py-2 text-base font-medium rounded-lg hover:bg-secondary transition-colors"
             >
               Formal
@@ -119,7 +119,7 @@ export function Navbar({ className }: NavbarProps) {
           </SheetClose>
           <SheetClose asChild>
             <Link
-              href="/shop?category=party"
+              href="/shop?dressStyle=Party"
               className="px-3 py-2 text-base font-medium rounded-lg hover:bg-secondary transition-colors"
             >
               Party
@@ -127,7 +127,7 @@ export function Navbar({ className }: NavbarProps) {
           </SheetClose>
           <SheetClose asChild>
             <Link
-              href="/shop?category=gym"
+              href="/shop?dressStyle=Gym"
               className="px-3 py-2 text-base font-medium rounded-lg hover:bg-secondary transition-colors"
             >
               Gym & Fitness
@@ -415,25 +415,25 @@ export function Navbar({ className }: NavbarProps) {
                       All Collections
                     </Link>
                     <Link
-                      href="/shop?category=casual"
+                      href="/shop?dressStyle=Casual"
                       className="px-3 py-2 text-sm font-medium rounded-lg hover:bg-secondary transition-colors text-foreground block"
                     >
                       Casual Style
                     </Link>
                     <Link
-                      href="/shop?category=formal"
+                      href="/shop?dressStyle=Formal"
                       className="px-3 py-2 text-sm font-medium rounded-lg hover:bg-secondary transition-colors text-foreground block"
                     >
                       Formal Style
                     </Link>
                     <Link
-                      href="/shop?category=party"
+                      href="/shop?dressStyle=Party"
                       className="px-3 py-2 text-sm font-medium rounded-lg hover:bg-secondary transition-colors text-foreground block"
                     >
                       Party Style
                     </Link>
                     <Link
-                      href="/shop?category=gym"
+                      href="/shop?dressStyle=Gym"
                       className="px-3 py-2 text-sm font-medium rounded-lg hover:bg-secondary transition-colors text-foreground block"
                     >
                       Gym & Athletic

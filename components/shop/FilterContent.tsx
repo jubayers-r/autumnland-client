@@ -33,7 +33,6 @@ export interface FilterState {
 interface FilterContentProps {
   filters: FilterState;
   onFilterChange: (next: Partial<FilterState>) => void;
-  onApply?: () => void;
   onReset?: () => void;
   minBound?: number;
   maxBound?: number;
@@ -42,7 +41,6 @@ interface FilterContentProps {
 export function FilterContent({
   filters,
   onFilterChange,
-  onApply,
   onReset,
   minBound = CATALOG_MIN_PRICE,
   maxBound = CATALOG_MAX_PRICE,
@@ -435,20 +433,9 @@ export function FilterContent({
         </button>
       </div>
 
-      {/* Divider */}
-      <hr className="border-t border-black/10 dark:border-white/10 my-5" />
-
-      {/* 7. Action Button: Apply Filter & Optional Reset */}
-      <div className="flex flex-col gap-2.5 pt-1">
-        <button
-          type="button"
-          onClick={onApply}
-          className="w-full h-12 rounded-full bg-black text-white dark:bg-white dark:text-black flex items-center justify-center font-medium text-sm sm:text-base hover:bg-black/90 dark:hover:bg-white/90 transition-colors shadow-2xs active:scale-[0.99] cursor-pointer focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
-        >
-          Apply Filter
-        </button>
-
-        {hasActiveFilters && onReset && (
+      {/* Reset Filters action (when active) */}
+      {hasActiveFilters && onReset && (
+        <div className="pt-4">
           <button
             type="button"
             onClick={onReset}
@@ -457,8 +444,8 @@ export function FilterContent({
             <RotateCcw className="w-3.5 h-3.5" />
             <span>Reset Filters</span>
           </button>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }
