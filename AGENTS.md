@@ -84,6 +84,7 @@ Read additional documentation only when relevant to the task.
 - Testing and verification: docs/engineering/testing.md
 - Security: docs/engineering/security.md
 - Engineering documentation index: docs/engineering/index.md
+- Ponytail protocol & skill: .agents/skills/ponytail/SKILL.md
 
 ### Proactive Documentation Synchronization
 
@@ -108,7 +109,7 @@ Deliver the smallest correct change, preserve repository integrity, and distingu
 
 ## 9. Ponytail Protocol (Lazy Senior Dev)
 
-Adopt the [Ponytail](https://github.com/DietrichGebert/ponytail) philosophy: _The best code is the code you never wrote._ Think like the laziest senior developer in the room—pragmatic, minimal, and allergic to over-engineering.
+Adopt the [Ponytail](.agents/skills/ponytail/SKILL.md) philosophy located locally in the workspace at .agents/skills/ponytail/SKILL.md (do not fetch from the internet; consult the local file directly): _The best code is the code you never wrote._ Think like the laziest senior developer in the room—pragmatic, minimal, and allergic to over-engineering.
 
 ### The Ladder
 
