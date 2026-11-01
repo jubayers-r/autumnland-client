@@ -238,6 +238,15 @@ test.describe("Shop & Category Catalog Page", () => {
       // Each on-sale product should display a discount percentage (e.g. -20%, -30%, -40%, -15%)
       await expect(card.getByText(/-\d+%/)).toBeVisible();
     }
+
+    // "Show non-sale" shortcut button is visible on breadcrumb row
+    const showNonSaleBtn = page.getByRole("button", { name: /Show non-sale/i });
+    await expect(showNonSaleBtn).toBeVisible();
+
+    // Clicking "Show non-sale" unselects on-sale filter and navigates back to full catalog
+    await showNonSaleBtn.click();
+    await expect(showNonSaleBtn).not.toBeVisible();
+    await expect(page).toHaveURL("/shop");
   });
 
   test("loads /shop?sort=newest with newest sort active and New Arrivals title", async ({

@@ -283,6 +283,8 @@ export function ShopView() {
             onSortChange={handleSortChange}
             onOpenMobileFilters={() => setIsMobileFiltersOpen(true)}
             activeFilterCount={activeFilterCount}
+            isOnSale={Boolean(filters.onSaleOnly || isOnSale)}
+            onToggleOnSale={() => handleFilterChange({ onSaleOnly: false })}
           />
 
           {/* Product Grid */}

@@ -53,12 +53,13 @@ export function Navbar({ className }: NavbarProps) {
 
   React.useEffect(() => {
     const checkVisibility = () => {
-      if (staticNavRef.current) {
+      if (staticNavRef.current && window.innerWidth < 768) {
         const rect = staticNavRef.current.getBoundingClientRect();
         // When rect.bottom <= 0, both the static navbar and search bar are invisible (scrolled past)
         setShowFloatingSearch(rect.bottom <= 0);
       } else {
-        setShowFloatingSearch(window.scrollY > 130);
+        // Tablet and desktop scroll detection past navbar height
+        setShowFloatingSearch(window.scrollY > 80);
       }
     };
 
@@ -200,7 +201,8 @@ export function Navbar({ className }: NavbarProps) {
       <div
         data-testid="floating-mobile-nav"
         className={cn(
-          "fixed top-0 left-0 right-0 z-50 md:hidden bg-background/95 backdrop-blur-md border-b border-border/40 shadow-xs transition-all duration-300 ease-in-out",
+          "fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-b border-border/40 shadow-xs transition-all duration-300 ease-in-out",
+          isCartPage ? "lg:hidden" : "md:hidden",
           showFloatingSearch
             ? "translate-y-0 opacity-100 visible pointer-events-auto"
             : "-translate-y-full opacity-0 invisible pointer-events-none"

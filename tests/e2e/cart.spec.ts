@@ -297,6 +297,32 @@ test.describe("Shopping Cart Flow & Responsiveness", () => {
     });
   });
 
+  test("tablet cart sticky top header and bottom checkout bar interact accurately on scroll", async ({
+    page,
+  }) => {
+    await page.addInitScript((state) => {
+      window.localStorage.setItem("autumnland_cart_storage", JSON.stringify(state));
+    }, SAMPLE_STORAGE_STATE);
+
+    // Tablet viewport (820px width, e.g. iPad Air)
+    await page.setViewportSize({ width: 820, height: 1180 });
+    await page.goto("/cart");
+
+    // Sticky bottom checkout bar is visible on tablet (< lg)
+    const mobileFooter = page.getByTestId("cart-mobile-footer");
+    await expect(mobileFooter).toBeVisible();
+
+    // Scroll down to activate floating sticky top header on tablet
+    await page.evaluate(() => window.scrollTo(0, 300));
+    const floatingNav = page.getByTestId("floating-mobile-nav");
+    await expect(floatingNav).toBeVisible();
+
+    // Verify Select All ( 3/3 Items ) and Payable Total are visible on tablet
+    await expect(floatingNav.getByText(/Select All \(3\/3 Items\)/i)).toBeVisible();
+    await expect(floatingNav.getByText(/Your Payable Total:/i)).toBeVisible();
+    await expect(floatingNav.getByText("$467")).toBeVisible();
+  });
+
   test("converts promo code to big letters on typing, applies TEST code with $10 reduction, and displays dev helper", async ({
     page,
   }) => {
