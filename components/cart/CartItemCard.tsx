@@ -20,7 +20,11 @@ export function CartItemCard({ item }: CartItemCardProps) {
   const productHref = productId ? `/shop/product/${productId}` : "/shop";
 
   return (
-    <article data-cart-item data-item-id={id} className="flex items-center gap-3.5 sm:gap-4 w-full">
+    <article
+      data-cart-item
+      data-item-id={id}
+      className="flex items-start sm:items-center gap-3.5 sm:gap-4 w-full"
+    >
       {/* Product Image Backdrop (#F0EEED) - Clickable link to product page */}
       <Link
         href={productHref}
@@ -37,7 +41,7 @@ export function CartItemCard({ item }: CartItemCardProps) {
       </Link>
 
       {/* Item Details Column */}
-      <div className="flex-1 flex flex-col justify-between min-w-0 h-[100px] sm:h-[124px] py-0.5">
+      <div className="flex-1 flex flex-col justify-between min-w-0 min-h-[100px] sm:min-h-[124px] py-0.5 gap-1.5 sm:gap-2">
         {/* Top: Title (Clickable link to product page) & Delete Trash Icon */}
         <div className="flex items-start justify-between gap-2">
           <h3 className="font-bold text-base sm:text-xl text-foreground font-sans truncate">
@@ -69,33 +73,33 @@ export function CartItemCard({ item }: CartItemCardProps) {
         </div>
 
         {/* Bottom: Price & Quantity Pill Counter */}
-        <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className="font-bold text-xl sm:text-2xl text-foreground font-sans">
+        <div className="flex items-end sm:items-center justify-between gap-2 mt-auto pt-1">
+          <div className="flex items-baseline gap-1.5 xs:gap-2 flex-wrap min-w-0">
+            <span className="font-bold text-base xs:text-lg sm:text-2xl text-foreground font-sans">
               ${price}
             </span>
             {item.originalPrice && item.originalPrice > price && (
-              <span className="text-black/40 dark:text-white/40 line-through font-bold text-base sm:text-lg font-sans">
+              <span className="text-black/40 dark:text-white/40 line-through font-bold text-xs xs:text-sm sm:text-base font-sans">
                 ${item.originalPrice}
               </span>
             )}
             {item.discount && (
-              <span className="bg-[#FF3333]/10 text-[#FF3333] text-[10px] sm:text-xs font-medium px-2 py-0.5 rounded-full font-sans">
+              <span className="bg-[#FF3333]/10 text-[#FF3333] text-[9px] xs:text-[10px] sm:text-xs font-semibold px-1.5 sm:px-2 py-0.5 rounded-full font-sans whitespace-nowrap">
                 {item.discount}
               </span>
             )}
           </div>
 
           {/* Quantity selector pill */}
-          <div className="bg-[#F0F0F0] dark:bg-[#262626] rounded-full h-[36px] sm:h-[44px] flex items-center justify-between px-3 sm:px-4 gap-3 sm:gap-4 shrink-0 transition-colors">
+          <div className="bg-[#F0F0F0] dark:bg-[#262626] rounded-full h-[32px] sm:h-[44px] flex items-center justify-between px-2.5 sm:px-4 gap-2.5 sm:gap-4 shrink-0 transition-colors">
             <button
               type="button"
               onClick={() => updateQuantity(id, -1)}
               disabled={quantity <= 1}
               aria-label={`Decrease quantity of ${title}`}
-              className="w-5 h-5 flex items-center justify-center text-foreground hover:opacity-75 disabled:opacity-30 cursor-pointer disabled:cursor-not-allowed transition-opacity"
+              className="w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center text-foreground hover:opacity-75 disabled:opacity-30 cursor-pointer disabled:cursor-not-allowed transition-opacity"
             >
-              <Minus className="w-3.5 h-3.5 stroke-[2.5]" />
+              <Minus className="w-3 h-3 sm:w-3.5 sm:h-3.5 stroke-[2.5]" />
             </button>
             <span className="font-bold text-xs sm:text-sm text-foreground font-sans min-w-[12px] text-center">
               {quantity}
@@ -104,9 +108,9 @@ export function CartItemCard({ item }: CartItemCardProps) {
               type="button"
               onClick={() => updateQuantity(id, 1)}
               aria-label={`Increase quantity of ${title}`}
-              className="w-5 h-5 flex items-center justify-center text-foreground hover:opacity-75 cursor-pointer transition-opacity"
+              className="w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center text-foreground hover:opacity-75 cursor-pointer transition-opacity"
             >
-              <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
+              <Plus className="w-3 h-3 sm:w-3.5 sm:h-3.5 stroke-[2.5]" />
             </button>
           </div>
         </div>
