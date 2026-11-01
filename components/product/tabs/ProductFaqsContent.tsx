@@ -45,7 +45,7 @@ const FAQS_DATA = [
 
 export function ProductFaqsContent({ productTitle }: ProductFaqsContentProps) {
   return (
-    <div className="w-full flex flex-col gap-6 sm:gap-8 select-none" data-faqs-tab>
+    <div className="w-full flex flex-col gap-6 sm:gap-8" data-faqs-tab>
       <div className="flex flex-col gap-2">
         <h3 className="font-heading font-black text-xl sm:text-2xl text-foreground uppercase tracking-tight">
           Frequently Asked Questions
@@ -65,12 +65,12 @@ export function ProductFaqsContent({ productTitle }: ProductFaqsContentProps) {
           <AccordionItem
             key={index}
             value={`item-${index}`}
-            className="rounded-[20px] border border-black/10 dark:border-white/10 px-5 sm:px-6 bg-card text-card-foreground overflow-hidden"
+            className="rounded-[20px] border border-black/10 dark:border-white/10 px-5 sm:px-6 bg-card text-card-foreground overflow-hidden transition-colors"
           >
             <AccordionTrigger className="text-sm sm:text-base font-semibold py-4 sm:py-5 hover:no-underline text-foreground">
               {faq.question}
             </AccordionTrigger>
-            <AccordionContent className="text-xs sm:text-sm text-foreground/70 leading-relaxed pb-5 sm:pb-6 font-sans">
+            <AccordionContent className="text-xs sm:text-sm text-muted-foreground leading-relaxed pb-5 sm:pb-6 font-sans">
               {faq.answer}
             </AccordionContent>
           </AccordionItem>
