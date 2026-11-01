@@ -16,65 +16,93 @@ export function ShopView() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // Extract initial values from URL params
+  // Extract values directly from URL searchParams (single source of truth)
+  const urlFilter = searchParams.get("filter");
+  const isOnSale = urlFilter === "sale";
   const urlCategory = searchParams.get("category");
   const urlDressStyle = searchParams.get("dressStyle");
-  const urlSort = (searchParams.get("sort") || searchParams.get("sortBy")) as CatalogSortOption;
-  const urlPage = Number(searchParams.get("page")) || 1;
+  const rawSort = (searchParams.get("sort") || searchParams.get("sortBy")) as CatalogSortOption;
+  const sortBy: CatalogSortOption = [
+    "popular",
+    "price-asc",
+    "price-desc",
+    "newest",
+    "rating",
+  ].includes(rawSort)
+    ? rawSort
+    : "popular";
+  const currentPage = Math.max(1, Number(searchParams.get("page")) || 1);
   const urlMinPrice = searchParams.has("minPrice") ? Number(searchParams.get("minPrice")) : null;
   const urlMaxPrice = searchParams.has("maxPrice") ? Number(searchParams.get("maxPrice")) : null;
   const urlColor = searchParams.get("color");
   const urlSize = searchParams.get("size");
   const urlSearch = searchParams.get("q");
 
-  // Determine initial dress style or category:
-  // In the design mockup, "Casual" is the primary dress style category displayed
-  const initialCategories = urlCategory
-    ? urlCategory
-        .split(",")
-        .map((c) => c.trim())
-        .filter(Boolean)
-    : [];
+  const categories = React.useMemo(
+    () =>
+      urlCategory
+        ? urlCategory
+            .split(",")
+            .map((c) => c.trim())
+            .filter(Boolean)
+        : [],
+    [urlCategory]
+  );
 
-  const initialDressStyles = urlDressStyle
-    ? urlDressStyle
+  const dressStyles = React.useMemo(() => {
+    if (urlDressStyle) {
+      return urlDressStyle
         .split(",")
         .map((d) => d.trim())
-        .filter(Boolean)
-    : ["casual", "formal", "party", "gym"].includes(urlCategory?.toLowerCase() || "")
-      ? [urlCategory!]
-      : ["Casual"];
+        .filter(Boolean);
+    }
+    if (["casual", "formal", "party", "gym"].includes(urlCategory?.toLowerCase() || "")) {
+      return [urlCategory!];
+    }
+    if (isOnSale || sortBy === "newest") {
+      return [];
+    }
+    return ["Casual"];
+  }, [urlDressStyle, urlCategory, isOnSale, sortBy]);
 
-  const initialSizes = urlSize
-    ? urlSize
-        .split(",")
-        .map((s) => s.trim())
-        .filter(Boolean)
-    : [];
+  const sizes = React.useMemo(
+    () =>
+      urlSize
+        ? urlSize
+            .split(",")
+            .map((s) => s.trim())
+            .filter(Boolean)
+        : [],
+    [urlSize]
+  );
 
-  const initialColors = urlColor
-    ? urlColor
-        .split(",")
-        .map((c) => c.trim())
-        .filter(Boolean)
-    : [];
+  const colors = React.useMemo(
+    () =>
+      urlColor
+        ? urlColor
+            .split(",")
+            .map((c) => c.trim())
+            .filter(Boolean)
+        : [],
+    [urlColor]
+  );
 
-  // Local filter states
-  const [filters, setFilters] = React.useState<FilterState>({
-    category: initialCategories[0] || null,
-    categories: initialCategories,
-    minPrice: urlMinPrice,
-    maxPrice: urlMaxPrice,
-    color: initialColors[0] || null,
-    colors: initialColors,
-    size: initialSizes[0] || null,
-    sizes: initialSizes,
-    dressStyle: initialDressStyles[0] || "Casual",
-    dressStyles: initialDressStyles,
-  });
+  const filters: FilterState = React.useMemo(
+    () => ({
+      category: categories[0] || null,
+      categories,
+      minPrice: urlMinPrice,
+      maxPrice: urlMaxPrice,
+      color: colors[0] || null,
+      colors,
+      size: sizes[0] || null,
+      sizes,
+      dressStyle: dressStyles[0] || null,
+      dressStyles,
+    }),
+    [categories, urlMinPrice, urlMaxPrice, colors, sizes, dressStyles]
+  );
 
-  const [sortBy, setSortBy] = React.useState<CatalogSortOption>(urlSort || "popular");
-  const [currentPage, setCurrentPage] = React.useState<number>(urlPage);
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = React.useState<boolean>(false);
 
   // Responsive pageSize: 9 on desktop (3 cols x 3 rows = 9 items)
@@ -105,8 +133,9 @@ export function ShopView() {
       page: currentPage,
       limit: pageSize,
       searchQuery: urlSearch,
+      onSaleOnly: isOnSale,
     });
-  }, [filters, sortBy, currentPage, pageSize, urlSearch]);
+  }, [filters, sortBy, currentPage, pageSize, urlSearch, isOnSale]);
 
   // Calculate active filter count for badges
   const activeFilterCount =
@@ -148,6 +177,7 @@ export function ShopView() {
     if (nextSort !== "popular") params.set("sort", nextSort);
     if (nextPage > 1) params.set("page", String(nextPage));
     if (urlSearch) params.set("q", urlSearch);
+    if (urlFilter) params.set("filter", urlFilter);
 
     const queryString = params.toString();
     router.replace(`/shop${queryString ? `?${queryString}` : ""}`, {
@@ -157,14 +187,11 @@ export function ShopView() {
 
   const handleFilterChange = (partial: Partial<FilterState>) => {
     const next = { ...filters, ...partial };
-    setFilters(next);
-    setCurrentPage(1);
     updateUrlParams(next, sortBy, 1);
   };
 
-  const handleApplyFilters = () => {
-    setCurrentPage(1);
-    updateUrlParams(filters, sortBy, 1);
+  const handleApplyFilters = (appliedFilters?: FilterState) => {
+    updateUrlParams(appliedFilters || filters, sortBy, 1);
   };
 
   const handleResetFilters = () => {
@@ -180,32 +207,30 @@ export function ShopView() {
       dressStyle: "Casual",
       dressStyles: ["Casual"],
     };
-    setFilters(resetState);
-    setCurrentPage(1);
     updateUrlParams(resetState, sortBy, 1);
   };
 
   const handleSortChange = (nextSort: CatalogSortOption) => {
-    setSortBy(nextSort);
-    setCurrentPage(1);
     updateUrlParams(filters, nextSort, 1);
   };
 
   const handlePageChange = (page: number) => {
-    setCurrentPage(page);
     updateUrlParams(filters, sortBy, page);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  // Derive dynamic page title (e.g. "Casual", "T-shirts", "Formal", etc.)
-  const pageTitle =
-    filters.categories.length > 0
-      ? filters.categories.join(", ")
-      : filters.dressStyles.length > 0
-        ? filters.dressStyles.join(", ")
-        : urlSearch
-          ? `Search: "${urlSearch}"`
-          : "Casual";
+  // Derive dynamic page title (e.g. "On Sale", "New Arrivals", "Casual", "T-shirts", etc.)
+  const pageTitle = isOnSale
+    ? "On Sale"
+    : sortBy === "newest" && filters.categories.length === 0 && filters.dressStyles.length === 0
+      ? "New Arrivals"
+      : filters.categories.length > 0
+        ? filters.categories.join(", ")
+        : filters.dressStyles.length > 0
+          ? filters.dressStyles.join(", ")
+          : urlSearch
+            ? `Search: "${urlSearch}"`
+            : "Casual";
 
   const startIndex =
     catalogData.totalCount > 0 ? (catalogData.page - 1) * catalogData.pageSize + 1 : 0;

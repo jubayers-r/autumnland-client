@@ -17,6 +17,7 @@ export interface CatalogFilterParams {
   page?: number | null;
   limit?: number | null;
   searchQuery?: string | null;
+  onSaleOnly?: boolean | null;
 }
 
 export interface CatalogResponse {
@@ -50,10 +51,18 @@ export function getCatalogProductsSync(params: CatalogFilterParams = {}): Catalo
     page = 1,
     limit = 9,
     searchQuery,
+    onSaleOnly,
   } = params;
 
   // Clone dataset for filtering
   let filtered = [...CATALOG_PRODUCTS];
+
+  // 1. Filter by on sale (discounted products only: 30%, 40% off, etc.)
+  if (onSaleOnly) {
+    filtered = filtered.filter(
+      (p) => Boolean(p.discount) || (Boolean(p.originalPrice) && (p.originalPrice ?? 0) > p.price)
+    );
+  }
 
   // 1. Filter by category (single or multi-select)
   const activeCategories = Array.from(

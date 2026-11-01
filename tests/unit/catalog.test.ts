@@ -60,6 +60,16 @@ describe("Catalog Data and Filtering Service", () => {
     });
   });
 
+  it("filters accurately by onSaleOnly returning only discounted products", async () => {
+    const saleItems = await getCatalogProducts({ onSaleOnly: true, limit: 50 });
+    expect(saleItems.products.length).toBeGreaterThan(0);
+    saleItems.products.forEach((p) => {
+      const hasDiscount =
+        Boolean(p.discount) || (Boolean(p.originalPrice) && (p.originalPrice ?? 0) > p.price);
+      expect(hasDiscount).toBe(true);
+    });
+  });
+
   it("filters accurately by price range bounds", async () => {
     const result = await getCatalogProducts({ minPrice: 100, maxPrice: 150, limit: 30 });
     expect(result.products.length).toBeGreaterThan(0);

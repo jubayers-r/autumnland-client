@@ -88,9 +88,8 @@ export function FilterContent({
 
   const toggleDressStyle = (style: string) => {
     const isSelected = filters.dressStyles.some((ds) => ds.toLowerCase() === style.toLowerCase());
-    const nextStyles = isSelected
-      ? filters.dressStyles.filter((ds) => ds.toLowerCase() !== style.toLowerCase())
-      : [...filters.dressStyles, style];
+    // Single-select: clicking an unselected style selects exclusively that style; clicking the active one toggles it off
+    const nextStyles = isSelected ? [] : [style];
 
     onFilterChange({
       dressStyles: nextStyles,

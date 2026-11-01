@@ -218,4 +218,61 @@ test.describe("Shop & Category Catalog Page", () => {
     await expect(sheet).not.toBeVisible();
     await expect(page.getByText("T-shirt with Tape Details").first()).toBeVisible();
   });
+
+  test("loads /shop?filter=sale with only discounted products and On Sale title", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1280, height: 850 });
+    await page.goto("/shop?filter=sale");
+
+    // Title should show ON SALE
+    await expect(page.getByRole("heading", { name: "ON SALE" })).toBeVisible();
+
+    // Verify all rendered cards have discount badges
+    const cards = page.locator("[data-product-card]");
+    const count = await cards.count();
+    expect(count).toBeGreaterThan(0);
+
+    for (let i = 0; i < count; i++) {
+      const card = cards.nth(i);
+      // Each on-sale product should display a discount percentage (e.g. -20%, -30%, -40%, -15%)
+      await expect(card.getByText(/-\d+%/)).toBeVisible();
+    }
+  });
+
+  test("loads /shop?sort=newest with newest sort active and New Arrivals title", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1280, height: 850 });
+    await page.goto("/shop?sort=newest");
+
+    // Title should show NEW ARRIVALS
+    await expect(page.getByRole("heading", { name: "NEW ARRIVALS" })).toBeVisible();
+
+    // Sort button should show Sort by: Newest
+    const sortBtn = page.getByRole("button", { name: /Sort by.*Newest/i });
+    await expect(sortBtn).toBeVisible();
+  });
+
+  test("enforces single selection on dress style in filter sidebar", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 850 });
+    await page.goto("/shop");
+
+    const filtersSidebar = page.getByRole("complementary", {
+      name: "Product filters",
+    });
+
+    const casualBtn = filtersSidebar.getByRole("button", { name: "Casual" });
+    const formalBtn = filtersSidebar.getByRole("button", { name: "Formal" });
+
+    // Casual is initially selected
+    await expect(casualBtn).toHaveClass(/font-bold/);
+
+    // Click Formal
+    await formalBtn.click();
+
+    // Formal should now be selected and Casual deselected (single-select)
+    await expect(formalBtn).toHaveClass(/font-bold/);
+    await expect(casualBtn).not.toHaveClass(/font-bold/);
+  });
 });

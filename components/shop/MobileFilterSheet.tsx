@@ -10,20 +10,49 @@ interface MobileFilterSheetProps {
   onOpenChange: (open: boolean) => void;
   filters: FilterState;
   onFilterChange: (next: Partial<FilterState>) => void;
-  onApply: () => void;
+  onApply: (appliedFilters?: FilterState) => void;
   onReset: () => void;
+}
+
+function MobileFilterBody({
+  filters,
+  onApply,
+  onReset,
+}: {
+  filters: FilterState;
+  onApply: (draft: FilterState) => void;
+  onReset: () => void;
+}) {
+  const [draft, setDraft] = React.useState<FilterState>(filters);
+
+  const handleDraftChange = (partial: Partial<FilterState>) => {
+    setDraft((prev) => ({ ...prev, ...partial }));
+  };
+
+  return (
+    <FilterContent
+      filters={draft}
+      onFilterChange={handleDraftChange}
+      onApply={() => onApply(draft)}
+      onReset={onReset}
+    />
+  );
 }
 
 export function MobileFilterSheet({
   open,
   onOpenChange,
   filters,
-  onFilterChange,
   onApply,
   onReset,
 }: MobileFilterSheetProps) {
-  const handleApply = () => {
-    onApply();
+  const handleApply = (draft: FilterState) => {
+    onApply(draft);
+    onOpenChange(false);
+  };
+
+  const handleReset = () => {
+    onReset();
     onOpenChange(false);
   };
 
@@ -51,12 +80,9 @@ export function MobileFilterSheet({
 
         {/* Scrollable Filter Body */}
         <div className="overflow-y-auto px-5 py-5 sm:px-6 flex-1">
-          <FilterContent
-            filters={filters}
-            onFilterChange={onFilterChange}
-            onApply={handleApply}
-            onReset={onReset}
-          />
+          {open && (
+            <MobileFilterBody filters={filters} onApply={handleApply} onReset={handleReset} />
+          )}
         </div>
       </SheetContent>
     </Sheet>
