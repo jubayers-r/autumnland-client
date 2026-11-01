@@ -38,7 +38,7 @@ The repository follows a clean Next.js App Router structure:
 │   ├── sitemap.ts          # Dynamic SEO sitemap.xml generator
 │   └── icon.svg            # Favicon SVG
 ├── components/
-│   ├── cart/               # Shopping cart components (CartItemCard, CartItemList, OrderSummary)
+│   ├── cart/               # Shopping cart components (CartItemCard, CartItemList, OrderSummary, CartMobileFooter)
 │   ├── footer/             # Footer components (Footer, Newsletter, PaymentBadges, SocialLinks)
 │   ├── header/             # Header components (TopBanner, Navbar, Header)
 │   ├── home/               # Homepage components (HeroSection, BrandBanner, ProductSection, ProductCard, BrowseByDressStyle, TestimonialsSection)

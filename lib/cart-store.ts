@@ -56,8 +56,9 @@ export const REFERENCE_CART_ITEMS: CartItem[] = [
   },
 ];
 
-interface CartState {
+export interface CartState {
   items: CartItem[];
+  selectedItemIds: string[] | null;
   promoCode: string;
   discountPercentage: number;
   deliveryFee: number;
@@ -69,15 +70,24 @@ interface CartState {
   setQuantity: (id: string, quantity: number) => void;
   applyPromo: (code: string) => boolean;
   clearCart: () => void;
+  getSelectedItems: () => CartItem[];
+  isItemSelected: (id: string) => boolean;
+  toggleSelectItem: (id: string) => void;
+  selectAllItems: () => void;
+  deselectAllItems: () => void;
+  toggleSelectAll: () => void;
+  removeSelectedItems: () => void;
   getSubtotal: () => number;
   getDiscountAmount: () => number;
   getTotal: () => number;
+  getSelectedOriginalSubtotal: () => number;
 }
 
 export const useCartStore = create<CartState>()(
   persist(
     (set, get) => ({
       items: INITIAL_CART_ITEMS,
+      selectedItemIds: null,
       promoCode: "",
       discountPercentage: 0,
       deliveryFee: 15,
@@ -89,15 +99,22 @@ export const useCartStore = create<CartState>()(
         const id = `${newItem.productId}-${newItem.size.toLowerCase()}-${newItem.color.toLowerCase()}`;
         set((state) => {
           const existing = state.items.find((i) => i.id === id);
+          const nextSelectedItemIds =
+            state.selectedItemIds !== null && !state.selectedItemIds.includes(id)
+              ? [...state.selectedItemIds, id]
+              : state.selectedItemIds;
+
           if (existing) {
             return {
               items: state.items.map((i) =>
                 i.id === id ? { ...i, quantity: i.quantity + newItem.quantity } : i
               ),
+              selectedItemIds: nextSelectedItemIds,
             };
           }
           return {
             items: [...state.items, { ...newItem, id }],
+            selectedItemIds: nextSelectedItemIds,
           };
         });
       },
@@ -105,6 +122,10 @@ export const useCartStore = create<CartState>()(
       removeItem: (id) => {
         set((state) => ({
           items: state.items.filter((item) => item.id !== id),
+          selectedItemIds:
+            state.selectedItemIds !== null
+              ? state.selectedItemIds.filter((itemId) => itemId !== id)
+              : null,
         }));
       },
 
@@ -146,15 +167,74 @@ export const useCartStore = create<CartState>()(
       },
 
       clearCart: () => {
-        set({ items: [], promoCode: "", discountPercentage: 0 });
+        set({ items: [], selectedItemIds: null, promoCode: "", discountPercentage: 0 });
+      },
+
+      getSelectedItems: () => {
+        const { items, selectedItemIds } = get();
+        if (selectedItemIds === null) {
+          return items;
+        }
+        return items.filter((item) => selectedItemIds.includes(item.id));
+      },
+
+      isItemSelected: (id: string) => {
+        const { selectedItemIds } = get();
+        if (selectedItemIds === null) return true;
+        return selectedItemIds.includes(id);
+      },
+
+      toggleSelectItem: (id: string) => {
+        set((state) => {
+          const current =
+            state.selectedItemIds === null ? state.items.map((i) => i.id) : state.selectedItemIds;
+          const next = current.includes(id)
+            ? current.filter((itemId) => itemId !== id)
+            : [...current, id];
+          return { selectedItemIds: next };
+        });
+      },
+
+      selectAllItems: () => {
+        set((state) => ({
+          selectedItemIds: state.items.map((i) => i.id),
+        }));
+      },
+
+      deselectAllItems: () => {
+        set({ selectedItemIds: [] });
+      },
+
+      toggleSelectAll: () => {
+        const { items, selectedItemIds } = get();
+        const currentSelectedCount =
+          selectedItemIds === null ? items.length : selectedItemIds.length;
+        if (currentSelectedCount === items.length) {
+          set({ selectedItemIds: [] });
+        } else {
+          set({ selectedItemIds: items.map((i) => i.id) });
+        }
+      },
+
+      removeSelectedItems: () => {
+        set((state) => {
+          const selected =
+            state.selectedItemIds === null ? state.items.map((i) => i.id) : state.selectedItemIds;
+          const remainingItems = state.items.filter((item) => !selected.includes(item.id));
+          return {
+            items: remainingItems,
+            selectedItemIds: null,
+          };
+        });
       },
 
       /**
-       * Subtotal before discounts:
+       * Subtotal before discounts of selected items:
        * Sum of (item.originalPrice ?? item.price) * item.quantity.
        */
       getSubtotal: () => {
-        return get().items.reduce(
+        const selected = get().getSelectedItems();
+        return selected.reduce(
           (sum, item) =>
             sum +
             (item.originalPrice && item.originalPrice > item.price
@@ -166,13 +246,15 @@ export const useCartStore = create<CartState>()(
       },
 
       /**
-       * Total discount savings:
-       * Product item savings (originalPrice - price) + promo code discount.
+       * Total discount savings of selected items:
+       * Product item savings (originalPrice - price) + promo code discount on selected items.
        */
       getDiscountAmount: () => {
-        const items = get().items;
+        const selected = get().getSelectedItems();
+        if (selected.length === 0) return 0;
+
         // 1. Savings from product item discounts
-        const itemDiscount = items.reduce(
+        const itemDiscount = selected.reduce(
           (sum, item) =>
             sum +
             (item.originalPrice && item.originalPrice > item.price
@@ -183,17 +265,32 @@ export const useCartStore = create<CartState>()(
         );
 
         // 2. Savings from promo code applied to the current items sale price
-        const currentPriceSum = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+        const currentPriceSum = selected.reduce((sum, item) => sum + item.price * item.quantity, 0);
         const promoDiscount = Math.round((currentPriceSum * get().discountPercentage) / 100);
 
         return itemDiscount + promoDiscount;
       },
 
       getTotal: () => {
+        const selected = get().getSelectedItems();
+        if (selected.length === 0) return 0;
         const subtotal = get().getSubtotal();
         if (subtotal === 0) return 0;
         const discount = get().getDiscountAmount();
         return subtotal - discount + get().deliveryFee;
+      },
+
+      getSelectedOriginalSubtotal: () => {
+        const selected = get().getSelectedItems();
+        return selected.reduce(
+          (sum, item) =>
+            sum +
+            (item.originalPrice && item.originalPrice > item.price
+              ? item.originalPrice
+              : item.price) *
+              item.quantity,
+          0
+        );
       },
     }),
     {
@@ -210,6 +307,7 @@ export const useCartStore = create<CartState>()(
       }),
       partialize: (state) => ({
         items: state.items,
+        selectedItemIds: state.selectedItemIds,
         promoCode: state.promoCode,
         discountPercentage: state.discountPercentage,
       }),

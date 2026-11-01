@@ -246,4 +246,56 @@ test.describe("Shopping Cart Flow & Responsiveness", () => {
       fullPage: false,
     });
   });
+
+  test("mobile cart sticky top header and bottom checkout bar interact accurately on scroll and selection", async ({
+    page,
+  }) => {
+    await page.addInitScript((state) => {
+      window.localStorage.setItem("autumnland_cart_storage", JSON.stringify(state));
+    }, SAMPLE_STORAGE_STATE);
+
+    await page.setViewportSize({ width: 375, height: 667 });
+    await page.goto("/cart");
+
+    // Sticky bottom bar is visible on mobile cart
+    const mobileFooter = page.getByTestId("cart-mobile-footer");
+    await expect(mobileFooter).toBeVisible();
+    await expect(mobileFooter.getByRole("button", { name: "Gift Order" })).toBeVisible();
+    const bottomCheckoutBtn = mobileFooter.getByRole("button", { name: "Go to Checkout" });
+    await expect(bottomCheckoutBtn).toBeVisible();
+    await expect(bottomCheckoutBtn).toBeEnabled();
+
+    // Scroll down to activate floating sticky top header
+    await page.evaluate(() => window.scrollTo(0, 300));
+    const floatingNav = page.getByTestId("floating-mobile-nav");
+    await expect(floatingNav).toBeVisible();
+
+    // Verify Select All ( 3/3 Items ) and Payable Total are present
+    await expect(floatingNav.getByText(/Select All \(3\/3 Items\)/i)).toBeVisible();
+    await expect(floatingNav.getByText(/Your Payable Total:/i)).toBeVisible();
+    await expect(floatingNav.getByText("$467")).toBeVisible();
+
+    // Deselect all items using the top sticky header checkbox
+    const selectAllCheckbox = floatingNav.getByRole("checkbox", {
+      name: /Select or deselect all items/i,
+    });
+    await selectAllCheckbox.click();
+
+    // Verify all items deselected: count becomes 0/3 and payable total becomes $0
+    await expect(floatingNav.getByText(/Select All \(0\/3 Items\)/i)).toBeVisible();
+    await expect(floatingNav.getByText("$0")).toBeVisible();
+    await expect(bottomCheckoutBtn).toBeDisabled();
+
+    // Re-select all items
+    await selectAllCheckbox.click();
+    await expect(floatingNav.getByText(/Select All \(3\/3 Items\)/i)).toBeVisible();
+    await expect(floatingNav.getByText("$467")).toBeVisible();
+    await expect(bottomCheckoutBtn).toBeEnabled();
+
+    // Capture screenshot of mobile scrolled cart state
+    await page.screenshot({
+      path: "test-results/cart_mobile_scrolled.png",
+      fullPage: false,
+    });
+  });
 });

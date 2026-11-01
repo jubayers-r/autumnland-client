@@ -3,9 +3,10 @@
 import * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Minus, Plus, Trash2 } from "lucide-react";
+import { Minus, Plus, Trash2, Check } from "lucide-react";
 import type { CartItem } from "@/lib/cart-store";
 import { useCartStore } from "@/lib/cart-store";
+import { cn } from "@/lib/utils";
 
 interface CartItemCardProps {
   item: CartItem;
@@ -15,6 +16,8 @@ export function CartItemCard({ item }: CartItemCardProps) {
   const { id, productId, title, imageSrc, price, size, color, quantity } = item;
   const updateQuantity = useCartStore((state) => state.updateQuantity);
   const removeItem = useCartStore((state) => state.removeItem);
+  const isSelected = useCartStore((state) => state.isItemSelected(id));
+  const toggleSelectItem = useCartStore((state) => state.toggleSelectItem);
 
   // Link to the actual product details page for this item
   const productHref = productId ? `/shop/product/${productId}` : "/shop";
@@ -23,8 +26,28 @@ export function CartItemCard({ item }: CartItemCardProps) {
     <article
       data-cart-item
       data-item-id={id}
-      className="flex items-start sm:items-center gap-3.5 sm:gap-4 w-full"
+      className={cn(
+        "flex items-start sm:items-center gap-2.5 sm:gap-4 w-full transition-opacity",
+        !isSelected && "opacity-60"
+      )}
     >
+      {/* Item Selection Checkbox */}
+      <button
+        type="button"
+        role="checkbox"
+        aria-checked={isSelected}
+        aria-label={`Select ${title}`}
+        onClick={() => toggleSelectItem(id)}
+        className={cn(
+          "w-5 h-5 rounded-[4px] border flex items-center justify-center shrink-0 transition-colors cursor-pointer self-center focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring",
+          isSelected
+            ? "bg-black text-white dark:bg-white dark:text-black border-black dark:border-white"
+            : "border-black/30 dark:border-white/30 bg-background hover:border-black dark:hover:border-white"
+        )}
+      >
+        {isSelected && <Check className="w-3.5 h-3.5 stroke-[3]" />}
+      </button>
+
       {/* Product Image Backdrop (#F0EEED) - Clickable link to product page */}
       <Link
         href={productHref}

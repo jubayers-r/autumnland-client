@@ -20,9 +20,13 @@ export function OrderSummary() {
   const discountPercentage = useCartStore((state) => state.discountPercentage);
   const applyPromo = useCartStore((state) => state.applyPromo);
   const items = useCartStore((state) => state.items);
+  const selectedItemIds = useCartStore((state) => state.selectedItemIds);
+  const getSelectedItems = useCartStore((state) => state.getSelectedItems);
 
   const [promoInput, setPromoInput] = React.useState("");
 
+  const selectedItems = getSelectedItems();
+  const hasSelectedItems = selectedItemIds === null ? items.length > 0 : selectedItemIds.length > 0;
   const subtotal = getSubtotal();
   const discount = getDiscountAmount();
   const total = getTotal();
@@ -54,8 +58,14 @@ export function OrderSummary() {
       });
       return;
     }
+    if (selectedItems.length === 0) {
+      toast.error("No items selected", {
+        description: "Please select at least one item before checking out.",
+      });
+      return;
+    }
     toast.success("Proceeding to Checkout", {
-      description: `Processing order for $${total}. Payment gateway initializing.`,
+      description: `Processing order for $${total} (${selectedItems.length} items). Payment gateway initializing.`,
     });
   };
 
@@ -134,12 +144,12 @@ export function OrderSummary() {
         </button>
       </form>
 
-      {/* Go to Checkout CTA */}
+      {/* Go to Checkout CTA - Visible on desktop, mobile/tablet uses sticky bottom bar */}
       <button
         type="button"
         onClick={handleCheckout}
-        disabled={items.length === 0}
-        className="w-full h-[54px] sm:h-[60px] rounded-full bg-black text-white dark:bg-white dark:text-black flex items-center justify-center gap-3 font-medium text-base hover:bg-black/90 dark:hover:bg-white/90 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer mt-5 sm:mt-6 shadow-2xs active:scale-[0.99] focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
+        disabled={!hasSelectedItems}
+        className="hidden lg:flex w-full h-[54px] sm:h-[60px] rounded-full bg-black text-white dark:bg-white dark:text-black items-center justify-center gap-3 font-medium text-base hover:bg-black/90 dark:hover:bg-white/90 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer mt-5 sm:mt-6 shadow-2xs active:scale-[0.99] focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
       >
         <span>Go to Checkout</span>
         <ArrowRight className="w-5 h-5" />

@@ -2,9 +2,20 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { Menu, Search, ShoppingCart, CircleUser, ChevronDown, Sparkles } from "lucide-react";
+import { useRouter, usePathname } from "next/navigation";
+import {
+  Menu,
+  Search,
+  ShoppingCart,
+  CircleUser,
+  ChevronDown,
+  Sparkles,
+  Check,
+  Trash2,
+} from "lucide-react";
+import { toast } from "sonner";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetClose } from "@/components/ui/sheet";
+import { useCartStore } from "@/lib/cart-store";
 import { cn } from "@/lib/utils";
 
 interface NavbarProps {
@@ -13,10 +24,32 @@ interface NavbarProps {
 
 export function Navbar({ className }: NavbarProps) {
   const router = useRouter();
+  const pathname = usePathname();
+  const isCartPage = pathname === "/cart";
+
   const [searchQuery, setSearchQuery] = React.useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
   const [showFloatingSearch, setShowFloatingSearch] = React.useState(false);
   const staticNavRef = React.useRef<HTMLDivElement>(null);
+
+  // Cart store subscriptions for mobile cart sticky header
+  const cartItems = useCartStore((state) => state.items);
+  const selectedItemIds = useCartStore((state) => state.selectedItemIds);
+  const toggleSelectAll = useCartStore((state) => state.toggleSelectAll);
+  const removeSelectedItems = useCartStore((state) => state.removeSelectedItems);
+  const getTotal = useCartStore((state) => state.getTotal);
+  const getSelectedOriginalSubtotal = useCartStore((state) => state.getSelectedOriginalSubtotal);
+
+  const selectedCount = selectedItemIds === null ? cartItems.length : selectedItemIds.length;
+  const allSelected = cartItems.length > 0 && selectedCount === cartItems.length;
+  const payableTotal = getTotal();
+  const originalSubtotal = getSelectedOriginalSubtotal();
+
+  const handleDeleteSelected = () => {
+    if (selectedCount === 0) return;
+    removeSelectedItems();
+    toast.success(`Removed ${selectedCount} item${selectedCount > 1 ? "s" : ""} from cart`);
+  };
 
   React.useEffect(() => {
     const checkVisibility = () => {
@@ -173,40 +206,96 @@ export function Navbar({ className }: NavbarProps) {
             : "-translate-y-full opacity-0 invisible pointer-events-none"
         )}
       >
-        <div className="h-14 px-3.5 flex items-center gap-3 justify-between">
-          <button
-            type="button"
-            onClick={() => setMobileMenuOpen(true)}
-            aria-label="Open navigation menu"
-            className="p-1.5 -ml-1 text-foreground hover:bg-secondary rounded-full shrink-0 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-          >
-            <Menu className="size-6" />
-          </button>
+        {isCartPage && cartItems.length > 0 ? (
+          /* Mobile Scrolled Cart Header with Select All, Trash & Payable Total */
+          <div className="h-14 px-3 sm:px-4 flex items-center justify-between gap-2 w-full">
+            {/* Left: Checkbox + Select All ( X/Y Items ) + Trash icon */}
+            <div className="flex items-center gap-2 sm:gap-2.5 min-w-0">
+              <button
+                type="button"
+                role="checkbox"
+                aria-checked={allSelected}
+                aria-label="Select or deselect all items"
+                onClick={toggleSelectAll}
+                className={cn(
+                  "w-5 h-5 rounded-[4px] border flex items-center justify-center shrink-0 transition-colors cursor-pointer focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring",
+                  allSelected
+                    ? "bg-black text-white dark:bg-white dark:text-black border-black dark:border-white"
+                    : "border-black/40 dark:border-white/40 bg-background hover:border-black dark:hover:border-white"
+                )}
+              >
+                {allSelected && <Check className="w-3.5 h-3.5 stroke-[3]" />}
+              </button>
 
-          {/* Expanded Search Bar */}
-          <form
-            onSubmit={handleSearchSubmit}
-            className="flex-1 flex items-center gap-2.5 bg-[#F0F0F0] dark:bg-muted/80 rounded-full px-3.5 py-1.5 focus-within:ring-2 focus-within:ring-foreground/20"
-          >
-            <Search className="size-4 text-muted-foreground shrink-0" />
-            <input
-              type="search"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search for products..."
-              className="w-full bg-transparent text-sm placeholder:text-muted-foreground focus:outline-none border-none text-foreground"
-            />
-          </form>
+              <span className="text-xs sm:text-sm font-semibold text-foreground truncate select-none">
+                Select All ({selectedCount}/{cartItems.length} Items)
+              </span>
 
-          {/* Right Cart Icon */}
-          <Link
-            href="/cart"
-            aria-label="Shopping Cart"
-            className="relative p-1.5 text-foreground hover:opacity-75 shrink-0 transition-opacity rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-          >
-            <ShoppingCart className="size-6" />
-          </Link>
-        </div>
+              <button
+                type="button"
+                onClick={handleDeleteSelected}
+                disabled={selectedCount === 0}
+                aria-label="Remove selected items from cart"
+                className="p-1.5 text-muted-foreground hover:text-[#FF3333] disabled:opacity-30 disabled:cursor-not-allowed transition-colors shrink-0 cursor-pointer focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring rounded-md"
+              >
+                <Trash2 className="w-4 h-4 sm:w-4.5 sm:h-4.5 stroke-[1.8]" />
+              </button>
+            </div>
+
+            {/* Right: Your Payable Total */}
+            <div className="flex flex-col items-end shrink-0 pl-1">
+              <span className="text-[10px] sm:text-[11px] text-muted-foreground font-medium leading-tight">
+                Your Payable Total:
+              </span>
+              <div className="flex items-baseline gap-1 sm:gap-1.5 leading-tight">
+                {payableTotal > 0 && originalSubtotal > payableTotal && (
+                  <span className="text-xs sm:text-sm text-muted-foreground line-through font-semibold">
+                    ${originalSubtotal}
+                  </span>
+                )}
+                <span className="text-sm sm:text-base font-bold text-foreground font-sans">
+                  ${payableTotal}
+                </span>
+              </div>
+            </div>
+          </div>
+        ) : (
+          /* Standard Floating Mobile Search & Icons */
+          <div className="h-14 px-3.5 flex items-center gap-3 justify-between">
+            <button
+              type="button"
+              onClick={() => setMobileMenuOpen(true)}
+              aria-label="Open navigation menu"
+              className="p-1.5 -ml-1 text-foreground hover:bg-secondary rounded-full shrink-0 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              <Menu className="size-6" />
+            </button>
+
+            {/* Expanded Search Bar */}
+            <form
+              onSubmit={handleSearchSubmit}
+              className="flex-1 flex items-center gap-2.5 bg-[#F0F0F0] dark:bg-muted/80 rounded-full px-3.5 py-1.5 focus-within:ring-2 focus-within:ring-foreground/20"
+            >
+              <Search className="size-4 text-muted-foreground shrink-0" />
+              <input
+                type="search"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search for products..."
+                className="w-full bg-transparent text-sm placeholder:text-muted-foreground focus:outline-none border-none text-foreground"
+              />
+            </form>
+
+            {/* Right Cart Icon */}
+            <Link
+              href="/cart"
+              aria-label="Shopping Cart"
+              className="relative p-1.5 text-foreground hover:opacity-75 shrink-0 transition-opacity rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              <ShoppingCart className="size-6" />
+            </Link>
+          </div>
+        )}
       </div>
 
       <nav

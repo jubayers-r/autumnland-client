@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import { CartItemList } from "@/components/cart/CartItemList";
 import { OrderSummary } from "@/components/cart/OrderSummary";
+import { CartMobileFooter } from "@/components/cart/CartMobileFooter";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -20,7 +21,7 @@ export const metadata: Metadata = {
 
 export default function CartPage() {
   return (
-    <main className="flex-1 flex flex-col w-full bg-background text-foreground">
+    <main className="flex-1 flex flex-col w-full bg-background text-foreground pb-24 lg:pb-8">
       <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 py-5 sm:py-6 lg:py-8">
         {/* Breadcrumb Navigation */}
         <Breadcrumb className="mb-4 sm:mb-6">
@@ -60,6 +61,9 @@ export default function CartPage() {
           </aside>
         </div>
       </div>
+
+      {/* Mobile Sticky Bottom Checkout Bar (Hidden on desktop) */}
+      <CartMobileFooter />
     </main>
   );
 }

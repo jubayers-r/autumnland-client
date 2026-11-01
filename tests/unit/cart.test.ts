@@ -171,4 +171,39 @@ describe("useCartStore", () => {
     // Total: 300 - 40 + 15 = 275
     expect(state.getTotal()).toBe(275);
   });
+
+  it("handles item selection, deselect all zeroes total, and removes selected items", () => {
+    useCartStore.setState({
+      items: [...REFERENCE_CART_ITEMS],
+      selectedItemIds: null,
+    });
+    const store = useCartStore.getState();
+    expect(store.items.length).toBe(3);
+    expect(store.getSelectedItems().length).toBe(3);
+    expect(store.getTotal()).toBeGreaterThan(0);
+
+    // Deselect all items -> total should become 0
+    store.deselectAllItems();
+    expect(useCartStore.getState().getSelectedItems().length).toBe(0);
+    expect(useCartStore.getState().getSubtotal()).toBe(0);
+    expect(useCartStore.getState().getDiscountAmount()).toBe(0);
+    expect(useCartStore.getState().getTotal()).toBe(0);
+
+    // Toggle select all -> restores all items
+    store.toggleSelectAll();
+    expect(useCartStore.getState().getSelectedItems().length).toBe(3);
+    expect(useCartStore.getState().getTotal()).toBeGreaterThan(0);
+
+    // Deselect 1 item -> calculations update for remaining 2 items
+    const firstId = REFERENCE_CART_ITEMS[0].id;
+    store.toggleSelectItem(firstId);
+    expect(useCartStore.getState().isItemSelected(firstId)).toBe(false);
+    expect(useCartStore.getState().getSelectedItems().length).toBe(2);
+
+    // Remove selected items -> only the unselected item remains
+    store.removeSelectedItems();
+    const remaining = useCartStore.getState().items;
+    expect(remaining.length).toBe(1);
+    expect(remaining[0].id).toBe(firstId);
+  });
 });
