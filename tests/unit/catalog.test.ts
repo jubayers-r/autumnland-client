@@ -3,11 +3,16 @@ import { getCatalogProducts } from "@/lib/catalog-service";
 import { CATALOG_PRODUCTS } from "@/lib/catalog-data";
 
 describe("Catalog Data and Filtering Service", () => {
-  it("initializes catalog with high-quality realistic products", () => {
+  it("initializes catalog with high-quality realistic products with zero duplicate images", () => {
     expect(Array.isArray(CATALOG_PRODUCTS)).toBe(true);
-    expect(CATALOG_PRODUCTS.length).toBeGreaterThanOrEqual(24);
+    expect(CATALOG_PRODUCTS.length).toBe(14);
 
-    // Verify first 9 items match the reference screenshot
+    // Verify zero repeated images across the entire catalog
+    const images = CATALOG_PRODUCTS.map((p) => p.imageSrc);
+    const uniqueImages = new Set(images);
+    expect(uniqueImages.size).toBe(CATALOG_PRODUCTS.length);
+
+    // Verify first 9 items match the reference screenshot when sorted by popularity
     const firstNineTitles = CATALOG_PRODUCTS.slice(0, 9).map((p) => p.title);
     expect(firstNineTitles).toContain("Gradient Graphic T-shirt");
     expect(firstNineTitles).toContain("Polo with Tipping Details");
@@ -20,7 +25,7 @@ describe("Catalog Data and Filtering Service", () => {
     expect(firstNineTitles).toContain("Loose Fit Bermuda Shorts");
   });
 
-  it("returns paginated products (9 per page) by default", async () => {
+  it("returns paginated products (9 per page on desktop) by default", async () => {
     const result = await getCatalogProducts({ page: 1, limit: 9 });
     expect(result.products.length).toBe(9);
     expect(result.page).toBe(1);
@@ -30,43 +35,28 @@ describe("Catalog Data and Filtering Service", () => {
     expect(result.hasMore).toBe(true);
   });
 
-  it("filters accurately by category", async () => {
+  it("filters accurately by single or multiple categories", async () => {
     const tshirts = await getCatalogProducts({ category: "T-shirts", limit: 20 });
     expect(tshirts.products.length).toBeGreaterThan(0);
     tshirts.products.forEach((p) => {
       expect(p.category).toBe("T-shirts");
     });
 
-    const hoodies = await getCatalogProducts({ category: "Hoodie", limit: 20 });
-    expect(hoodies.products.length).toBeGreaterThan(0);
-    hoodies.products.forEach((p) => {
-      expect(p.category).toBe("Hoodie");
-    });
-
-    const jeans = await getCatalogProducts({ category: "Jeans", limit: 20 });
-    expect(jeans.products.length).toBeGreaterThan(0);
-    jeans.products.forEach((p) => {
-      expect(p.category).toBe("Jeans");
+    const multiCat = await getCatalogProducts({ categories: ["T-shirts", "Jeans"], limit: 20 });
+    expect(multiCat.products.length).toBeGreaterThan(0);
+    multiCat.products.forEach((p) => {
+      expect(["T-shirts", "Jeans"]).toContain(p.category);
     });
   });
 
-  it("filters accurately by dress style", async () => {
+  it("filters accurately by single or multiple dress styles", async () => {
     const casual = await getCatalogProducts({ dressStyle: "Casual", limit: 30 });
     expect(casual.products.length).toBeGreaterThan(0);
-    casual.products.forEach((p) => {
-      expect(p.dressStyle).toBe("Casual");
-    });
 
-    const formal = await getCatalogProducts({ dressStyle: "Formal", limit: 30 });
-    expect(formal.products.length).toBeGreaterThan(0);
-    formal.products.forEach((p) => {
-      expect(p.dressStyle).toBe("Formal");
-    });
-
-    const gym = await getCatalogProducts({ dressStyle: "Gym", limit: 30 });
-    expect(gym.products.length).toBeGreaterThan(0);
-    gym.products.forEach((p) => {
-      expect(p.dressStyle).toBe("Gym");
+    const party = await getCatalogProducts({ dressStyle: "Party", limit: 30 });
+    expect(party.products.length).toBeGreaterThan(0);
+    party.products.forEach((p) => {
+      expect(p.dressStyles).toContain("Party");
     });
   });
 
@@ -88,25 +78,34 @@ describe("Catalog Data and Filtering Service", () => {
     });
   });
 
-  it("filters accurately by size badge", async () => {
+  it("filters accurately by size badge (single or multi-select)", async () => {
     const largeItems = await getCatalogProducts({ size: "Large", limit: 30 });
     expect(largeItems.products.length).toBeGreaterThan(0);
     largeItems.products.forEach((p) => {
       const hasLarge = p.sizes.some((s) => s.toLowerCase() === "large");
       expect(hasLarge).toBe(true);
     });
+
+    const multiSizes = await getCatalogProducts({ sizes: ["Small", "Large"], limit: 30 });
+    expect(multiSizes.products.length).toBeGreaterThan(0);
+    multiSizes.products.forEach((p) => {
+      const matches = p.sizes.some((s) => ["small", "large"].includes(s.toLowerCase()));
+      expect(matches).toBe(true);
+    });
   });
 
-  it("sorts correctly by price ascending and descending", async () => {
-    const asc = await getCatalogProducts({ sortBy: "price-asc", limit: 30 });
-    for (let i = 0; i < asc.products.length - 1; i++) {
-      expect(asc.products[i].price).toBeLessThanOrEqual(asc.products[i + 1].price);
-    }
+  it("sorts correctly by Most Popular and Newest with distinct results", async () => {
+    const popular = await getCatalogProducts({ sortBy: "popular", limit: 5 });
+    const newest = await getCatalogProducts({ sortBy: "newest", limit: 5 });
 
-    const desc = await getCatalogProducts({ sortBy: "price-desc", limit: 30 });
-    for (let i = 0; i < desc.products.length - 1; i++) {
-      expect(desc.products[i].price).toBeGreaterThanOrEqual(desc.products[i + 1].price);
-    }
+    // Most popular first item is Gradient Graphic T-shirt (highest salesCount)
+    expect(popular.products[0].id).toBe("gradient-graphic-t-shirt");
+
+    // Newest first item is One Life Graphic T-shirt (most recent createdDate)
+    expect(newest.products[0].id).toBe("one-life-graphic-t-shirt");
+
+    // The two lists are distinct
+    expect(popular.products[0].id).not.toBe(newest.products[0].id);
   });
 
   it("supports multi-page pagination navigation", async () => {

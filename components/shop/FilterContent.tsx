@@ -1,10 +1,12 @@
 "use client";
 
 import * as React from "react";
-import { Check, ChevronDown, ChevronRight, ChevronUp, RotateCcw } from "lucide-react";
+import { Check, ChevronDown, ChevronUp, RotateCcw } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { cn } from "@/lib/utils";
 import {
+  CATALOG_MAX_PRICE,
+  CATALOG_MIN_PRICE,
   FILTER_CATEGORIES,
   FILTER_COLORS,
   FILTER_DRESS_STYLES,
@@ -12,12 +14,16 @@ import {
 } from "@/lib/catalog-data";
 
 export interface FilterState {
-  category: string | null;
+  category?: string | null;
+  categories: string[];
   minPrice: number | null;
   maxPrice: number | null;
-  color: string | null;
-  size: string | null;
-  dressStyle: string | null;
+  color?: string | null;
+  colors: string[];
+  size?: string | null;
+  sizes: string[];
+  dressStyle?: string | null;
+  dressStyles: string[];
 }
 
 interface FilterContentProps {
@@ -25,41 +31,97 @@ interface FilterContentProps {
   onFilterChange: (next: Partial<FilterState>) => void;
   onApply?: () => void;
   onReset?: () => void;
+  minBound?: number;
+  maxBound?: number;
 }
 
-export function FilterContent({ filters, onFilterChange, onApply, onReset }: FilterContentProps) {
+export function FilterContent({
+  filters,
+  onFilterChange,
+  onApply,
+  onReset,
+  minBound = CATALOG_MIN_PRICE,
+  maxBound = CATALOG_MAX_PRICE,
+}: FilterContentProps) {
   // Accordion toggle states (default expanded to match design mockup)
   const [isPriceOpen, setIsPriceOpen] = React.useState(true);
   const [isColorsOpen, setIsColorsOpen] = React.useState(true);
   const [isSizeOpen, setIsSizeOpen] = React.useState(true);
   const [isDressStyleOpen, setIsDressStyleOpen] = React.useState(true);
 
-  const currentMin = filters.minPrice ?? 50;
-  const currentMax = filters.maxPrice ?? 200;
+  const currentMin = filters.minPrice ?? minBound;
+  const currentMax = filters.maxPrice ?? maxBound;
 
   const hasActiveFilters =
-    Boolean(filters.category) ||
-    Boolean(filters.color) ||
-    Boolean(filters.size) ||
-    (Boolean(filters.dressStyle) && filters.dressStyle !== "Casual") ||
+    filters.categories.length > 0 ||
+    filters.colors.length > 0 ||
+    filters.sizes.length > 0 ||
+    (filters.dressStyles.length > 0 &&
+      (filters.dressStyles.length > 1 || !filters.dressStyles.includes("Casual"))) ||
     filters.minPrice !== null ||
     filters.maxPrice !== null;
 
+  // Toggle helpers for multi-select
+  const toggleCategory = (cat: string) => {
+    const isSelected = filters.categories.some((c) => c.toLowerCase() === cat.toLowerCase());
+    const nextCategories = isSelected
+      ? filters.categories.filter((c) => c.toLowerCase() !== cat.toLowerCase())
+      : [...filters.categories, cat];
+
+    onFilterChange({
+      categories: nextCategories,
+      category: nextCategories.length === 1 ? nextCategories[0] : null,
+    });
+  };
+
+  const toggleSize = (size: string) => {
+    const isSelected = filters.sizes.some((s) => s.toLowerCase() === size.toLowerCase());
+    const nextSizes = isSelected
+      ? filters.sizes.filter((s) => s.toLowerCase() !== size.toLowerCase())
+      : [...filters.sizes, size];
+
+    onFilterChange({
+      sizes: nextSizes,
+      size: nextSizes.length === 1 ? nextSizes[0] : null,
+    });
+  };
+
+  const toggleDressStyle = (style: string) => {
+    const isSelected = filters.dressStyles.some((ds) => ds.toLowerCase() === style.toLowerCase());
+    const nextStyles = isSelected
+      ? filters.dressStyles.filter((ds) => ds.toLowerCase() !== style.toLowerCase())
+      : [...filters.dressStyles, style];
+
+    onFilterChange({
+      dressStyles: nextStyles,
+      dressStyle: nextStyles.length === 1 ? nextStyles[0] : null,
+    });
+  };
+
+  const toggleColor = (colorName: string) => {
+    const isSelected = filters.colors.some((c) => c.toLowerCase() === colorName.toLowerCase());
+    const nextColors = isSelected
+      ? filters.colors.filter((c) => c.toLowerCase() !== colorName.toLowerCase())
+      : [...filters.colors, colorName];
+
+    onFilterChange({
+      colors: nextColors,
+      color: nextColors.length === 1 ? nextColors[0] : null,
+    });
+  };
+
   return (
     <div className="flex flex-col w-full font-sans">
-      {/* 1. Category Navigation List */}
+      {/* 1. Category Navigation List (Type of Dress) */}
       <nav aria-label="Categories" className="flex flex-col gap-3 py-1">
         {FILTER_CATEGORIES.map((cat) => {
-          const isSelected = filters.category?.toLowerCase() === cat.toLowerCase();
+          const isSelected = filters.categories.some((c) => c.toLowerCase() === cat.toLowerCase());
+
           return (
             <button
               key={cat}
               type="button"
-              onClick={() =>
-                onFilterChange({
-                  category: isSelected ? null : cat,
-                })
-              }
+              onClick={() => toggleCategory(cat)}
               className={cn(
                 "flex items-center justify-between w-full text-base transition-colors py-1 cursor-pointer group text-left",
                 isSelected
@@ -68,14 +130,12 @@ export function FilterContent({ filters, onFilterChange, onApply, onReset }: Fil
               )}
             >
               <span>{cat}</span>
-              <ChevronRight
-                className={cn(
-                  "w-4 h-4 transition-transform",
-                  isSelected
-                    ? "text-foreground translate-x-0.5"
-                    : "text-black/40 dark:text-white/40 group-hover:text-foreground"
-                )}
-              />
+              {/* White tick inside a rounded black circle when selected */}
+              {isSelected && (
+                <span className="w-5 h-5 rounded-full bg-black text-white dark:bg-white dark:text-black flex items-center justify-center shrink-0 shadow-2xs">
+                  <Check className="w-3 h-3 stroke-[3]" />
+                </span>
+              )}
             </button>
           );
         })}
@@ -103,8 +163,8 @@ export function FilterContent({ filters, onFilterChange, onApply, onReset }: Fil
         {isPriceOpen && (
           <div className="pt-5 pb-1">
             <Slider
-              min={50}
-              max={200}
+              min={minBound}
+              max={maxBound}
               step={5}
               value={[currentMin, currentMax]}
               onValueChange={(val) => {
@@ -147,16 +207,14 @@ export function FilterContent({ filters, onFilterChange, onApply, onReset }: Fil
         {isColorsOpen && (
           <div className="grid grid-cols-5 gap-3 pt-5 pb-1">
             {FILTER_COLORS.map((col) => {
-              const isSelected = filters.color?.toLowerCase() === col.name.toLowerCase();
+              const isSelected = filters.colors.some(
+                (c) => c.toLowerCase() === col.name.toLowerCase()
+              );
               return (
                 <button
                   key={col.name}
                   type="button"
-                  onClick={() =>
-                    onFilterChange({
-                      color: isSelected ? null : col.name,
-                    })
-                  }
+                  onClick={() => toggleColor(col.name)}
                   aria-label={`Filter by color ${col.name}`}
                   aria-pressed={isSelected}
                   style={{ backgroundColor: col.hex }}
@@ -184,7 +242,7 @@ export function FilterContent({ filters, onFilterChange, onApply, onReset }: Fil
       {/* Divider */}
       <hr className="border-t border-black/10 dark:border-white/10 my-5" />
 
-      {/* 4. Size Accordion */}
+      {/* 4. Size Accordion (Multi-select) */}
       <div>
         <button
           type="button"
@@ -203,21 +261,17 @@ export function FilterContent({ filters, onFilterChange, onApply, onReset }: Fil
         {isSizeOpen && (
           <div className="flex flex-wrap gap-2 pt-4 pb-1">
             {FILTER_SIZES.map((size) => {
-              const isSelected = filters.size?.toLowerCase() === size.toLowerCase();
+              const isSelected = filters.sizes.some((s) => s.toLowerCase() === size.toLowerCase());
               return (
                 <button
                   key={size}
                   type="button"
-                  onClick={() =>
-                    onFilterChange({
-                      size: isSelected ? null : size,
-                    })
-                  }
+                  onClick={() => toggleSize(size)}
                   aria-pressed={isSelected}
                   className={cn(
                     "rounded-full px-5 py-2.5 text-xs sm:text-sm font-medium transition-colors cursor-pointer focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring",
                     isSelected
-                      ? "bg-black text-white dark:bg-white dark:text-black shadow-xs"
+                      ? "bg-black text-white dark:bg-white dark:text-black shadow-xs font-semibold"
                       : "bg-[#F0F0F0] dark:bg-[#262626] text-black/60 dark:text-white/60 hover:bg-black/10 dark:hover:bg-white/10"
                   )}
                 >
@@ -232,7 +286,7 @@ export function FilterContent({ filters, onFilterChange, onApply, onReset }: Fil
       {/* Divider */}
       <hr className="border-t border-black/10 dark:border-white/10 my-5" />
 
-      {/* 5. Dress Style Accordion */}
+      {/* 5. Dress Style Accordion (Multi-select) */}
       <div>
         <button
           type="button"
@@ -251,16 +305,15 @@ export function FilterContent({ filters, onFilterChange, onApply, onReset }: Fil
         {isDressStyleOpen && (
           <nav aria-label="Dress styles" className="flex flex-col gap-3 pt-4 pb-1">
             {FILTER_DRESS_STYLES.map((style) => {
-              const isSelected = filters.dressStyle?.toLowerCase() === style.toLowerCase();
+              const isSelected = filters.dressStyles.some(
+                (ds) => ds.toLowerCase() === style.toLowerCase()
+              );
+
               return (
                 <button
                   key={style}
                   type="button"
-                  onClick={() =>
-                    onFilterChange({
-                      dressStyle: isSelected ? null : style,
-                    })
-                  }
+                  onClick={() => toggleDressStyle(style)}
                   className={cn(
                     "flex items-center justify-between w-full text-base transition-colors py-1 cursor-pointer group text-left",
                     isSelected
@@ -269,14 +322,12 @@ export function FilterContent({ filters, onFilterChange, onApply, onReset }: Fil
                   )}
                 >
                   <span>{style}</span>
-                  <ChevronRight
-                    className={cn(
-                      "w-4 h-4 transition-transform",
-                      isSelected
-                        ? "text-foreground translate-x-0.5"
-                        : "text-black/40 dark:text-white/40 group-hover:text-foreground"
-                    )}
-                  />
+                  {/* White tick inside a rounded black circle when selected */}
+                  {isSelected && (
+                    <span className="w-5 h-5 rounded-full bg-black text-white dark:bg-white dark:text-black flex items-center justify-center shrink-0 shadow-2xs">
+                      <Check className="w-3 h-3 stroke-[3]" />
+                    </span>
+                  )}
                 </button>
               );
             })}

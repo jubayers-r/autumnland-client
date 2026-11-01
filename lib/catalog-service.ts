@@ -4,11 +4,15 @@ export type CatalogSortOption = "popular" | "price-asc" | "price-desc" | "newest
 
 export interface CatalogFilterParams {
   category?: string | null;
+  categories?: string[] | null;
   dressStyle?: string | null;
+  dressStyles?: string[] | null;
   minPrice?: number | null;
   maxPrice?: number | null;
   color?: string | null;
+  colors?: string[] | null;
   size?: string | null;
+  sizes?: string[] | null;
   sortBy?: CatalogSortOption | null;
   page?: number | null;
   limit?: number | null;
@@ -33,11 +37,15 @@ export interface CatalogResponse {
 export function getCatalogProductsSync(params: CatalogFilterParams = {}): CatalogResponse {
   const {
     category,
+    categories,
     dressStyle,
+    dressStyles,
     minPrice,
     maxPrice,
     color,
+    colors,
     size,
+    sizes,
     sortBy = "popular",
     page = 1,
     limit = 9,
@@ -47,16 +55,29 @@ export function getCatalogProductsSync(params: CatalogFilterParams = {}): Catalo
   // Clone dataset for filtering
   let filtered = [...CATALOG_PRODUCTS];
 
-  // 1. Filter by category (e.g. T-shirts, Shorts, Shirts, Hoodie, Jeans)
-  if (category && category.trim()) {
-    const cleanCat = category.trim().toLowerCase();
-    filtered = filtered.filter((p) => p.category.toLowerCase() === cleanCat);
+  // 1. Filter by category (single or multi-select)
+  const activeCategories = Array.from(
+    new Set([...(categories || []), ...(category ? [category] : [])])
+  )
+    .filter(Boolean)
+    .map((c) => c.trim().toLowerCase());
+
+  if (activeCategories.length > 0) {
+    filtered = filtered.filter((p) => activeCategories.includes(p.category.toLowerCase()));
   }
 
-  // 2. Filter by dress style (e.g. Casual, Formal, Party, Gym)
-  if (dressStyle && dressStyle.trim()) {
-    const cleanStyle = dressStyle.trim().toLowerCase();
-    filtered = filtered.filter((p) => p.dressStyle.toLowerCase() === cleanStyle);
+  // 2. Filter by dress style (single or multi-select)
+  const activeDressStyles = Array.from(
+    new Set([...(dressStyles || []), ...(dressStyle ? [dressStyle] : [])])
+  )
+    .filter(Boolean)
+    .map((d) => d.trim().toLowerCase());
+
+  if (activeDressStyles.length > 0) {
+    filtered = filtered.filter((p) => {
+      const pStyles = (p.dressStyles || [p.dressStyle]).map((s) => s.toLowerCase());
+      return activeDressStyles.some((active) => pStyles.includes(active));
+    });
   }
 
   // 3. Filter by search query
@@ -79,15 +100,21 @@ export function getCatalogProductsSync(params: CatalogFilterParams = {}): Catalo
   }
 
   // 5. Filter by color (case-insensitive match)
-  if (color && color.trim()) {
-    const cleanColor = color.trim().toLowerCase();
-    filtered = filtered.filter((p) => p.colors.some((c) => c.toLowerCase() === cleanColor));
+  const activeColors = Array.from(new Set([...(colors || []), ...(color ? [color] : [])]))
+    .filter(Boolean)
+    .map((c) => c.trim().toLowerCase());
+
+  if (activeColors.length > 0) {
+    filtered = filtered.filter((p) => p.colors.some((c) => activeColors.includes(c.toLowerCase())));
   }
 
-  // 6. Filter by size (case-insensitive match)
-  if (size && size.trim()) {
-    const cleanSize = size.trim().toLowerCase();
-    filtered = filtered.filter((p) => p.sizes.some((s) => s.toLowerCase() === cleanSize));
+  // 6. Filter by size (multi-select supported)
+  const activeSizes = Array.from(new Set([...(sizes || []), ...(size ? [size] : [])]))
+    .filter(Boolean)
+    .map((s) => s.trim().toLowerCase());
+
+  if (activeSizes.length > 0) {
+    filtered = filtered.filter((p) => p.sizes.some((s) => activeSizes.includes(s.toLowerCase())));
   }
 
   // 7. Sort products
@@ -99,6 +126,7 @@ export function getCatalogProductsSync(params: CatalogFilterParams = {}): Catalo
       filtered.sort((a, b) => b.price - a.price);
       break;
     case "newest":
+      // Sort by newest addition date
       filtered.sort(
         (a, b) => new Date(b.createdDate).getTime() - new Date(a.createdDate).getTime()
       );
@@ -108,7 +136,8 @@ export function getCatalogProductsSync(params: CatalogFilterParams = {}): Catalo
       break;
     case "popular":
     default:
-      filtered.sort((a, b) => b.popularity - a.popularity);
+      // Sort by total units sold (salesCount)
+      filtered.sort((a, b) => (b.salesCount ?? b.popularity) - (a.salesCount ?? a.popularity));
       break;
   }
 
@@ -122,8 +151,8 @@ export function getCatalogProductsSync(params: CatalogFilterParams = {}): Catalo
 
   // Compute catalog price bounds for sliders
   const allPrices = CATALOG_PRODUCTS.map((p) => p.price);
-  const catalogMinPrice = Math.min(...allPrices);
-  const catalogMaxPrice = Math.max(...allPrices);
+  const catalogMinPrice = allPrices.length > 0 ? Math.min(...allPrices) : 80;
+  const catalogMaxPrice = allPrices.length > 0 ? Math.max(...allPrices) : 260;
 
   return {
     products: paginatedProducts,
