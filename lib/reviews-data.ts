@@ -140,19 +140,49 @@ export const REFERENCE_REVIEWS: Review[] = [
 ];
 
 /**
- * In-memory store initialized with reference reviews.
- * Allows adding reviews at runtime so submitting a new review immediately updates the list.
+ * Session storage key to keep user reviews sticky across page refreshes
+ * until hard refresh (or new tab session).
  */
-let inMemoryReviews: Review[] = [...REFERENCE_REVIEWS];
+const REVIEWS_STORAGE_KEY = "autumnland_user_reviews";
+
+function getStoredReviews(): Review[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = sessionStorage.getItem(REVIEWS_STORAGE_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveStoredReviews(reviews: Review[]): void {
+  if (typeof window === "undefined") return;
+  try {
+    sessionStorage.setItem(REVIEWS_STORAGE_KEY, JSON.stringify(reviews));
+  } catch {
+    // Ignore storage quota errors
+  }
+}
+
+let inMemoryCustomReviews: Review[] = [];
 
 export function getInMemoryReviews(): Review[] {
-  return inMemoryReviews;
+  const custom = typeof window !== "undefined" ? getStoredReviews() : inMemoryCustomReviews;
+  return [...custom, ...REFERENCE_REVIEWS];
 }
 
 export function addInMemoryReview(review: Review): void {
-  inMemoryReviews = [review, ...inMemoryReviews];
+  inMemoryCustomReviews = [review, ...inMemoryCustomReviews];
+  saveStoredReviews(inMemoryCustomReviews);
 }
 
 export function resetInMemoryReviews(): void {
-  inMemoryReviews = [...REFERENCE_REVIEWS];
+  inMemoryCustomReviews = [];
+  if (typeof window !== "undefined") {
+    try {
+      sessionStorage.removeItem(REVIEWS_STORAGE_KEY);
+    } catch {
+      // Ignore
+    }
+  }
 }

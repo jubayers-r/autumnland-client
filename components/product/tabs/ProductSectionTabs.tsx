@@ -96,11 +96,7 @@ export function ProductSectionTabs({
             tabIndex={0}
             className="outline-hidden"
           >
-            <ProductReviewsSection
-              productId={product.id}
-              productTitle={product.title}
-              initialTotalCount={451}
-            />
+            <ProductReviewsSection productId={product.id} productTitle={product.title} />
           </div>
         )}
 

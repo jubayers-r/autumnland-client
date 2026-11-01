@@ -18,7 +18,6 @@ import {
 interface ProductReviewsSectionProps {
   productId: string;
   productTitle: string;
-  initialTotalCount?: number;
 }
 
 const SORT_LABELS: Record<ReviewSortOption, string> = {
@@ -29,11 +28,7 @@ const SORT_LABELS: Record<ReviewSortOption, string> = {
   oldest: "Oldest",
 };
 
-export function ProductReviewsSection({
-  productId,
-  productTitle,
-  initialTotalCount = 451,
-}: ProductReviewsSectionProps) {
+export function ProductReviewsSection({ productId, productTitle }: ProductReviewsSectionProps) {
   // Filter & sorting states
   const [sortBy, setSortBy] = React.useState<ReviewSortOption>("latest");
   const [selectedRating, setSelectedRating] = React.useState<number | null>(null);
@@ -43,6 +38,7 @@ export function ProductReviewsSection({
   // Data states
   const [reviews, setReviews] = React.useState<Review[]>([]);
   const [filteredCount, setFilteredCount] = React.useState<number>(0);
+  const [totalCount, setTotalCount] = React.useState<number>(0);
   const [hasMore, setHasMore] = React.useState<boolean>(false);
   const [isLoading, setIsLoading] = React.useState<boolean>(true);
   const [isLoadingMore, setIsLoadingMore] = React.useState<boolean>(false);
@@ -72,6 +68,7 @@ export function ProductReviewsSection({
         if (!ignore) {
           setReviews(response.reviews);
           setFilteredCount(response.filteredCount);
+          setTotalCount(response.totalCount);
           setHasMore(response.hasMore);
           setPage(1);
           setIsLoading(false);
@@ -129,6 +126,7 @@ export function ProductReviewsSection({
     });
     setReviews(response.reviews);
     setFilteredCount(response.filteredCount);
+    setTotalCount(response.totalCount);
     setHasMore(response.hasMore);
     setPage(1);
   };
@@ -139,33 +137,56 @@ export function ProductReviewsSection({
     setSortBy("latest");
   };
 
-  // Display count: In reference, shows (451) for the t-shirt.
-  // When filters are active, display the filtered count.
-  const displayCount =
-    activeFilterCount > 0 ? filteredCount : Math.max(initialTotalCount, reviews.length);
+  // Display count: Reflects the real count from the underlying reviews array
+  // When filters are active, displays the filtered count.
+  const displayCount = activeFilterCount > 0 ? filteredCount : totalCount;
 
   return (
-    <div className="w-full select-none" data-reviews-section>
+    <div className="w-full" data-reviews-section>
       {/* Subheader: All Reviews (count) + Filters & Actions */}
-      <div className="flex items-center justify-between gap-3 sm:gap-4 flex-wrap pb-4 sm:pb-6">
-        {/* Left: Section Title & Count */}
-        <div className="flex items-baseline gap-1 sm:gap-2">
-          <h3 className="font-heading font-black text-xl sm:text-2xl lg:text-[26px] text-foreground tracking-tight">
-            All Reviews
-          </h3>
-          <span className="text-sm sm:text-base font-normal text-muted-foreground font-sans">
-            ({displayCount})
-          </span>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 pb-4 sm:pb-6">
+        {/* Top line on phone / Left title group on tablet/desktop */}
+        <div className="flex items-center justify-between w-full sm:w-auto gap-3">
+          <div className="flex items-baseline gap-1 sm:gap-2">
+            <h3 className="font-heading font-black text-xl sm:text-2xl lg:text-[26px] text-foreground tracking-tight">
+              All Reviews
+            </h3>
+            <span className="text-sm sm:text-base font-normal text-muted-foreground font-sans">
+              ({displayCount})
+            </span>
+          </div>
+
+          {/* Filter Icon Button on phone (aligned on the same row as title) */}
+          <div className="flex items-center gap-2 sm:hidden">
+            <button
+              type="button"
+              onClick={() => setIsFilterDialogOpen(true)}
+              className={cn(
+                "relative w-10 h-10 rounded-full flex items-center justify-center transition-colors",
+                "bg-[#F0F0F0] hover:bg-[#E6E6E6] dark:bg-muted dark:hover:bg-muted/80 text-foreground",
+                "focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
+              )}
+              aria-label="Filter reviews"
+              title="Filter reviews"
+            >
+              <SlidersHorizontal className="w-4 h-4" />
+              {activeFilterCount > 0 && (
+                <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-black text-white dark:bg-white dark:text-black text-[11px] font-bold flex items-center justify-center shadow-xs">
+                  {activeFilterCount}
+                </span>
+              )}
+            </button>
+          </div>
         </div>
 
-        {/* Right: Controls (Filter button, Sort dropdown, Write a Review button) */}
-        <div className="flex items-center gap-2 sm:gap-2.5 md:gap-3 shrink-0">
-          {/* Filter Icon Button */}
+        {/* Controls: Filter (sm+), Sort (sm+), Write a Review (full width on phone, auto on sm+) */}
+        <div className="flex items-center gap-2 sm:gap-2.5 md:gap-3 w-full sm:w-auto">
+          {/* Filter Icon Button (Tablet & Desktop) */}
           <button
             type="button"
             onClick={() => setIsFilterDialogOpen(true)}
             className={cn(
-              "relative w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center transition-colors",
+              "hidden sm:flex relative w-10 h-10 sm:w-12 sm:h-12 rounded-full items-center justify-center transition-colors shrink-0",
               "bg-[#F0F0F0] hover:bg-[#E6E6E6] dark:bg-muted dark:hover:bg-muted/80 text-foreground",
               "focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
             )}
@@ -180,7 +201,7 @@ export function ProductReviewsSection({
             )}
           </button>
 
-          {/* Sort By Dropdown (Desktop & Tablet) */}
+          {/* Sort By Dropdown (Tablet & Desktop) */}
           <div className="hidden sm:block">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -211,12 +232,12 @@ export function ProductReviewsSection({
             </DropdownMenu>
           </div>
 
-          {/* Write a Review Button */}
+          {/* Write a Review Button: Full width on phone, auto on tablet/desktop */}
           <button
             type="button"
             onClick={() => setIsWriteReviewOpen(true)}
             className={cn(
-              "h-10 sm:h-12 px-4 sm:px-6 rounded-full font-medium text-xs sm:text-sm md:text-base transition-colors shrink-0",
+              "w-full sm:w-auto h-11 sm:h-12 px-5 sm:px-6 rounded-full font-medium text-sm sm:text-base transition-colors shrink-0 flex items-center justify-center",
               "bg-black text-white hover:bg-black/85 dark:bg-white dark:text-black dark:hover:bg-white/85 shadow-xs",
               "focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
             )}
