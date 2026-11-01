@@ -75,7 +75,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <Header />
             <div className="flex-1 flex flex-col">{children}</div>
             <Footer />
-            <Toaster richColors position="top-right" />
+            <Toaster position="top-right" />
           </QueryProvider>
         </ThemeProvider>
       </body>

@@ -219,3 +219,24 @@
     object-position: right top;
   }
 }
+
+/* Sonner Toast Action Button Styling */
+[data-sonner-toast] [data-button] {
+  height: 36px !important;
+  min-height: 36px !important;
+  padding: 0 16px !important;
+  border-radius: 9999px !important;
+  font-weight: 600 !important;
+  font-size: 13px !important;
+  background-color: var(--foreground) !important;
+  color: var(--background) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: opacity 0.15s ease;
+}
+
+[data-sonner-toast] [data-button]:hover {
+  opacity: 0.85 !important;
+}
