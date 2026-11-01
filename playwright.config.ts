@@ -1,10 +1,10 @@
 import { defineConfig, devices } from "@playwright/test";
 
-const PORT = process.env.PORT || 5174;
+const PORT = process.env.PORT || 5173;
 
 /**
  * Playwright E2E configuration for Next.js 16 + Bun
- * Runs isolated against localhost:5174 with automatic webServer boot.
+ * Runs against localhost:5173 with automatic webServer reuse/boot.
  */
 export default defineConfig({
   testDir: "./tests/e2e",
