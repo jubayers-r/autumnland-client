@@ -4,6 +4,7 @@ import {
   ProductCard,
   ProductSection,
   TOP_SELLING,
+  YOU_MIGHT_ALSO_LIKE,
   type Product,
 } from "@/components/home";
 
@@ -13,10 +14,13 @@ describe("Product showcase components and datasets", () => {
     expect(ProductCard).toBeDefined();
     expect(NEW_ARRIVALS).toBeDefined();
     expect(TOP_SELLING).toBeDefined();
+    expect(YOU_MIGHT_ALSO_LIKE).toBeDefined();
     expect(Array.isArray(NEW_ARRIVALS)).toBe(true);
     expect(Array.isArray(TOP_SELLING)).toBe(true);
+    expect(Array.isArray(YOU_MIGHT_ALSO_LIKE)).toBe(true);
     expect(NEW_ARRIVALS.length).toBe(4);
     expect(TOP_SELLING.length).toBe(4);
+    expect(YOU_MIGHT_ALSO_LIKE.length).toBe(4);
   });
 
   it("contains all 4 products in New Arrivals from reference", () => {
@@ -81,13 +85,78 @@ describe("Product showcase components and datasets", () => {
     expect(fadedJeans.imageSrc).toBe("/assets/t-shirt/image 10-1.png");
   });
 
+  it("contains all 4 products in You Might Also Like matching design reference", () => {
+    const titles = YOU_MIGHT_ALSO_LIKE.map((p) => p.title);
+    expect(titles).toContain("Polo with Contrast Trims");
+    expect(titles).toContain("Gradient Graphic T-shirt");
+    expect(titles).toContain("Polo with Tipping Details");
+    expect(titles).toContain("Black Striped T-shirt");
+
+    const poloContrast = YOU_MIGHT_ALSO_LIKE.find((p) => p.id === "polo-contrast-trims")!;
+    expect(poloContrast.price).toBe(212);
+    expect(poloContrast.originalPrice).toBe(242);
+    expect(poloContrast.discount).toBe("-20%");
+    expect(poloContrast.rating).toBe(4.0);
+    expect(poloContrast.imageSrc).toBe("/assets/t-shirt/image 1.png");
+
+    const gradientTee = YOU_MIGHT_ALSO_LIKE.find((p) => p.id === "gradient-graphic-t-shirt")!;
+    expect(gradientTee.price).toBe(145);
+    expect(gradientTee.rating).toBe(3.5);
+    expect(gradientTee.imageSrc).toBe("/assets/t-shirt/image 2.png");
+
+    const poloTipping = YOU_MIGHT_ALSO_LIKE.find((p) => p.id === "polo-tipping-details")!;
+    expect(poloTipping.price).toBe(180);
+    expect(poloTipping.rating).toBe(4.5);
+    expect(poloTipping.imageSrc).toBe("/assets/t-shirt/image 3.png");
+
+    const blackStriped = YOU_MIGHT_ALSO_LIKE.find((p) => p.id === "black-striped-t-shirt")!;
+    expect(blackStriped.price).toBe(120);
+    expect(blackStriped.originalPrice).toBe(150);
+    expect(blackStriped.discount).toBe("-30%");
+    expect(blackStriped.rating).toBe(5.0);
+    expect(blackStriped.imageSrc).toBe("/assets/t-shirt/image 4.png");
+  });
+
   it("links each product to a valid shop detail route with accessible metadata", () => {
-    [...NEW_ARRIVALS, ...TOP_SELLING].forEach((p: Product) => {
+    [...NEW_ARRIVALS, ...TOP_SELLING, ...YOU_MIGHT_ALSO_LIKE].forEach((p: Product) => {
       expect(p.href).toMatch(/^\/shop\/product\/[a-z0-9-]+$/);
       expect(p.imageAlt.length).toBeGreaterThan(5);
       expect(p.rating).toBeGreaterThanOrEqual(1);
       expect(p.rating).toBeLessThanOrEqual(5);
       expect(p.price).toBeGreaterThan(0);
     });
+  });
+
+  it("provides comprehensive product details mock for each product including one-life-graphic-t-shirt", async () => {
+    const { getProductById, MOCK_PRODUCT_DETAILS } = await import("@/lib/products");
+
+    expect(MOCK_PRODUCT_DETAILS).toBeDefined();
+
+    // Verify all 12 products have valid detail entries
+    for (const p of [...NEW_ARRIVALS, ...TOP_SELLING, ...YOU_MIGHT_ALSO_LIKE]) {
+      const detail = await getProductById(p.id);
+      expect(detail).toBeDefined();
+      expect(detail).not.toBeNull();
+      expect(detail!.id).toBe(p.id);
+      expect(detail!.images.length).toBeGreaterThanOrEqual(1);
+      expect(detail!.colors.length).toBeGreaterThanOrEqual(1);
+      expect(detail!.sizes.length).toBeGreaterThanOrEqual(1);
+      expect(detail!.breadcrumbs.length).toBeGreaterThanOrEqual(2);
+      expect(detail!.description.length).toBeGreaterThan(10);
+    }
+
+    // Verify the reference demo product "one-life-graphic-t-shirt"
+    const oneLife = await getProductById("one-life-graphic-t-shirt");
+    expect(oneLife).not.toBeNull();
+    expect(oneLife!.title).toBe("ONE LIFE GRAPHIC T-SHIRT");
+    expect(oneLife!.price).toBe(260);
+    expect(oneLife!.originalPrice).toBe(300);
+    expect(oneLife!.discount).toBe("-40%");
+    expect(oneLife!.colors.length).toBe(3);
+    expect(oneLife!.sizes).toContain("Large");
+
+    // Verify non-existent product returns null
+    const nonExistent = await getProductById("unknown-product-xyz");
+    expect(nonExistent).toBeNull();
   });
 });

@@ -32,17 +32,17 @@ function AccordionTrigger({
       <AccordionPrimitive.Accordion.Trigger
         data-slot="accordion-trigger"
         className={cn(
-          "flex flex-1 items-start justify-between gap-4 rounded-md py-4 text-left text-sm font-medium transition-all outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 group-data-[state=open]:bg-secondary group-data-[state=open]:text-white",
+          "flex flex-1 items-center justify-between gap-4 py-4 text-left text-sm sm:text-base font-medium transition-colors outline-none focus-visible:ring-[3px] focus-visible:ring-ring focus-visible:rounded-md disabled:pointer-events-none disabled:opacity-50 cursor-pointer select-none text-foreground",
           className
         )}
         {...props}
       >
-        {children}
+        <span className="flex-1">{children}</span>
 
         {/* Icons that react to the parent .group[data-state] */}
-        <span className="relative w-7 h-7 shrink-0">
-          <PlusIcon className="absolute inset-0 h-7 w-7 group-data-[state=open]:hidden bg-primary text-white rounded-full p-1" />
-          <MinusIcon className="absolute inset-0 h-7 w-7 hidden group-data-[state=open]:block bg-primary text-white rounded-full p-1" />
+        <span className="relative w-7 h-7 shrink-0 flex items-center justify-center">
+          <PlusIcon className="absolute inset-0 h-7 w-7 group-data-[state=open]:hidden bg-primary text-primary-foreground rounded-full p-1.5 transition-transform" />
+          <MinusIcon className="absolute inset-0 h-7 w-7 hidden group-data-[state=open]:block bg-primary text-primary-foreground rounded-full p-1.5 transition-transform" />
         </span>
       </AccordionPrimitive.Accordion.Trigger>
     </AccordionPrimitive.Accordion.Header>
@@ -60,7 +60,7 @@ function AccordionContent({
       className="data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down overflow-hidden text-sm"
       {...props}
     >
-      <div className={cn("pt-0 pb-4", className)}>{children}</div>
+      <div className={cn("pt-0 pb-4 text-muted-foreground", className)}>{children}</div>
     </AccordionPrimitive.Accordion.Content>
   );
 }
