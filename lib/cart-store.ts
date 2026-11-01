@@ -7,6 +7,8 @@ export interface CartItem {
   title: string;
   imageSrc: string;
   price: number;
+  originalPrice?: number;
+  discount?: string;
   size: string;
   color: string;
   quantity: number;
@@ -147,14 +149,44 @@ export const useCartStore = create<CartState>()(
         set({ items: [], promoCode: "", discountPercentage: 0 });
       },
 
+      /**
+       * Subtotal before discounts:
+       * Sum of (item.originalPrice ?? item.price) * item.quantity.
+       */
       getSubtotal: () => {
-        return get().items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+        return get().items.reduce(
+          (sum, item) =>
+            sum +
+            (item.originalPrice && item.originalPrice > item.price
+              ? item.originalPrice
+              : item.price) *
+              item.quantity,
+          0
+        );
       },
 
+      /**
+       * Total discount savings:
+       * Product item savings (originalPrice - price) + promo code discount.
+       */
       getDiscountAmount: () => {
-        const subtotal = get().getSubtotal();
-        const discount = (subtotal * get().discountPercentage) / 100;
-        return Math.round(discount);
+        const items = get().items;
+        // 1. Savings from product item discounts
+        const itemDiscount = items.reduce(
+          (sum, item) =>
+            sum +
+            (item.originalPrice && item.originalPrice > item.price
+              ? item.originalPrice - item.price
+              : 0) *
+              item.quantity,
+          0
+        );
+
+        // 2. Savings from promo code applied to the current items sale price
+        const currentPriceSum = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+        const promoDiscount = Math.round((currentPriceSum * get().discountPercentage) / 100);
+
+        return itemDiscount + promoDiscount;
       },
 
       getTotal: () => {

@@ -30,6 +30,8 @@ export function ProductDetailOrder({ product }: ProductDetailOrderProps) {
       productId: product.id,
       title: product.title,
       price: product.price,
+      originalPrice: product.originalPrice,
+      discount: product.discount,
       imageSrc: product.images[0],
       size: selectedSize,
       color: selectedColor.name,

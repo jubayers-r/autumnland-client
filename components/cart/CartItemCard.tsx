@@ -70,7 +70,21 @@ export function CartItemCard({ item }: CartItemCardProps) {
 
         {/* Bottom: Price & Quantity Pill Counter */}
         <div className="flex items-center justify-between gap-2">
-          <span className="font-bold text-xl sm:text-2xl text-foreground font-sans">${price}</span>
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="font-bold text-xl sm:text-2xl text-foreground font-sans">
+              ${price}
+            </span>
+            {item.originalPrice && item.originalPrice > price && (
+              <span className="text-black/40 dark:text-white/40 line-through font-bold text-base sm:text-lg font-sans">
+                ${item.originalPrice}
+              </span>
+            )}
+            {item.discount && (
+              <span className="bg-[#FF3333]/10 text-[#FF3333] text-[10px] sm:text-xs font-medium px-2 py-0.5 rounded-full font-sans">
+                {item.discount}
+              </span>
+            )}
+          </div>
 
           {/* Quantity selector pill */}
           <div className="bg-[#F0F0F0] dark:bg-[#262626] rounded-full h-[36px] sm:h-[44px] flex items-center justify-between px-3 sm:px-4 gap-3 sm:gap-4 shrink-0 transition-colors">

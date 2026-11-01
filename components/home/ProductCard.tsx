@@ -30,6 +30,8 @@ export function ProductCard({ product, className, priority = false }: ProductCar
       productId: id,
       title,
       price,
+      originalPrice,
+      discount,
       imageSrc,
       size: "Large",
       color: "Standard",

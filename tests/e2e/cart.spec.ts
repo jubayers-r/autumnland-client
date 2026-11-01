@@ -98,6 +98,12 @@ test.describe("Shopping Cart Flow & Responsiveness", () => {
     // Refresh page to verify persistence in localStorage
     await page.reload();
     await expect(page.getByRole("heading", { name: /One Life Graphic T-shirt/i })).toBeVisible();
+
+    // Verify product discount total is calculated and displayed in Order Summary
+    const summary = page.getByRole("region", { name: "Order summary" });
+    await expect(summary.getByText("$300")).toBeVisible();
+    await expect(summary.getByText("-$40")).toBeVisible();
+    await expect(summary.getByText("$275")).toBeVisible();
   });
 
   test("updates item quantity and recalculates totals", async ({ page }) => {

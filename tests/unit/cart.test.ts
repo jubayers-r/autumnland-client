@@ -148,4 +148,27 @@ describe("useCartStore", () => {
     expect(useCartStore.getState().getSubtotal()).toBe(0);
     expect(useCartStore.getState().getTotal()).toBe(0);
   });
+
+  it("calculates product item discounts and total savings accurately", () => {
+    const store = useCartStore.getState();
+    store.addItem({
+      productId: "one-life-graphic-t-shirt",
+      title: "One Life Graphic T-shirt",
+      imageSrc: "/assets/t-shirt/one-life-main.png",
+      price: 260,
+      originalPrice: 300,
+      discount: "-40%",
+      size: "Large",
+      color: "Olive Brown",
+      quantity: 1,
+    });
+
+    const state = useCartStore.getState();
+    // Subtotal before discount: 300
+    expect(state.getSubtotal()).toBe(300);
+    // Product discount: 300 - 260 = 40
+    expect(state.getDiscountAmount()).toBe(40);
+    // Total: 300 - 40 + 15 = 275
+    expect(state.getTotal()).toBe(275);
+  });
 });
