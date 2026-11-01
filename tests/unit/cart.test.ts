@@ -173,12 +173,43 @@ describe("useCartStore", () => {
     });
 
     const state = useCartStore.getState();
-    // Subtotal before discount: 300
-    expect(state.getSubtotal()).toBe(300);
-    // Product discount: 300 - 260 = 40
-    expect(state.getDiscountAmount()).toBe(40);
-    // Total: 300 - 40 + 15 = 275
+    // Subtotal is item price (260)
+    expect(state.getSubtotal()).toBe(260);
+    // Without promo code, order discount is 0
+    expect(state.getDiscountAmount()).toBe(0);
+    // Total: 260 + 15 = 275
     expect(state.getTotal()).toBe(275);
+
+    // When TEST fixed $10 promo is applied, exactly $10 is discounted from total
+    store.applyPromo("TEST");
+    expect(useCartStore.getState().getDiscountAmount()).toBe(10);
+    expect(useCartStore.getState().getTotal()).toBe(265);
+  });
+
+  it("applies fixed $10 promo discount once to the order regardless of item count (never per item)", () => {
+    useCartStore.setState({
+      items: [...REFERENCE_CART_ITEMS], // 3 products
+      selectedItemIds: null,
+    });
+    const store = useCartStore.getState();
+    expect(store.items.length).toBe(3);
+
+    // Apply fixed TEST promo code
+    store.applyPromo("TEST");
+    const state = useCartStore.getState();
+    // Subtotal of 3 items: 145 + 180 + 240 = 565
+    expect(state.getSubtotal()).toBe(565);
+    // Discount is strictly $10 once for the whole order, NOT 3 * 10 = $30
+    expect(state.getDiscountAmount()).toBe(10);
+    // Total: 565 - 10 + 15 = 570
+    expect(state.getTotal()).toBe(570);
+
+    // Even if 2 items are selected, discount remains exactly $10
+    store.toggleSelectItem(REFERENCE_CART_ITEMS[0].id);
+    expect(useCartStore.getState().getSelectedItems().length).toBe(2);
+    expect(useCartStore.getState().getSubtotal()).toBe(420);
+    expect(useCartStore.getState().getDiscountAmount()).toBe(10);
+    expect(useCartStore.getState().getTotal()).toBe(425);
   });
 
   it("handles item selection, deselect all zeroes total, and removes selected items", () => {

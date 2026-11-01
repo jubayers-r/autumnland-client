@@ -36,9 +36,6 @@ export function OrderSummary() {
   const discount = getDiscountAmount();
   const total = getTotal();
 
-  const effectivePercentage =
-    subtotal > 0 && discount > 0 ? Math.round((discount / subtotal) * 100) : discountPercentage;
-
   const handleApplyPromo = async (e: React.FormEvent) => {
     e.preventDefault();
     const cleanCode = promoInput.trim().toUpperCase();
@@ -132,8 +129,8 @@ export function OrderSummary() {
             Discount
             {promoCode === "TEST" || fixedDiscount > 0
               ? " (TEST -$10)"
-              : effectivePercentage > 0
-                ? ` (-${effectivePercentage}%)`
+              : discountPercentage > 0
+                ? ` (-${discountPercentage}%)`
                 : ""}
           </span>
           <span className="font-bold text-[#FF3333] font-sans">

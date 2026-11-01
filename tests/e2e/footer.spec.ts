@@ -99,10 +99,10 @@ test.describe("Footer & Newsletter Section", () => {
     await expect(page.getByTitle("Google Pay")).toBeVisible();
   });
 
-  test("hides footer and newsletter on mobile screen while keeping it visible on desktop", async ({
+  test("hides footer and newsletter on mobile and tablet screens while keeping it visible on desktop", async ({
     page,
   }) => {
-    // Mobile Viewport (375x812) - Footer and newsletter are hidden
+    // 1. Mobile Viewport (375x812) - Footer and newsletter are hidden
     await page.setViewportSize({ width: 375, height: 812 });
     await page.goto("/");
 
@@ -114,12 +114,13 @@ test.describe("Footer & Newsletter Section", () => {
     });
     await expect(newsletterHeading).toBeHidden();
 
-    // Capture mobile full-page screenshot
-    await page.screenshot({ path: "test-results/mobile-footer.png", fullPage: true });
+    // 2. Tablet Viewport (768x1024, iPad / tablet) - Footer and newsletter are hidden
+    await page.setViewportSize({ width: 768, height: 1024 });
+    await expect(footer).toBeHidden();
+    await expect(newsletterHeading).toBeHidden();
 
-    // Desktop Viewport (1280x800) - Footer and newsletter are visible
+    // 3. Desktop Viewport (1280x800) - Footer and newsletter are visible
     await page.setViewportSize({ width: 1280, height: 800 });
-    await page.goto("/");
     await expect(footer).toBeVisible();
     await expect(newsletterHeading).toBeVisible();
     await page.screenshot({ path: "test-results/desktop-footer.png", fullPage: true });

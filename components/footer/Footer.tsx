@@ -45,8 +45,8 @@ export function Footer({ className, showNewsletter = true }: FooterProps) {
     <footer
       aria-label="Site Footer"
       className={cn(
-        "hidden md:block w-full relative text-foreground transition-colors",
-        showNewsletter ? "mt-24 sm:mt-32 lg:mt-36" : "mt-12 sm:mt-16",
+        "hidden lg:block w-full relative text-foreground transition-colors",
+        showNewsletter ? "mt-8 lg:mt-10" : "mt-8 lg:mt-10",
         className
       )}
     >
@@ -54,7 +54,7 @@ export function Footer({ className, showNewsletter = true }: FooterProps) {
       <div
         className={cn(
           "absolute inset-x-0 bottom-0 bg-[#F0F0F0] dark:bg-card -z-10",
-          showNewsletter ? "top-36 sm:top-32 lg:top-24" : "top-0"
+          showNewsletter ? "top-20 lg:top-24" : "top-0"
         )}
       />
 

@@ -241,47 +241,38 @@ export const useCartStore = create<CartState>()(
       },
 
       /**
-       * Subtotal before discounts of selected items:
-       * Sum of (item.originalPrice ?? item.price) * item.quantity.
+       * Subtotal of selected items:
+       * Sum of item.price * item.quantity.
        */
       getSubtotal: () => {
         const selected = get().getSelectedItems();
-        return selected.reduce(
-          (sum, item) =>
-            sum +
-            (item.originalPrice && item.originalPrice > item.price
-              ? item.originalPrice
-              : item.price) *
-              item.quantity,
-          0
-        );
+        return selected.reduce((sum, item) => sum + item.price * item.quantity, 0);
       },
 
       /**
-       * Total discount savings of selected items:
-       * Product item savings (originalPrice - price) + promo code discount on selected items.
+       * Promotional discount amount:
+       * - Fixed promo (e.g. TEST = $10 flat off the entire order)
+       * - Percentage promo (e.g. AUTUMN20 = 20% off selected items subtotal)
+       * Fixed discount is applied ONCE per order, never multiplied per item.
        */
       getDiscountAmount: () => {
         const selected = get().getSelectedItems();
         if (selected.length === 0) return 0;
 
-        // 1. Savings from product item discounts
-        const itemDiscount = selected.reduce(
-          (sum, item) =>
-            sum +
-            (item.originalPrice && item.originalPrice > item.price
-              ? item.originalPrice - item.price
-              : 0) *
-              item.quantity,
-          0
-        );
+        const subtotal = get().getSubtotal();
+        if (subtotal === 0) return 0;
 
-        // 2. Savings from promo code applied to the current items sale price
-        const currentPriceSum = selected.reduce((sum, item) => sum + item.price * item.quantity, 0);
-        const promoDiscount = Math.round((currentPriceSum * get().discountPercentage) / 100);
+        // 1. Percentage discount from promo code (e.g. 20% off order)
+        const promoDiscount =
+          get().discountPercentage > 0
+            ? Math.round((subtotal * get().discountPercentage) / 100)
+            : 0;
+
+        // 2. Fixed order discount from promo code (e.g. TEST = $10 flat off entire order)
         const fixedDiscount = get().fixedDiscount ?? 0;
 
-        return itemDiscount + promoDiscount + fixedDiscount;
+        // Total order discount is capped at subtotal so total never goes negative
+        return Math.min(subtotal, promoDiscount + fixedDiscount);
       },
 
       getTotal: () => {
