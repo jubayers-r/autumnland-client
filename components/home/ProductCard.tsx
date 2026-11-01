@@ -38,7 +38,9 @@ export function ProductCard({ product, className, priority = false }: ProductCar
       quantity: 1,
     });
 
+    toast.dismiss();
     toast.success("Added to Cart!", {
+      id: "cart-toast",
       description: `${title} × 1`,
       action: {
         label: "View Cart",

@@ -37,7 +37,9 @@ export function ProductDetailOrder({ product }: ProductDetailOrderProps) {
       color: selectedColor.name,
       quantity,
     });
+    toast.dismiss();
     toast.success("Added to Cart!", {
+      id: "cart-toast",
       description: `${title} (${selectedSize}, ${selectedColor.name}) × ${quantity}`,
       action: {
         label: "View Cart",
