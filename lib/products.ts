@@ -1,4 +1,5 @@
 import type { ProductDetail } from "@/types/product";
+import { CATALOG_PRODUCTS } from "./catalog-data";
 
 export const MOCK_PRODUCT_DETAILS: Record<string, ProductDetail> = {
   "one-life-graphic-t-shirt": {
@@ -353,5 +354,36 @@ export const MOCK_PRODUCT_DETAILS: Record<string, ProductDetail> = {
  */
 export async function getProductById(id: string): Promise<ProductDetail | null> {
   // Simulating async behavior identical to backend API call
-  return MOCK_PRODUCT_DETAILS[id] ?? null;
+  if (MOCK_PRODUCT_DETAILS[id]) {
+    return MOCK_PRODUCT_DETAILS[id];
+  }
+
+  const catalogItem = CATALOG_PRODUCTS.find((p) => p.id === id);
+  if (catalogItem) {
+    return {
+      id: catalogItem.id,
+      title: catalogItem.title.toUpperCase(),
+      category: catalogItem.category,
+      rating: catalogItem.rating,
+      ratingCount: catalogItem.ratingCount ?? 30,
+      price: catalogItem.price,
+      originalPrice: catalogItem.originalPrice,
+      discount: catalogItem.discount,
+      description: `${catalogItem.title} - High quality garment tailored with premium fabrics for unmatched comfort and effortless modern style.`,
+      colors: catalogItem.colors.map((c) => ({ name: c, hex: "#1A1A1A" })),
+      sizes: catalogItem.sizes,
+      images: [catalogItem.imageSrc, catalogItem.imageSrc],
+      breadcrumbs: [
+        { label: "Home", href: "/" },
+        { label: "Shop", href: "/shop" },
+        {
+          label: catalogItem.dressStyle,
+          href: `/shop?category=${catalogItem.dressStyle.toLowerCase()}`,
+        },
+        { label: catalogItem.title },
+      ],
+    };
+  }
+
+  return null;
 }
