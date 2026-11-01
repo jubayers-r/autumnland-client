@@ -1,13 +1,7 @@
-import * as React from "react";
-import type { Metadata } from "next";
-import Link from "next/link";
-import { notFound } from "next/navigation";
-import { ChevronRight } from "lucide-react";
-import { getProductById, MOCK_PRODUCT_DETAILS } from "@/lib/products";
+import { ProductSection, TOP_SELLING, YOU_MIGHT_ALSO_LIKE } from "@/components/home";
+import { ProductSectionTabs } from "@/components/product";
 import { ProductDetailGallery } from "@/components/product/ProductDetailGallery";
 import { ProductDetailOrder } from "@/components/product/ProductDetailOrder";
-import { ProductSectionTabs } from "@/components/product";
-import { ProductSection, TOP_SELLING, YOU_MIGHT_ALSO_LIKE } from "@/components/home";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -16,6 +10,12 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { getProductById, MOCK_PRODUCT_DETAILS } from "@/lib/products";
+import { ChevronRight } from "lucide-react";
+import type { Metadata } from "next";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import * as React from "react";
 
 interface ProductPageProps {
   params: Promise<{ id: string }>;

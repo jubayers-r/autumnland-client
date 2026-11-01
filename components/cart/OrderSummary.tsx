@@ -5,7 +5,14 @@ import { ArrowRight, Tag } from "lucide-react";
 import { toast } from "sonner";
 import { useCartStore } from "@/lib/cart-store";
 
+const emptySubscribe = () => () => {};
+
 export function OrderSummary() {
+  const mounted = React.useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false
+  );
   const getSubtotal = useCartStore((state) => state.getSubtotal);
   const getDiscountAmount = useCartStore((state) => state.getDiscountAmount);
   const getTotal = useCartStore((state) => state.getTotal);
@@ -49,12 +56,21 @@ export function OrderSummary() {
     });
   };
 
+  if (!mounted) {
+    return (
+      <div
+        data-order-summary
+        className="bg-card rounded-[20px] border border-black/10 dark:border-white/10 p-5 sm:p-6 lg:p-7 min-h-[350px] animate-pulse"
+      />
+    );
+  }
+
   return (
     <div
       data-order-summary
       role="region"
       aria-label="Order summary"
-      className="bg-card rounded-[20px] border border-black/10 dark:border-white/10 p-5 sm:p-6 lg:p-7 flex flex-col select-none"
+      className="bg-card rounded-[20px] border border-black/10 dark:border-white/10 p-5 sm:p-6 lg:p-7 flex flex-col"
     >
       <h2 className="font-bold text-xl sm:text-2xl text-foreground font-sans mb-5 sm:mb-6">
         Order Summary

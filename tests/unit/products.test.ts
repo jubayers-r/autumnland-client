@@ -1,4 +1,3 @@
-import { describe, expect, it } from "bun:test";
 import {
   NEW_ARRIVALS,
   ProductCard,
@@ -7,6 +6,7 @@ import {
   YOU_MIGHT_ALSO_LIKE,
   type Product,
 } from "@/components/home";
+import { describe, expect, it } from "bun:test";
 
 describe("Product showcase components and datasets", () => {
   it("exports all product components and datasets", () => {

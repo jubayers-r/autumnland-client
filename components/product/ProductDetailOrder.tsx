@@ -1,17 +1,19 @@
 "use client";
 
-import * as React from "react";
-import { Check, Minus, Plus } from "lucide-react";
-import { toast } from "sonner";
-import { cn } from "@/lib/utils";
 import { useCartStore } from "@/lib/cart-store";
+import { cn } from "@/lib/utils";
 import type { ProductDetail } from "@/types/product";
+import { Check, Minus, Plus } from "lucide-react";
+import { useRouter } from "next/navigation";
+import * as React from "react";
+import { toast } from "sonner";
 
 interface ProductDetailOrderProps {
   product: ProductDetail;
 }
 
 export function ProductDetailOrder({ product }: ProductDetailOrderProps) {
+  const router = useRouter();
   const { title, rating, price, originalPrice, discount, description, colors, sizes } = product;
 
   const [selectedColor, setSelectedColor] = React.useState(colors[0]);
@@ -35,6 +37,10 @@ export function ProductDetailOrder({ product }: ProductDetailOrderProps) {
     });
     toast.success("Added to Cart!", {
       description: `${title} (${selectedSize}, ${selectedColor.name}) × ${quantity}`,
+      action: {
+        label: "View Cart",
+        onClick: () => router.push("/cart"),
+      },
     });
   };
 

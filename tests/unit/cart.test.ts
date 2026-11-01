@@ -1,18 +1,32 @@
 import { describe, expect, it, beforeEach } from "bun:test";
-import { useCartStore, INITIAL_CART_ITEMS } from "@/lib/cart-store";
+import { useCartStore, INITIAL_CART_ITEMS, REFERENCE_CART_ITEMS } from "@/lib/cart-store";
 
 describe("useCartStore", () => {
   beforeEach(() => {
-    // Reset cart to initial default items
+    // Reset cart to realistic empty state before each test
     useCartStore.setState({
-      items: [...INITIAL_CART_ITEMS],
-      promoCode: "AUTUMN20",
-      discountPercentage: 20,
+      items: [],
+      promoCode: "",
+      discountPercentage: 0,
       deliveryFee: 15,
     });
   });
 
-  it("initializes with reference items matching the design", () => {
+  it("initializes with empty items array by default for realistic flow", () => {
+    expect(INITIAL_CART_ITEMS.length).toBe(0);
+    const state = useCartStore.getState();
+    expect(state.items.length).toBe(0);
+    expect(state.getSubtotal()).toBe(0);
+    expect(state.getDiscountAmount()).toBe(0);
+    expect(state.getTotal()).toBe(0);
+  });
+
+  it("calculates totals correctly when populated with reference items", () => {
+    useCartStore.setState({
+      items: [...REFERENCE_CART_ITEMS],
+      promoCode: "AUTUMN20",
+      discountPercentage: 20,
+    });
     const state = useCartStore.getState();
     expect(state.items.length).toBe(3);
 
@@ -27,6 +41,9 @@ describe("useCartStore", () => {
   });
 
   it("increments and decrements item quantity", () => {
+    useCartStore.setState({
+      items: [...REFERENCE_CART_ITEMS],
+    });
     const store = useCartStore.getState();
     const firstItemId = store.items[0].id;
 
@@ -38,6 +55,9 @@ describe("useCartStore", () => {
   });
 
   it("removes an item from the cart", () => {
+    useCartStore.setState({
+      items: [...REFERENCE_CART_ITEMS],
+    });
     const store = useCartStore.getState();
     const initialCount = store.items.length;
     const itemToRemove = store.items[0].id;
@@ -60,7 +80,7 @@ describe("useCartStore", () => {
     });
 
     const items = useCartStore.getState().items;
-    expect(items.length).toBe(4);
+    expect(items.length).toBe(1);
     const added = items.find((i) => i.productId === "t-shirt-tape-details");
     expect(added).toBeDefined();
     expect(added?.price).toBe(120);
@@ -75,16 +95,29 @@ describe("useCartStore", () => {
       price: 145,
       size: "Large",
       color: "White",
+      quantity: 1,
+    });
+
+    store.addItem({
+      productId: "gradient-graphic-t-shirt",
+      title: "Gradient Graphic T-shirt",
+      imageSrc: "/assets/t-shirt/image 2.png",
+      price: 145,
+      size: "Large",
+      color: "White",
       quantity: 2,
     });
 
     const items = useCartStore.getState().items;
-    expect(items.length).toBe(3); // Same number of unique items
+    expect(items.length).toBe(1); // Same unique SKU
     const item = items.find((i) => i.productId === "gradient-graphic-t-shirt");
-    expect(item?.quantity).toBe(3); // 1 initial + 2 added
+    expect(item?.quantity).toBe(3); // 1 + 2
   });
 
   it("applies promotional discount codes correctly", () => {
+    useCartStore.setState({
+      items: [...REFERENCE_CART_ITEMS],
+    });
     const store = useCartStore.getState();
 
     // Valid code: VIP30 gives 30%
@@ -101,10 +134,17 @@ describe("useCartStore", () => {
   });
 
   it("clears cart and returns zero for total", () => {
+    useCartStore.setState({
+      items: [...REFERENCE_CART_ITEMS],
+      promoCode: "AUTUMN20",
+      discountPercentage: 20,
+    });
     const store = useCartStore.getState();
     store.clearCart();
 
     expect(useCartStore.getState().items.length).toBe(0);
+    expect(useCartStore.getState().promoCode).toBe("");
+    expect(useCartStore.getState().discountPercentage).toBe(0);
     expect(useCartStore.getState().getSubtotal()).toBe(0);
     expect(useCartStore.getState().getTotal()).toBe(0);
   });

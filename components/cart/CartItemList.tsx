@@ -6,8 +6,23 @@ import { ShoppingBag } from "lucide-react";
 import { useCartStore } from "@/lib/cart-store";
 import { CartItemCard } from "./CartItemCard";
 
+const emptySubscribe = () => () => {};
+
 export function CartItemList() {
   const items = useCartStore((state) => state.items);
+  const mounted = React.useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false
+  );
+
+  if (!mounted) {
+    return (
+      <div className="bg-card rounded-[20px] border border-black/10 dark:border-white/10 p-8 sm:p-12 min-h-[280px] flex items-center justify-center animate-pulse">
+        <div className="w-8 h-8 rounded-full border-2 border-foreground/20 border-t-foreground animate-spin" />
+      </div>
+    );
+  }
 
   if (items.length === 0) {
     return (

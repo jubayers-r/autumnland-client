@@ -147,4 +147,37 @@ test.describe("Landing Page Hero & Brand Banner", () => {
     const viewAllButtons = page.getByRole("link", { name: "View All" });
     await expect(viewAllButtons).toHaveCount(2);
   });
+
+  test("shows quick Add to Cart button on product card hover and triggers cart addition", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto("/");
+
+    const firstCard = page.locator("#new-arrivals [data-product-card]").first();
+    await firstCard.scrollIntoViewIfNeeded();
+
+    // Hover over product card
+    await firstCard.hover();
+
+    // Verify Add to Cart button is visible
+    const addToCartBtn = firstCard.getByRole("button", { name: /Add.*to cart/i });
+    await expect(addToCartBtn).toBeVisible();
+
+    // Click Add to Cart
+    await addToCartBtn.click();
+
+    // Verify Sonner toast with View Cart action button
+    const toast = page.locator("[data-sonner-toast]").first();
+    await expect(toast).toBeVisible();
+    await expect(toast.getByText("Added to Cart!")).toBeVisible();
+    const viewCartBtn = toast.getByRole("button", { name: "View Cart" });
+    await expect(viewCartBtn).toBeVisible();
+
+    // Click View Cart navigates to /cart and item is present
+    await viewCartBtn.click();
+    await expect(page).toHaveURL("/cart");
+    await expect(page.getByRole("heading", { name: "YOUR CART" })).toBeVisible();
+    await expect(page.locator("[data-cart-item]").first()).toBeVisible();
+  });
 });
