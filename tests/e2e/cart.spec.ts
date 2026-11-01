@@ -361,4 +361,71 @@ test.describe("Shopping Cart Flow & Responsiveness", () => {
     await expect(summary.getByText("-$10", { exact: true })).toBeVisible();
     await expect(summary.getByText("$150")).toBeVisible();
   });
+
+  test("renders Select All toggle and shows amber warning when 0 items are selected", async ({
+    page,
+  }) => {
+    await page.addInitScript(
+      (state) => {
+        window.localStorage.setItem("autumnland_cart_storage", JSON.stringify(state));
+      },
+      {
+        state: {
+          items: [
+            {
+              id: "gradient-graphic-t-shirt-large-white",
+              productId: "gradient-graphic-t-shirt",
+              title: "Gradient Graphic T-shirt",
+              imageSrc: "/assets/t-shirt/image 2.png",
+              price: 145,
+              size: "Large",
+              color: "White",
+              quantity: 1,
+            },
+            {
+              id: "skinny-fit-jeans-large-blue",
+              productId: "skinny-fit-jeans",
+              title: "Skinny Fit Jeans",
+              imageSrc: "/assets/t-shirt/image 8.png",
+              price: 240,
+              size: "Large",
+              color: "Blue",
+              quantity: 1,
+            },
+          ],
+          selectedItemIds: null,
+          promoCode: "",
+          discountPercentage: 0,
+          fixedDiscount: 0,
+        },
+        version: 0,
+      }
+    );
+
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto("/cart");
+
+    // Initially 2/2 selected
+    const selectAllBtn = page.getByRole("checkbox", { name: "Select all items in cart" });
+    await expect(selectAllBtn).toBeVisible();
+    await expect(page.getByText("Select All ( 2/2 Items )")).toBeVisible();
+
+    // No warning banner initially
+    const warning = page.locator("[data-cart-warning]");
+    await expect(warning).not.toBeVisible();
+
+    // Click Select All -> Deselects all items (0/2)
+    await selectAllBtn.click();
+    await expect(page.getByText("Select All ( 0/2 Items )")).toBeVisible();
+
+    // Amber warning banner must appear with exact title and description
+    await expect(warning).toBeVisible();
+    await expect(warning.getByText("No items selected")).toBeVisible();
+    await expect(warning.getByText("Select at least one item to checkout")).toBeVisible();
+
+    // Click Select All again -> Reselects all items (2/2)
+    await selectAllBtn.click();
+    await expect(page.getByText("Select All ( 2/2 Items )")).toBeVisible();
+    await expect(warning).not.toBeVisible();
+  });
 });

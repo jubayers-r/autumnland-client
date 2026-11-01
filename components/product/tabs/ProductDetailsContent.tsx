@@ -1,48 +1,17 @@
 import * as React from "react";
-import { Check, ShieldCheck, Sparkles, Feather, RefreshCw } from "lucide-react";
+import { Check } from "lucide-react";
 import type { ProductDetail } from "@/types/product";
+import { getProductSpecs } from "@/lib/product-specs";
 
 interface ProductDetailsContentProps {
   product: ProductDetail;
 }
 
 export function ProductDetailsContent({ product }: ProductDetailsContentProps) {
-  const specs = [
-    { label: "Material Composition", value: "100% Combed Heavyweight Organic Cotton" },
-    { label: "Fabric Density", value: "240 GSM (Substantial, non-sheer luxury drape)" },
-    { label: "Fit Profile", value: "Relaxed contemporary fit with drop shoulder geometry" },
-    { label: "Collar & Hem", value: "1x1 ribbed crew collar with double-needle topstitching" },
-    {
-      label: "Graphic Print Technique",
-      value: "Eco-friendly high-density water-based screen print",
-    },
-    { label: "Pre-Treatment", value: "Pre-shrunk and silicone washed for ultra-soft hand feel" },
-    { label: "Origin", value: "Ethically spun and constructed in Porto, Portugal" },
-  ];
-
-  const highlights = [
-    {
-      icon: Feather,
-      title: "Breathable & Soft",
-      description: "Premium long-staple cotton ensures supreme airflow and all-day skin comfort.",
-    },
-    {
-      icon: ShieldCheck,
-      title: "Shape Retention",
-      description:
-        "Ribbed neckline reinforced with elastane to prevent sagging after repeated wash cycles.",
-    },
-    {
-      icon: Sparkles,
-      title: "Color Vibrancy",
-      description: "Reactive dye methods resist fading, maintaining deep contrast wear after wear.",
-    },
-    {
-      icon: RefreshCw,
-      title: "Sustainable Craft",
-      description: "OEKO-TEX® Standard 100 certified non-toxic inks and zero hazardous chemicals.",
-    },
-  ];
+  const { specs, highlights } = React.useMemo(
+    () => getProductSpecs(product.id, product.category, product.title),
+    [product.id, product.category, product.title]
+  );
 
   return (
     <div className="w-full flex flex-col gap-8 sm:gap-10 lg:gap-12" data-product-details-tab>

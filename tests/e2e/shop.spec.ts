@@ -265,7 +265,12 @@ test.describe("Shop & Category Catalog Page", () => {
     const casualBtn = filtersSidebar.getByRole("button", { name: "Casual" });
     const formalBtn = filtersSidebar.getByRole("button", { name: "Formal" });
 
-    // Casual is initially selected
+    // Initially no dress style is selected on /shop
+    await expect(casualBtn).not.toHaveClass(/font-bold/);
+    await expect(formalBtn).not.toHaveClass(/font-bold/);
+
+    // Click Casual
+    await casualBtn.click();
     await expect(casualBtn).toHaveClass(/font-bold/);
 
     // Click Formal

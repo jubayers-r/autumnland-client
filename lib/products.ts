@@ -378,7 +378,7 @@ export async function getProductById(id: string): Promise<ProductDetail | null> 
         { label: "Shop", href: "/shop" },
         {
           label: catalogItem.dressStyle,
-          href: `/shop?category=${catalogItem.dressStyle.toLowerCase()}`,
+          href: `/shop?dressStyle=${catalogItem.dressStyle}`,
         },
         { label: catalogItem.title },
       ],

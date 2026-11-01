@@ -134,4 +134,53 @@ describe("Product reviews and tabs system", () => {
     expect(res.reviews[0].author).toBe("Test User");
     expect(res.reviews[0].comment).toContain("Incredible craftsmanship");
   });
+
+  it("isolates reviews strictly per product and attaches new reviews only to that product", async () => {
+    // 1. Fetch reviews for skinny-fit-jeans and verify they belong ONLY to skinny-fit-jeans
+    const jeansReviews = await fetchProductReviews({
+      productId: "skinny-fit-jeans",
+    });
+    expect(jeansReviews.reviews.length).toBeGreaterThan(0);
+    expect(jeansReviews.reviews.every((r) => r.productId === "skinny-fit-jeans")).toBe(true);
+
+    // 2. Fetch reviews for checkered-shirt and verify they belong ONLY to checkered-shirt
+    const shirtReviews = await fetchProductReviews({
+      productId: "checkered-shirt",
+    });
+    expect(shirtReviews.reviews.length).toBeGreaterThan(0);
+    expect(shirtReviews.reviews.every((r) => r.productId === "checkered-shirt")).toBe(true);
+
+    // 3. Ensure no overlap between jeans and shirt reviews
+    const jeansIds = new Set(jeansReviews.reviews.map((r) => r.id));
+    expect(shirtReviews.reviews.some((r) => jeansIds.has(r.id))).toBe(false);
+
+    // 4. Submit a review specifically for skinny-fit-jeans
+    await submitProductReview({
+      productId: "skinny-fit-jeans",
+      author: "Denim Fanatic",
+      rating: 5,
+      comment: "Best taper in the game!",
+      isVerified: true,
+    });
+
+    // 5. Verify the new review appears on skinny-fit-jeans
+    const updatedJeans = await fetchProductReviews({
+      productId: "skinny-fit-jeans",
+      sortBy: "latest",
+    });
+    expect(updatedJeans.reviews[0].author).toBe("Denim Fanatic");
+
+    // 6. Verify the new review does NOT appear on one-life-graphic-t-shirt or checkered-shirt
+    const oneLifeRes = await fetchProductReviews({
+      productId: "one-life-graphic-t-shirt",
+      sortBy: "latest",
+    });
+    expect(oneLifeRes.reviews.some((r) => r.author === "Denim Fanatic")).toBe(false);
+
+    const shirtRes = await fetchProductReviews({
+      productId: "checkered-shirt",
+      sortBy: "latest",
+    });
+    expect(shirtRes.reviews.some((r) => r.author === "Denim Fanatic")).toBe(false);
+  });
 });

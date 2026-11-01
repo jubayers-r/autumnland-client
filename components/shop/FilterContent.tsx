@@ -27,6 +27,7 @@ export interface FilterState {
   sizes: string[];
   dressStyle?: string | null;
   dressStyles: string[];
+  onSaleOnly?: boolean;
 }
 
 interface FilterContentProps {
@@ -61,8 +62,8 @@ export function FilterContent({
     (filters.brands && filters.brands.length > 0) ||
     filters.colors.length > 0 ||
     filters.sizes.length > 0 ||
-    (filters.dressStyles.length > 0 &&
-      (filters.dressStyles.length > 1 || !filters.dressStyles.includes("Casual"))) ||
+    filters.dressStyles.length > 0 ||
+    Boolean(filters.onSaleOnly) ||
     filters.minPrice !== null ||
     filters.maxPrice !== null;
 
@@ -408,7 +409,36 @@ export function FilterContent({
       {/* Divider */}
       <hr className="border-t border-black/10 dark:border-white/10 my-5" />
 
-      {/* 6. Action Button: Apply Filter & Optional Reset */}
+      {/* 6. On Sale Filter Toggle */}
+      <div>
+        <button
+          type="button"
+          onClick={() => onFilterChange({ onSaleOnly: !filters.onSaleOnly })}
+          className={cn(
+            "flex items-center justify-between w-full text-left py-1 cursor-pointer group transition-colors",
+            filters.onSaleOnly
+              ? "font-bold text-foreground"
+              : "text-black/60 dark:text-white/60 hover:text-foreground"
+          )}
+        >
+          <div className="flex items-center gap-2">
+            <span className="text-xl font-bold font-sans">On Sale</span>
+            <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-red-100 text-red-600 dark:bg-red-950/60 dark:text-red-400">
+              % Deals
+            </span>
+          </div>
+          {filters.onSaleOnly && (
+            <span className="w-5 h-5 rounded-full bg-black text-white dark:bg-white dark:text-black flex items-center justify-center shrink-0 shadow-2xs">
+              <Check className="w-3 h-3 stroke-[3]" />
+            </span>
+          )}
+        </button>
+      </div>
+
+      {/* Divider */}
+      <hr className="border-t border-black/10 dark:border-white/10 my-5" />
+
+      {/* 7. Action Button: Apply Filter & Optional Reset */}
       <div className="flex flex-col gap-2.5 pt-1">
         <button
           type="button"

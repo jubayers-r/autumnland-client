@@ -43,7 +43,7 @@ describe("BrowseByDressStyle components and data", () => {
 
   it("links each card to the appropriate category route", () => {
     DRESS_STYLES.forEach((item: DressStyleItem) => {
-      expect(item.href).toMatch(/^\/shop\?category=[a-z]+$/);
+      expect(item.href).toMatch(/^\/shop\?dressStyle=[A-Za-z]+$/);
       expect(item.imageAlt).toBeTruthy();
       expect(["small", "large"]).toContain(item.gridSpan);
     });

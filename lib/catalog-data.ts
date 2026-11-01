@@ -334,28 +334,6 @@ export const CATALOG_PRODUCTS: CatalogProduct[] = [
     createdDate: "2026-04-18",
     href: "/shop/product/faded-skinny-jeans",
   },
-  // 14. Classic Pullover Hoodie (Hoodie category item with unique picture)
-  {
-    id: "classic-pullover-hoodie",
-    title: "Classic Pullover Hoodie",
-    imageSrc: "/assets/t-shirt/image 5.png",
-    imageAlt: "Cozy urban minimalist pullover hoodie",
-    category: "Hoodie",
-    dressStyle: "Casual",
-    dressStyles: ["Casual", "Gym"],
-    brand: "Versace",
-    rating: 4.7,
-    ratingCount: 41,
-    price: 170,
-    originalPrice: 195,
-    discount: "-15%",
-    colors: ["Black", "White"],
-    sizes: ["Small", "Medium", "Large", "X-Large", "XX-Large"],
-    salesCount: 750,
-    popularity: 72,
-    createdDate: "2026-04-15",
-    href: "/shop/product/classic-pullover-hoodie",
-  },
 ];
 
 /**

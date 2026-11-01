@@ -68,14 +68,8 @@ export function ShopView() {
         .map((d) => d.trim())
         .filter(Boolean);
     }
-    if (["casual", "formal", "party", "gym"].includes(urlCategory?.toLowerCase() || "")) {
-      return [urlCategory!];
-    }
-    if (isOnSale || sortBy === "newest" || brands.length > 0) {
-      return [];
-    }
-    return ["Casual"];
-  }, [urlDressStyle, urlCategory, isOnSale, sortBy, brands]);
+    return [];
+  }, [urlDressStyle]);
 
   const sizes = React.useMemo(
     () =>
@@ -113,8 +107,9 @@ export function ShopView() {
       sizes,
       dressStyle: dressStyles[0] || null,
       dressStyles,
+      onSaleOnly: isOnSale,
     }),
-    [categories, brands, urlMinPrice, urlMaxPrice, colors, sizes, dressStyles]
+    [categories, brands, urlMinPrice, urlMaxPrice, colors, sizes, dressStyles, isOnSale]
   );
 
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = React.useState<boolean>(false);
@@ -148,7 +143,7 @@ export function ShopView() {
       page: currentPage,
       limit: pageSize,
       searchQuery: urlSearch,
-      onSaleOnly: isOnSale,
+      onSaleOnly: Boolean(filters.onSaleOnly || isOnSale),
     });
   }, [filters, sortBy, currentPage, pageSize, urlSearch, isOnSale]);
 
@@ -158,10 +153,8 @@ export function ShopView() {
     filters.brands.length +
     filters.colors.length +
     filters.sizes.length +
-    (filters.dressStyles.length > 0 &&
-    (filters.dressStyles.length > 1 || !filters.dressStyles.includes("Casual"))
-      ? filters.dressStyles.length
-      : 0) +
+    filters.dressStyles.length +
+    (filters.onSaleOnly ? 1 : 0) +
     (filters.minPrice !== null || filters.maxPrice !== null ? 1 : 0);
 
   // Update URL parameters cleanly without hard reload
@@ -193,10 +186,12 @@ export function ShopView() {
     if (nextFilters.maxPrice !== null && nextFilters.maxPrice !== undefined) {
       params.set("maxPrice", String(nextFilters.maxPrice));
     }
+    if (nextFilters.onSaleOnly) {
+      params.set("filter", "sale");
+    }
     if (nextSort !== "popular") params.set("sort", nextSort);
     if (nextPage > 1) params.set("page", String(nextPage));
     if (urlSearch) params.set("q", urlSearch);
-    if (urlFilter) params.set("filter", urlFilter);
 
     const queryString = params.toString();
     router.replace(`/shop${queryString ? `?${queryString}` : ""}`, {
@@ -225,8 +220,9 @@ export function ShopView() {
       colors: [],
       size: null,
       sizes: [],
-      dressStyle: "Casual",
-      dressStyles: ["Casual"],
+      dressStyle: null,
+      dressStyles: [],
+      onSaleOnly: false,
     };
     updateUrlParams(resetState, sortBy, 1);
   };
@@ -241,22 +237,23 @@ export function ShopView() {
   };
 
   // Derive dynamic page title (e.g. "On Sale", "New Arrivals", "Gucci", "Casual", "T-shirts", etc.)
-  const pageTitle = isOnSale
-    ? "On Sale"
-    : sortBy === "newest" &&
-        filters.categories.length === 0 &&
-        filters.dressStyles.length === 0 &&
-        filters.brands.length === 0
-      ? "New Arrivals"
-      : filters.brands.length > 0 && filters.categories.length === 0
-        ? filters.brands.join(", ")
-        : filters.categories.length > 0
-          ? filters.categories.join(", ")
-          : filters.dressStyles.length > 0
-            ? filters.dressStyles.join(", ")
-            : urlSearch
-              ? `Search: "${urlSearch}"`
-              : "Casual";
+  const pageTitle =
+    filters.onSaleOnly || isOnSale
+      ? "On Sale"
+      : sortBy === "newest" &&
+          filters.categories.length === 0 &&
+          filters.dressStyles.length === 0 &&
+          filters.brands.length === 0
+        ? "New Arrivals"
+        : filters.brands.length > 0 && filters.categories.length === 0
+          ? filters.brands.join(", ")
+          : filters.categories.length > 0
+            ? filters.categories.join(", ")
+            : filters.dressStyles.length > 0
+              ? filters.dressStyles.join(", ")
+              : urlSearch
+                ? `Search: "${urlSearch}"`
+                : "Casual";
 
   const startIndex =
     catalogData.totalCount > 0 ? (catalogData.page - 1) * catalogData.pageSize + 1 : 0;

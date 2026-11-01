@@ -12,7 +12,7 @@ export const DRESS_STYLES: DressStyleItem[] = [
   {
     id: "casual",
     title: "Casual",
-    href: "/shop?category=casual",
+    href: "/shop?dressStyle=Casual",
     imageSrc: "/assets/browse-by-dress-style/image 11.png",
     imageAlt: "Man in casual white t-shirt",
     gridSpan: "small",
@@ -22,7 +22,7 @@ export const DRESS_STYLES: DressStyleItem[] = [
   {
     id: "formal",
     title: "Formal",
-    href: "/shop?category=formal",
+    href: "/shop?dressStyle=Formal",
     imageSrc: "/assets/browse-by-dress-style/image 13.png",
     imageAlt: "Man in formal checkered blazer with white dress shirt",
     gridSpan: "large",
@@ -33,7 +33,7 @@ export const DRESS_STYLES: DressStyleItem[] = [
   {
     id: "party",
     title: "Party",
-    href: "/shop?category=party",
+    href: "/shop?dressStyle=Party",
     imageSrc: "/assets/browse-by-dress-style/image 12.png",
     imageAlt: "Woman in party off-shoulder knit sweater",
     gridSpan: "large",
@@ -44,7 +44,7 @@ export const DRESS_STYLES: DressStyleItem[] = [
   {
     id: "gym",
     title: "Gym",
-    href: "/shop?category=gym",
+    href: "/shop?dressStyle=Gym",
     imageSrc: "/assets/browse-by-dress-style/image 14.png",
     imageAlt: "Athletic man in gym tank top lifting dumbbell",
     gridSpan: "small",

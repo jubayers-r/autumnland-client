@@ -5,7 +5,7 @@ import { CATALOG_PRODUCTS } from "@/lib/catalog-data";
 describe("Catalog Data and Filtering Service", () => {
   it("initializes catalog with high-quality realistic products with zero duplicate images", () => {
     expect(Array.isArray(CATALOG_PRODUCTS)).toBe(true);
-    expect(CATALOG_PRODUCTS.length).toBe(14);
+    expect(CATALOG_PRODUCTS.length).toBe(13);
 
     // Verify zero repeated images across the entire catalog
     const images = CATALOG_PRODUCTS.map((p) => p.imageSrc);
