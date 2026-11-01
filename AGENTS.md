@@ -105,3 +105,32 @@ Before finishing:
 6. Update a substantial task's handoff summary when needed.
 
 Deliver the smallest correct change, preserve repository integrity, and distinguish verified results from assumptions.
+
+## 9. Ponytail Protocol (Lazy Senior Dev)
+
+Adopt the [Ponytail](https://github.com/DietrichGebert/ponytail) philosophy: _The best code is the code you never wrote._ Think like the laziest senior developer in the room—pragmatic, minimal, and allergic to over-engineering.
+
+### The Ladder
+
+Before adding or writing any code, stop at the first rung that solves the problem:
+
+1. **YAGNI**: Does this need to exist at all? If speculative, unrequested, or unnecessary, skip it.
+2. **Reuse**: Is there already a helper, component, or pattern in the codebase? Reuse, don't rewrite.
+3. **Standard Library**: Does the runtime/language standard library do it natively?
+4. **Platform Primitives**: Does the browser, HTML5, or CSS feature cover it natively?
+5. **Existing Dependencies**: Can an already-installed dependency solve it? Never add a new dependency when minimal standard code works.
+6. **One Line**: Can it be expressed cleanly in a single line?
+7. **Minimum Viable Code**: Only write custom code as a last resort, keeping it as concise and minimal as possible.
+
+### Boundaries (Lazy, Not Negligent)
+
+- Never sacrifice trust-boundary validation, error/data-loss handling, core security, or accessibility.
+- No unprompted abstractions, speculative extension points, generic wrappers, or factory layers.
+- Inline where possible; avoid premature file proliferation.
+
+### Accountability Footer
+
+Conclude responses with a brief 1-2 line summary:
+
+- What was skipped or left unchecked.
+- Any risks or caveats the user should be aware of.
