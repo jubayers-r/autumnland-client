@@ -93,3 +93,46 @@ export const TOP_SELLING: Product[] = [
     href: "/shop/product/faded-skinny-jeans",
   },
 ];
+
+export const YOU_MIGHT_ALSO_LIKE: Product[] = [
+  {
+    id: "polo-contrast-trims",
+    title: "Polo with Contrast Trims",
+    imageSrc: "/assets/t-shirt/image 1.png",
+    imageAlt: "Teal short sleeve polo shirt with white contrast collar and trims",
+    rating: 4.0,
+    price: 212,
+    originalPrice: 242,
+    discount: "-20%",
+    href: "/shop/product/polo-contrast-trims",
+  },
+  {
+    id: "gradient-graphic-t-shirt",
+    title: "Gradient Graphic T-shirt",
+    imageSrc: "/assets/t-shirt/image 2.png",
+    imageAlt: "White crewneck t-shirt with vibrant swirl gradient graphic artwork",
+    rating: 3.5,
+    price: 145,
+    href: "/shop/product/gradient-graphic-t-shirt",
+  },
+  {
+    id: "polo-tipping-details",
+    title: "Polo with Tipping Details",
+    imageSrc: "/assets/t-shirt/image 3.png",
+    imageAlt: "Mauve pink textured polo shirt with white tipping collar details",
+    rating: 4.5,
+    price: 180,
+    href: "/shop/product/polo-tipping-details",
+  },
+  {
+    id: "black-striped-t-shirt",
+    title: "Black Striped T-shirt",
+    imageSrc: "/assets/t-shirt/image 4.png",
+    imageAlt: "White t-shirt with thin black vertical stripes and black raglan sleeves",
+    rating: 5.0,
+    price: 120,
+    originalPrice: 150,
+    discount: "-30%",
+    href: "/shop/product/black-striped-t-shirt",
+  },
+];

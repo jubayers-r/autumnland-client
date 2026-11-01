@@ -252,6 +252,98 @@ export const MOCK_PRODUCT_DETAILS: Record<string, ProductDetail> = {
       { label: "Jeans" },
     ],
   },
+  "polo-contrast-trims": {
+    id: "polo-contrast-trims",
+    title: "POLO WITH CONTRAST TRIMS",
+    category: "Polo",
+    rating: 4.0,
+    ratingCount: 28,
+    price: 212,
+    originalPrice: 242,
+    discount: "-20%",
+    description:
+      "Smart casual polo shirt crafted from breathable pique cotton with refined contrast collar and sleeve trims.",
+    colors: [
+      { name: "Ocean Teal", hex: "#1C6B8A" },
+      { name: "Bright White", hex: "#FFFFFF" },
+    ],
+    sizes: ["Small", "Medium", "Large", "X-Large"],
+    images: ["/assets/t-shirt/image 1.png", "/assets/t-shirt/image 3.png"],
+    breadcrumbs: [
+      { label: "Home", href: "/" },
+      { label: "Shop", href: "/shop" },
+      { label: "Men", href: "/shop?gender=men" },
+      { label: "Polo" },
+    ],
+  },
+  "gradient-graphic-t-shirt": {
+    id: "gradient-graphic-t-shirt",
+    title: "GRADIENT GRAPHIC T-SHIRT",
+    category: "T-shirts",
+    rating: 3.5,
+    ratingCount: 19,
+    price: 145,
+    description:
+      "Modern artistic crewneck tee showcasing a vibrant fluid swirl graphic with contemporary streetwear typography.",
+    colors: [
+      { name: "Pure White", hex: "#FFFFFF" },
+      { name: "Neon Spectrum", hex: "#E056FD" },
+    ],
+    sizes: ["Small", "Medium", "Large", "X-Large"],
+    images: ["/assets/t-shirt/image 2.png", "/assets/t-shirt/image 10.png"],
+    breadcrumbs: [
+      { label: "Home", href: "/" },
+      { label: "Shop", href: "/shop" },
+      { label: "Men", href: "/shop?gender=men" },
+      { label: "T-shirts" },
+    ],
+  },
+  "polo-tipping-details": {
+    id: "polo-tipping-details",
+    title: "POLO WITH TIPPING DETAILS",
+    category: "Polo",
+    rating: 4.5,
+    ratingCount: 35,
+    price: 180,
+    description:
+      "Sophisticated textured knit polo featuring delicate contrast tipping on the ribbed collar and embroidered palm crest.",
+    colors: [
+      { name: "Dusty Mauve", hex: "#9E6B7A" },
+      { name: "Classic Navy", hex: "#1E2A38" },
+    ],
+    sizes: ["Small", "Medium", "Large", "X-Large"],
+    images: ["/assets/t-shirt/image 3.png", "/assets/t-shirt/image 1.png"],
+    breadcrumbs: [
+      { label: "Home", href: "/" },
+      { label: "Shop", href: "/shop" },
+      { label: "Men", href: "/shop?gender=men" },
+      { label: "Polo" },
+    ],
+  },
+  "black-striped-t-shirt": {
+    id: "black-striped-t-shirt",
+    title: "BLACK STRIPED T-SHIRT",
+    category: "T-shirts",
+    rating: 5.0,
+    ratingCount: 52,
+    price: 120,
+    originalPrice: 150,
+    discount: "-30%",
+    description:
+      "Baseball-inspired raglan t-shirt featuring pinstriped front torso panel and contrasting solid black sleeves.",
+    colors: [
+      { name: "White & Black", hex: "#1A1A1A" },
+      { name: "Heather Grey", hex: "#7D7D7D" },
+    ],
+    sizes: ["Small", "Medium", "Large", "X-Large"],
+    images: ["/assets/t-shirt/image 4.png", "/assets/t-shirt/image 7.png"],
+    breadcrumbs: [
+      { label: "Home", href: "/" },
+      { label: "Shop", href: "/shop" },
+      { label: "Men", href: "/shop?gender=men" },
+      { label: "T-shirts" },
+    ],
+  },
 };
 
 /**

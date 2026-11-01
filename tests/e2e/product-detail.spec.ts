@@ -122,10 +122,27 @@ test.describe("Product Details Page & Navigation", () => {
     // Verify new review appears in list
     await expect(page.getByText("Jordan Reed")).toBeVisible();
 
+    // Verify "You Might Also Like" section
+    const mightAlsoLikeSection = page.locator("#you-might-also-like");
+    await expect(mightAlsoLikeSection).toBeVisible();
+    await expect(
+      mightAlsoLikeSection.getByRole("heading", { name: "YOU MIGHT ALSO LIKE" })
+    ).toBeVisible();
+
+    // Check presence of products from reference
+    await expect(mightAlsoLikeSection.getByText("Polo with Contrast Trims")).toBeVisible();
+    await expect(mightAlsoLikeSection.getByText("Gradient Graphic T-shirt")).toBeVisible();
+    await expect(mightAlsoLikeSection.getByText("Polo with Tipping Details")).toBeVisible();
+    await expect(mightAlsoLikeSection.getByText("Black Striped T-shirt")).toBeVisible();
+
     // Capture desktop and mobile preview screenshots
     await page.screenshot({ path: "test-results/product-detail-desktop.png" });
 
     await page.setViewportSize({ width: 375, height: 812 });
+    await expect(mightAlsoLikeSection.getByText("Polo with Contrast Trims")).toBeVisible();
+    await expect(mightAlsoLikeSection.getByText("Gradient Graphic T-shirt")).toBeVisible();
+    await expect(mightAlsoLikeSection.getByText("Polo with Tipping Details")).toBeVisible();
+    await expect(mightAlsoLikeSection.getByText("Black Striped T-shirt")).toBeVisible();
     await page.screenshot({ path: "test-results/product-detail-mobile.png", fullPage: true });
   });
 

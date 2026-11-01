@@ -7,6 +7,7 @@ import { getProductById, MOCK_PRODUCT_DETAILS } from "@/lib/products";
 import { ProductDetailGallery } from "@/components/product/ProductDetailGallery";
 import { ProductDetailOrder } from "@/components/product/ProductDetailOrder";
 import { ProductSectionTabs } from "@/components/product";
+import { ProductSection, TOP_SELLING, YOU_MIGHT_ALSO_LIKE } from "@/components/home";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -50,6 +51,15 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   if (!product) {
     notFound();
+  }
+
+  // Prepare related products (filter out current product if viewing one of them)
+  const relatedProducts = YOU_MIGHT_ALSO_LIKE.filter((p) => p.id !== product.id);
+  if (relatedProducts.length < 4) {
+    const fallback = TOP_SELLING.find(
+      (p) => p.id !== product.id && !relatedProducts.some((r) => r.id === p.id)
+    );
+    if (fallback) relatedProducts.push(fallback);
   }
 
   return (
@@ -97,6 +107,15 @@ export default async function ProductPage({ params }: ProductPageProps) {
           <ProductSectionTabs product={product} />
         </section>
       </div>
+
+      {/* You Might Also Like Section */}
+      <ProductSection
+        id="you-might-also-like"
+        title="YOU MIGHT ALSO LIKE"
+        products={relatedProducts}
+        showViewAll={false}
+        className="pt-4 sm:pt-8 lg:pt-10 pb-12 sm:pb-16 lg:pb-24"
+      />
     </main>
   );
 }
