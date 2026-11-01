@@ -45,10 +45,7 @@ export function ProductDetailsContent({ product }: ProductDetailsContentProps) {
   ];
 
   return (
-    <div
-      className="w-full flex flex-col gap-8 sm:gap-10 lg:gap-12 select-none"
-      data-product-details-tab
-    >
+    <div className="w-full flex flex-col gap-8 sm:gap-10 lg:gap-12" data-product-details-tab>
       {/* Overview Description */}
       <div className="flex flex-col gap-3">
         <h3 className="font-heading font-black text-xl sm:text-2xl text-foreground uppercase tracking-tight">

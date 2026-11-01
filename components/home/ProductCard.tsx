@@ -18,7 +18,7 @@ export function ProductCard({ product, className, priority = false }: ProductCar
     <article
       data-product-card
       data-product-id={id}
-      className={cn("group flex flex-col w-full select-none", className)}
+      className={cn("group flex flex-col w-full", className)}
     >
       <Link
         href={href}

@@ -39,8 +39,8 @@ export function ProductDetailOrder({ product }: ProductDetailOrderProps) {
   };
 
   return (
-    <div className="flex flex-col w-full select-none">
-      {/* Title: Integral CF ExtraBold, uppercase */}
+    <div className="flex flex-col w-full">
+      {/* Title: Integral CF ExtraBold, uppercase with CSS unicode-range dash fallback */}
       <h1 className="font-heading font-black text-2xl sm:text-3xl lg:text-[40px] leading-[1.1] uppercase tracking-tight text-foreground">
         {title}
       </h1>

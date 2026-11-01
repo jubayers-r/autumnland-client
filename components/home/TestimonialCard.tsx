@@ -24,7 +24,7 @@ export function TestimonialCard({
       style={style}
       className={cn(
         "bg-card text-card-foreground border border-black/10 dark:border-white/10",
-        "rounded-[20px] p-6 sm:p-7 md:p-8 flex flex-col justify-start shrink-0 select-none",
+        "rounded-[20px] p-6 sm:p-7 md:p-8 flex flex-col justify-start shrink-0",
         "transition-all duration-500 ease-out",
         isActive
           ? "opacity-100 blur-none scale-100"
