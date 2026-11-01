@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Mail, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -64,7 +64,6 @@ export function Newsletter({ className }: NewsletterProps) {
           className="flex flex-col gap-3.5 w-full lg:w-[350px] shrink-0"
         >
           <div className="relative flex items-center w-full">
-            <Mail className="absolute left-4.5 size-5 text-muted-foreground/80 pointer-events-none shrink-0" />
             <label htmlFor="newsletter-email" className="sr-only">
               Email Address
             </label>
@@ -77,7 +76,7 @@ export function Newsletter({ className }: NewsletterProps) {
               placeholder="Enter your email address"
               autoComplete="email"
               disabled={isSubmitting}
-              className="w-full bg-white text-black placeholder:text-neutral-400 text-sm sm:text-base rounded-full pl-12 pr-5 py-3 sm:py-3.5 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all font-sans"
+              className="w-full bg-white text-black placeholder:text-neutral-400 text-sm sm:text-base rounded-full px-5 py-3 sm:py-3.5 text-center placeholder:text-center focus:outline-none focus:ring-2 focus:ring-white/50 transition-all font-sans"
             />
           </div>
 

@@ -1,5 +1,8 @@
+"use client";
+
 import * as React from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Newsletter } from "./Newsletter";
 import { SocialLinks } from "./SocialLinks";
 import { PaymentBadges } from "./PaymentBadges";
@@ -41,11 +44,16 @@ const NAV_COLUMNS = [
 ];
 
 export function Footer({ className, showNewsletter = true }: FooterProps) {
+  const pathname = usePathname();
+  const isCartPage = pathname === "/cart";
+
   return (
     <footer
       aria-label="Site Footer"
       className={cn(
-        "hidden lg:block w-full relative text-foreground transition-colors",
+        "w-full relative text-foreground transition-colors",
+        // Hides on mobile and tablet (< lg) only on the /cart page; visible on all other pages
+        isCartPage ? "hidden lg:block" : "block",
         showNewsletter ? "mt-8 lg:mt-10" : "mt-8 lg:mt-10",
         className
       )}

@@ -99,30 +99,37 @@ test.describe("Footer & Newsletter Section", () => {
     await expect(page.getByTitle("Google Pay")).toBeVisible();
   });
 
-  test("hides footer and newsletter on mobile and tablet screens while keeping it visible on desktop", async ({
+  test("shows footer and newsletter on mobile and tablet on main pages, but hides them on /cart", async ({
     page,
   }) => {
-    // 1. Mobile Viewport (375x812) - Footer and newsletter are hidden
+    // 1. Mobile Viewport (375x812) on Home Page - Footer and newsletter are visible
     await page.setViewportSize({ width: 375, height: 812 });
     await page.goto("/");
 
     const footer = page.locator("footer");
-    await expect(footer).toBeHidden();
+    await expect(footer).toBeVisible();
 
     const newsletterHeading = page.getByRole("heading", {
       name: /STAY UPTO DATE ABOUT OUR LATEST OFFERS/i,
     });
-    await expect(newsletterHeading).toBeHidden();
+    await expect(newsletterHeading).toBeVisible();
 
-    // 2. Tablet Viewport (768x1024, iPad / tablet) - Footer and newsletter are hidden
+    // 2. Mobile Viewport on /cart Page - Footer is hidden on mobile
+    await page.goto("/cart");
+    await expect(footer).toBeHidden();
+
+    // 3. Tablet Viewport (768x1024) on /cart Page - Footer is hidden on tablet
     await page.setViewportSize({ width: 768, height: 1024 });
     await expect(footer).toBeHidden();
-    await expect(newsletterHeading).toBeHidden();
 
-    // 3. Desktop Viewport (1280x800) - Footer and newsletter are visible
-    await page.setViewportSize({ width: 1280, height: 800 });
+    // 4. Tablet Viewport on /shop Page - Footer is visible on tablet
+    await page.goto("/shop");
     await expect(footer).toBeVisible();
-    await expect(newsletterHeading).toBeVisible();
+
+    // 5. Desktop Viewport (1280x800) on /cart Page - Footer is visible on desktop
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto("/cart");
+    await expect(footer).toBeVisible();
     await page.screenshot({ path: "test-results/desktop-footer.png", fullPage: true });
   });
 });
