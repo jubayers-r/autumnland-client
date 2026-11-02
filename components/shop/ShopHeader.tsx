@@ -18,7 +18,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import type { CatalogSortOption } from "@/lib/catalog-service";
-import { cn } from "@/lib/utils";
+import { cn, renderHeadingText } from "@/lib/utils";
 
 interface ShopHeaderProps {
   title: string;
@@ -99,7 +99,7 @@ export function ShopHeader({
         {/* Left: Section Title */}
         <div className="flex items-center justify-between w-full sm:w-auto">
           <h1 className="font-heading font-black text-2xl sm:text-3xl lg:text-[40px] uppercase tracking-tight text-foreground">
-            {title}
+            {renderHeadingText(title)}
           </h1>
 
           {/* Mobile Filter Toggle Button (< sm phone only: aligned to top-right) */}
