@@ -30,9 +30,7 @@ export function Navbar({ className }: NavbarProps) {
   const [searchQuery, setSearchQuery] = React.useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
   const [showFloatingSearch, setShowFloatingSearch] = React.useState(false);
-  const [shopDropdownOpen, setShopDropdownOpen] = React.useState(false);
   const staticNavRef = React.useRef<HTMLDivElement>(null);
-  const shopDropdownRef = React.useRef<HTMLDivElement>(null);
 
   // Cart store subscriptions for mobile cart sticky header
   const cartItems = useCartStore((state) => state.items);
@@ -51,30 +49,6 @@ export function Navbar({ className }: NavbarProps) {
     if (selectedCount === 0) return;
     removeSelectedItems();
     toast.success(`Removed ${selectedCount} item${selectedCount > 1 ? "s" : ""} from cart`);
-  };
-
-  // Close dropdown on outside click
-  React.useEffect(() => {
-    if (!shopDropdownOpen) return;
-    const handleClickOutside = (e: MouseEvent | TouchEvent) => {
-      if (shopDropdownRef.current && !shopDropdownRef.current.contains(e.target as Node)) {
-        setShopDropdownOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    document.addEventListener("touchstart", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-      document.removeEventListener("touchstart", handleClickOutside);
-    };
-  }, [shopDropdownOpen]);
-
-  const handleShopClick = (e: React.MouseEvent) => {
-    // On tablet / non-desktop viewports (< 1024px), toggle dropdown on click instead of immediate navigation
-    if (window.innerWidth < 1024) {
-      e.preventDefault();
-      setShopDropdownOpen((prev) => !prev);
-    }
   };
 
   React.useEffect(() => {
@@ -324,11 +298,11 @@ export function Navbar({ className }: NavbarProps) {
               <ShoppingCart className="size-6" />
             </Link>
 
-            {/* Right User Icon on Tablet */}
+            {/* Right User Icon */}
             <Link
               href="/login"
               aria-label="User Account"
-              className="hidden md:flex p-1.5 text-foreground hover:opacity-75 shrink-0 transition-opacity rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className="p-1.5 text-foreground hover:opacity-75 shrink-0 transition-opacity rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
               <CircleUser className="size-6" />
             </Link>
@@ -344,14 +318,15 @@ export function Navbar({ className }: NavbarProps) {
         )}
       >
         {/* =========================================================================
-            1. STATIC MOBILE HEADER (md:hidden)
-            - Part of normal flow: Row 1 (Hamburger, Smaller Logo, Cart, Account)
-            - Row 2: Search Bar attached directly beneath
+            1. STATIC MOBILE & TABLET HEADER (lg:hidden)
+            - Matches mobile navbar layout and functioning 100% on tablet
+            - Row 1: Hamburger (Sheet trigger), Logo, Cart & Account
+            - Row 2: Full-width Search Bar
             - Scrolls off-screen naturally
            ========================================================================= */}
-        <div data-testid="static-mobile-nav" className="md:hidden flex flex-col w-full">
+        <div data-testid="static-mobile-nav" className="lg:hidden flex flex-col w-full">
           {/* Row 1: Logo & Actions */}
-          <div className="h-16 px-4 flex items-center justify-between">
+          <div className="h-16 px-4 sm:px-6 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <button
                 type="button"
@@ -362,16 +337,16 @@ export function Navbar({ className }: NavbarProps) {
                 <Menu className="size-6" />
               </button>
 
-              {/* Smaller Logo on mobile screen (text-xl instead of text-2xl) */}
+              {/* Logo */}
               <Link
                 href="/"
-                className="font-heading font-black text-xl tracking-normal uppercase select-none text-foreground flex items-center"
+                className="font-heading font-black text-xl sm:text-2xl tracking-normal uppercase select-none text-foreground flex items-center"
               >
                 AUTUMN LAND
               </Link>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 sm:gap-3">
               <Link
                 href="/cart"
                 aria-label="Shopping Cart"
@@ -391,7 +366,7 @@ export function Navbar({ className }: NavbarProps) {
           </div>
 
           {/* Row 2: Search Bar fixed with the navbar */}
-          <div className="px-4 pb-3 pt-0.5">
+          <div className="px-4 sm:px-6 pb-3 pt-0.5">
             <form
               onSubmit={handleSearchSubmit}
               className="flex items-center gap-3 bg-[#F0F0F0] dark:bg-muted/80 rounded-full px-4 py-2 w-full focus-within:ring-2 focus-within:ring-foreground/20"
@@ -409,13 +384,12 @@ export function Navbar({ className }: NavbarProps) {
         </div>
 
         {/* =========================================================================
-            2. DESKTOP & TABLET VIEW (hidden md:flex)
-            - Tablet: Row 1 (Logo, Nav Links, Cart, Account) + Row 2 (Full-width Search Bar)
+            2. DESKTOP VIEW (hidden lg:flex)
             - Desktop: Single-row layout with inline search bar
            ========================================================================= */}
-        <div className="hidden md:flex flex-col w-full">
+        <div className="hidden lg:flex flex-col w-full">
           {/* Row 1: Logo, Nav Links, (Desktop Inline Search), Action Icons */}
-          <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-12 w-full h-16 md:h-18 lg:h-20 flex items-center justify-between gap-3 sm:gap-6 lg:gap-10">
+          <div className="max-w-[1440px] mx-auto px-6 lg:px-10 xl:px-12 w-full h-18 lg:h-20 flex items-center justify-between gap-6 lg:gap-10">
             {/* Brand Logo */}
             <Link
               href="/"
@@ -425,35 +399,21 @@ export function Navbar({ className }: NavbarProps) {
               AUTUMN LAND
             </Link>
 
-            {/* Center Desktop & Tablet Navigation Links */}
-            <div className="flex items-center gap-4 md:gap-5 lg:gap-8 text-sm lg:text-base font-normal text-foreground shrink-0">
-              {/* Shop Hover & Click Dropdown */}
-              <div ref={shopDropdownRef} className="relative group py-2">
+            {/* Center Desktop Navigation Links */}
+            <div className="flex items-center gap-5 lg:gap-8 text-sm lg:text-base font-normal text-foreground shrink-0">
+              {/* Shop Hover Dropdown */}
+              <div className="relative group py-2">
                 <Link
                   href="/shop"
                   role="button"
-                  onClick={handleShopClick}
                   className="flex items-center gap-1 hover:text-muted-foreground transition-colors focus:outline-none rounded px-1 text-sm lg:text-base font-normal text-foreground"
                 >
                   <span>Shop</span>
-                  <ChevronDown
-                    className={cn(
-                      "size-4 text-foreground/70 transition-transform duration-200 lg:group-hover:rotate-180",
-                      shopDropdownOpen && "rotate-180"
-                    )}
-                  />
+                  <ChevronDown className="size-4 text-foreground/70 transition-transform duration-200 group-hover:rotate-180" />
                 </Link>
 
-                {/* Bridge & Dropdown Menu Container */}
-                <div
-                  className={cn(
-                    "absolute top-full left-0 pt-2 transition-all duration-200 z-50",
-                    "lg:group-hover:opacity-100 lg:group-hover:translate-y-0 lg:group-hover:visible lg:group-hover:pointer-events-auto",
-                    shopDropdownOpen
-                      ? "opacity-100 translate-y-0 visible pointer-events-auto"
-                      : "opacity-0 translate-y-1 invisible pointer-events-none"
-                  )}
-                >
+                {/* Dropdown Menu Container */}
+                <div className="absolute top-full left-0 pt-2 transition-all duration-200 z-50 opacity-0 translate-y-1 invisible pointer-events-none group-hover:opacity-100 group-hover:translate-y-0 group-hover:visible group-hover:pointer-events-auto">
                   <div className="w-56 p-2 rounded-2xl shadow-xl border border-border/80 bg-background">
                     <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground px-3 py-1.5">
                       Categories
@@ -461,35 +421,30 @@ export function Navbar({ className }: NavbarProps) {
                     <div className="flex flex-col gap-0.5">
                       <Link
                         href="/shop"
-                        onClick={() => setShopDropdownOpen(false)}
                         className="px-3 py-2 text-sm font-medium rounded-lg hover:bg-secondary transition-colors text-foreground block"
                       >
                         All Collections
                       </Link>
                       <Link
                         href="/shop?dressStyle=Casual"
-                        onClick={() => setShopDropdownOpen(false)}
                         className="px-3 py-2 text-sm font-medium rounded-lg hover:bg-secondary transition-colors text-foreground block"
                       >
                         Casual Style
                       </Link>
                       <Link
                         href="/shop?dressStyle=Formal"
-                        onClick={() => setShopDropdownOpen(false)}
                         className="px-3 py-2 text-sm font-medium rounded-lg hover:bg-secondary transition-colors text-foreground block"
                       >
                         Formal Style
                       </Link>
                       <Link
                         href="/shop?dressStyle=Party"
-                        onClick={() => setShopDropdownOpen(false)}
                         className="px-3 py-2 text-sm font-medium rounded-lg hover:bg-secondary transition-colors text-foreground block"
                       >
                         Party Style
                       </Link>
                       <Link
                         href="/shop?dressStyle=Gym"
-                        onClick={() => setShopDropdownOpen(false)}
                         className="px-3 py-2 text-sm font-medium rounded-lg hover:bg-secondary transition-colors text-foreground block"
                       >
                         Gym & Athletic
@@ -516,10 +471,10 @@ export function Navbar({ className }: NavbarProps) {
               </Link>
             </div>
 
-            {/* Desktop-Only Inline Search Bar (Hidden on tablet md:<lg, visible on lg+) */}
+            {/* Desktop-Only Inline Search Bar */}
             <form
               onSubmit={handleSearchSubmit}
-              className="hidden lg:flex items-center gap-3 bg-[#F0F0F0] dark:bg-muted/80 rounded-full px-4 py-2.5 flex-1 max-w-sm lg:max-w-md xl:max-w-lg transition-all focus-within:ring-2 focus-within:ring-foreground/20"
+              className="flex items-center gap-3 bg-[#F0F0F0] dark:bg-muted/80 rounded-full px-4 py-2.5 flex-1 max-w-sm lg:max-w-md xl:max-w-lg transition-all focus-within:ring-2 focus-within:ring-foreground/20"
             >
               <Search className="size-4 sm:size-5 text-muted-foreground shrink-0" />
               <input
@@ -532,42 +487,23 @@ export function Navbar({ className }: NavbarProps) {
             </form>
 
             {/* Right Action Icons */}
-            <div className="flex items-center gap-3 sm:gap-4 lg:gap-5 shrink-0">
-              {/* Cart Icon */}
+            <div className="flex items-center gap-4 lg:gap-5 shrink-0">
               <Link
                 href="/cart"
                 aria-label="Shopping Cart"
                 className="relative p-1.5 text-foreground hover:opacity-75 transition-opacity rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
-                <ShoppingCart className="size-5 sm:size-6" />
+                <ShoppingCart className="size-6" />
               </Link>
 
-              {/* User Profile / Account Icon */}
               <Link
                 href="/login"
                 aria-label="User Account"
                 className="p-1.5 text-foreground hover:opacity-75 transition-opacity rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
-                <CircleUser className="size-5 sm:size-6" />
+                <CircleUser className="size-6" />
               </Link>
             </div>
-          </div>
-
-          {/* Row 2: Search Bar fixed with navbar on Tablet (md:block lg:hidden) - Just as mobile one */}
-          <div className="hidden md:block lg:hidden px-4 sm:px-6 pb-3 pt-0.5 max-w-[1440px] mx-auto w-full">
-            <form
-              onSubmit={handleSearchSubmit}
-              className="flex items-center gap-3 bg-[#F0F0F0] dark:bg-muted/80 rounded-full px-4 py-2 w-full focus-within:ring-2 focus-within:ring-foreground/20"
-            >
-              <Search className="size-4 sm:size-5 text-muted-foreground shrink-0" />
-              <input
-                type="search"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search for products..."
-                className="w-full bg-transparent text-sm placeholder:text-muted-foreground focus:outline-none border-none text-foreground"
-              />
-            </form>
           </div>
         </div>
       </nav>
