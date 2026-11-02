@@ -118,4 +118,48 @@ test.describe("Header & Navigation Component", () => {
     await expect(staticNav).toBeInViewport();
     await expect(floatingNav).not.toBeVisible();
   });
+
+  test("renders tablet navigation with search bar and drops floating search on scroll", async ({
+    page,
+  }) => {
+    // Set tablet viewport
+    await page.setViewportSize({ width: 768, height: 1024 });
+    await page.goto("/");
+
+    // Verify brand logo on tablet is visible
+    const logo = page
+      .locator("header")
+      .getByRole("link", { name: "AUTUMN LAND" })
+      .filter({ visible: true });
+    await expect(logo).toBeVisible();
+    await expect(logo).toContainText("AUTUMN");
+    await expect(logo).toContainText("LAND");
+
+    // Capture unscrolled tablet navbar screenshot
+    await page.screenshot({ path: "test-results/tablet-navbar.png" });
+
+    const floatingNav = page.getByTestId("floating-mobile-nav");
+    await expect(floatingNav).not.toBeVisible();
+
+    // Scroll down past the entire static header
+    await page.evaluate(() => {
+      window.scrollTo(0, 300);
+      window.dispatchEvent(new Event("scroll"));
+    });
+    await page.waitForTimeout(400);
+
+    // On scroll past navbar: floating search drops down from top
+    await expect(floatingNav).toBeVisible();
+    await expect(floatingNav).toBeInViewport();
+    await expect(floatingNav.getByPlaceholder("Search for products...")).toBeVisible();
+
+    // Scroll back to top: floating search hides
+    await page.evaluate(() => {
+      window.scrollTo(0, 0);
+      window.dispatchEvent(new Event("scroll"));
+    });
+    await page.waitForTimeout(400);
+
+    await expect(floatingNav).not.toBeVisible();
+  });
 });
