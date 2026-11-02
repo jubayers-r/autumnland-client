@@ -13,13 +13,16 @@ export function cn(...inputs: ClassValue[]) {
  * across all devices and screens wherever FSD demo font and '-' are used.
  */
 export function renderHeadingText(text: string): React.ReactNode {
-  if (!text || (!text.includes("-") && !text.includes("–") && !text.includes("—"))) {
+  if (
+    !text ||
+    (!text.includes("-") && !text.includes("–") && !text.includes("—") && !text.includes("&"))
+  ) {
     return text;
   }
 
-  const parts = text.split(/([-\u2010-\u2014\u2212])/g);
+  const parts = text.split(/([-\u2010-\u2014\u2212&])/g);
   return parts.map((part, i) => {
-    if (/[-\u2010-\u2014\u2212]/.test(part)) {
+    if (/[-\u2010-\u2014\u2212&]/.test(part)) {
       return React.createElement("span", { key: i, className: "font-sans font-black" }, part);
     }
     return part;

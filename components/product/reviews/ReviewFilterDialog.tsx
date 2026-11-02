@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { SlidersHorizontal, RotateCcw } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, renderHeadingText } from "@/lib/utils";
 import type { ReviewSortOption } from "@/types/review";
 import {
   Dialog,
@@ -91,7 +91,7 @@ export function ReviewFilterDialog({
         <DialogHeader className="flex flex-row items-center justify-between pb-3 border-b border-black/10 dark:border-white/10">
           <DialogTitle className="font-heading font-black text-xl uppercase tracking-tight flex items-center gap-2">
             <SlidersHorizontal className="w-5 h-5" />
-            Filter & Sort Reviews
+            {renderHeadingText("Filter - Sort Reviews")}
           </DialogTitle>
         </DialogHeader>
 

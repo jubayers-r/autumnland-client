@@ -51,5 +51,33 @@ describe("Utility functions", () => {
       const dashElement = elements[1] as React.ReactElement<{ children?: React.ReactNode }>;
       expect(dashElement.props.children).toBe("–");
     });
+
+    it("renders bold fallback font for Filter - Sort Reviews", () => {
+      const result = renderHeadingText("Filter - Sort Reviews");
+      expect(Array.isArray(result)).toBe(true);
+      const elements = result as React.ReactNode[];
+      expect(elements.length).toBe(3);
+      expect(elements[0]).toBe("Filter ");
+      const dashElement = elements[1] as React.ReactElement<{
+        className?: string;
+        children?: React.ReactNode;
+      }>;
+      expect(dashElement.props.children).toBe("-");
+      expect(dashElement.props.className).toContain("font-sans font-black");
+      expect(elements[2]).toBe(" Sort Reviews");
+    });
+
+    it("handles ampersand & by wrapping in bold fallback font", () => {
+      const result = renderHeadingText("Filter & Sort Reviews");
+      expect(Array.isArray(result)).toBe(true);
+      const elements = result as React.ReactNode[];
+      expect(elements.length).toBe(3);
+      const ampElement = elements[1] as React.ReactElement<{
+        className?: string;
+        children?: React.ReactNode;
+      }>;
+      expect(ampElement.props.children).toBe("&");
+      expect(ampElement.props.className).toContain("font-sans font-black");
+    });
   });
 });
