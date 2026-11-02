@@ -140,15 +140,23 @@ describe("Product reviews and tabs system", () => {
     const jeansReviews = await fetchProductReviews({
       productId: "skinny-fit-jeans",
     });
-    expect(jeansReviews.reviews.length).toBeGreaterThan(0);
+    expect(jeansReviews.reviews.length).toBe(3);
+    expect(jeansReviews.totalCount).toBe(3);
     expect(jeansReviews.reviews.every((r) => r.productId === "skinny-fit-jeans")).toBe(true);
 
     // 2. Fetch reviews for checkered-shirt and verify they belong ONLY to checkered-shirt
     const shirtReviews = await fetchProductReviews({
       productId: "checkered-shirt",
     });
-    expect(shirtReviews.reviews.length).toBeGreaterThan(0);
+    expect(shirtReviews.reviews.length).toBe(3);
+    expect(shirtReviews.totalCount).toBe(3);
     expect(shirtReviews.reviews.every((r) => r.productId === "checkered-shirt")).toBe(true);
+
+    // Ensure one-life-graphic-t-shirt has its expected 12 reviews
+    const oneLifeInitial = await fetchProductReviews({
+      productId: "one-life-graphic-t-shirt",
+    });
+    expect(oneLifeInitial.totalCount).toBe(12);
 
     // 3. Ensure no overlap between jeans and shirt reviews
     const jeansIds = new Set(jeansReviews.reviews.map((r) => r.id));

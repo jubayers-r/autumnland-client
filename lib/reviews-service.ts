@@ -33,7 +33,8 @@ export async function fetchProductReviews(params: ReviewFilterParams): Promise<R
   const allReviews = getInMemoryReviews();
 
   // 1. Filter strictly by productId
-  let filtered = allReviews.filter((rev) => !productId || rev.productId === productId);
+  const productReviews = allReviews.filter((rev) => !productId || rev.productId === productId);
+  let filtered = [...productReviews];
 
   // 2. Filter by rating (e.g., 5, 4, 3, etc.)
   if (rating !== null && rating !== undefined) {
@@ -96,8 +97,8 @@ export async function fetchProductReviews(params: ReviewFilterParams): Promise<R
     }
   });
 
-  // Calculate statistics
-  const totalCount = allReviews.length;
+  // Calculate statistics (scoped strictly to this product)
+  const totalCount = productReviews.length;
   const filteredCount = filtered.length;
   const totalPages = Math.ceil(filteredCount / limit);
 
@@ -110,7 +111,7 @@ export async function fetchProductReviews(params: ReviewFilterParams): Promise<R
     5: 0,
   };
   let ratingSum = 0;
-  for (const rev of allReviews) {
+  for (const rev of productReviews) {
     const star = Math.min(5, Math.max(1, Math.round(rev.rating))) as 1 | 2 | 3 | 4 | 5;
     ratingDistribution[star] = (ratingDistribution[star] || 0) + 1;
     ratingSum += rev.rating;
