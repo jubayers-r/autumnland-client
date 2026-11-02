@@ -6,7 +6,7 @@ test.describe("Product Details Page & Navigation", () => {
     await page.goto("/");
 
     // Click on the first product card: "T-shirt with Tape Details"
-    const productCard = page.locator("#new-arrivals [data-product-card]").first();
+    const productCard = page.locator("#newest [data-product-card]").first();
     await expect(productCard).toBeVisible();
 
     const productLink = productCard.getByRole("link");

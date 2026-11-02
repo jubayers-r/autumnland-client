@@ -104,7 +104,7 @@ test.describe("Landing Page Hero & Brand Banner", () => {
     // Tablet viewport screenshot
     await page.setViewportSize({ width: 768, height: 1024 });
     await page.goto("/");
-    await page.locator("#new-arrivals").screenshot({ path: "test-results/tablet-preview.png" });
+    await page.locator("#newest").screenshot({ path: "test-results/tablet-preview.png" });
 
     await page.setViewportSize({ width: 1280, height: 800 });
     await page.goto("/");
@@ -159,7 +159,7 @@ test.describe("Landing Page Hero & Brand Banner", () => {
     await page.setViewportSize({ width: 1280, height: 800 });
     await page.goto("/");
 
-    const firstCard = page.locator("#new-arrivals [data-product-card]").first();
+    const firstCard = page.locator("#newest [data-product-card]").first();
     await firstCard.scrollIntoViewIfNeeded();
 
     // Hover over product card

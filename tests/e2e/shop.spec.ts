@@ -299,7 +299,7 @@ test.describe("Shop & Category Catalog Page", () => {
   }) => {
     await page.setViewportSize({ width: 1280, height: 850 });
     // Go to filtered URL
-    await page.goto("/shop?category=jeans&minPrice=100&sort=newest");
+    await page.goto("/shop?dressStyle=jeans&minPrice=100&sort=newest");
     await expect(page.getByText("Skinny Fit Jeans").first()).toBeVisible();
 
     // Click Shop in navbar
