@@ -16,7 +16,7 @@ export function HeroSection({ className }: HeroSectionProps) {
       <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:pl-10 xl:pl-14 lg:pr-0">
         <div className="flex flex-col lg:grid lg:grid-cols-12 items-end">
           {/* Left Column: Headline, Copy, CTA, and Stats */}
-          <div className="w-full lg:col-span-7 flex flex-col justify-center text-left pt-6 sm:pt-8 lg:pt-16 pb-8 sm:pb-12 lg:pb-24">
+          <div className="w-full lg:col-span-7 flex flex-col justify-center text-left sm:text-center lg:text-left items-start sm:items-center lg:items-start pt-6 sm:pt-8 lg:pt-16 pb-8 sm:pb-12 lg:pb-24">
             <h1 className="font-heading font-black text-4xl sm:text-5xl lg:text-[64px] leading-[1.05] sm:leading-[1.0] lg:leading-[64px] tracking-tight uppercase text-foreground">
               FIND CLOTHES
               <br />
@@ -25,12 +25,12 @@ export function HeroSection({ className }: HeroSectionProps) {
               YOUR STYLE
             </h1>
 
-            <p className="mt-4 sm:mt-6 text-sm sm:text-base text-muted-foreground max-w-lg leading-relaxed font-sans">
+            <p className="mt-4 sm:mt-6 text-sm sm:text-base text-muted-foreground max-w-lg leading-relaxed font-sans mx-auto lg:mx-0">
               Browse through our diverse range of meticulously crafted garments, designed to bring
               out your individuality and cater to your sense of style.
             </p>
 
-            <div className="mt-6 sm:mt-8 w-full sm:w-auto">
+            <div className="mt-6 sm:mt-8 w-full sm:w-auto flex justify-start sm:justify-center lg:justify-start">
               <Link
                 href="/shop"
                 className="w-full sm:w-auto inline-flex items-center justify-center px-12 sm:px-14 py-3.5 sm:py-4 rounded-full bg-black text-white text-sm sm:text-base font-medium hover:bg-black/85 active:scale-[0.99] transition-all shadow-sm"
