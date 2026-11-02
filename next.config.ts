@@ -30,12 +30,14 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   cacheComponents: true,
   partialPrefetching: true,
+  allowedDevOrigins: ["10.10.13.25"],
   experimental: {
     agentUpgrade: "security",
   },
   images: {
     formats: ["image/avif", "image/webp"],
   },
+
   async headers() {
     return [
       {
