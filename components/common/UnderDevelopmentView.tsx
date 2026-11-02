@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowLeft, Clock, ShoppingBag } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { renderHeadingText } from "@/lib/utils";
 
 interface UnderDevelopmentViewProps {
   pageName: string;
@@ -21,7 +22,7 @@ export function UnderDevelopmentView({
 
       {/* Main heading */}
       <h1 className="text-3xl sm:text-4xl md:text-5xl font-black font-heading tracking-tight uppercase max-w-xl text-foreground">
-        {pageName}
+        {renderHeadingText(pageName)}
       </h1>
 
       <p className="mt-3 text-sm sm:text-base text-muted-foreground max-w-md mx-auto leading-relaxed">

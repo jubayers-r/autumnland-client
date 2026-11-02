@@ -118,4 +118,62 @@ test.describe("Header & Navigation Component", () => {
     await expect(staticNav).toBeInViewport();
     await expect(floatingNav).not.toBeVisible();
   });
+
+  test("renders tablet navigation with search bar and drops floating search on scroll", async ({
+    page,
+  }) => {
+    // Set tablet viewport
+    await page.setViewportSize({ width: 768, height: 1024 });
+    await page.goto("/");
+
+    const staticNav = page.getByTestId("static-mobile-nav");
+    const floatingNav = page.getByTestId("floating-mobile-nav");
+
+    // Unscrolled: static mobile/tablet nav is visible, floating is hidden
+    await expect(staticNav).toBeInViewport();
+    await expect(floatingNav).not.toBeVisible();
+
+    // Verify brand logo, hamburger menu, search bar, and action icons on tablet
+    await expect(staticNav.getByRole("link", { name: "AUTUMN LAND" })).toBeVisible();
+    await expect(staticNav.getByRole("button", { name: "Open navigation menu" })).toBeVisible();
+    await expect(staticNav.getByPlaceholder("Search for products...")).toBeVisible();
+    await expect(staticNav.getByRole("link", { name: "Shopping Cart" })).toBeVisible();
+    await expect(staticNav.getByRole("link", { name: "User Account" })).toBeVisible();
+
+    // Capture unscrolled tablet navbar screenshot
+    await page.screenshot({ path: "test-results/tablet-navbar.png" });
+
+    // Scroll down past the entire static header
+    await page.evaluate(() => {
+      window.scrollTo(0, 300);
+      window.dispatchEvent(new Event("scroll"));
+    });
+    await page.waitForTimeout(400);
+
+    // On scroll past navbar: floating search drops down from top
+    await expect(floatingNav).toBeVisible();
+    await expect(floatingNav).toBeInViewport();
+    await expect(floatingNav.getByRole("button", { name: "Open navigation menu" })).toBeVisible();
+    await expect(floatingNav.getByPlaceholder("Search for products...")).toBeVisible();
+    await expect(floatingNav.getByRole("link", { name: "Shopping Cart" })).toBeVisible();
+
+    // Open drawer navigation menu on tablet
+    await floatingNav.getByRole("button", { name: "Open navigation menu" }).click();
+    await expect(page.getByRole("link", { name: "All Collections" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Casual" })).toBeVisible();
+
+    // Close drawer
+    await page.getByRole("button", { name: "Close" }).click();
+    await page.waitForTimeout(200);
+
+    // Scroll back to top: floating search hides
+    await page.evaluate(() => {
+      window.scrollTo(0, 0);
+      window.dispatchEvent(new Event("scroll"));
+    });
+    await page.waitForTimeout(400);
+
+    await expect(staticNav).toBeInViewport();
+    await expect(floatingNav).not.toBeVisible();
+  });
 });

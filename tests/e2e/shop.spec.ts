@@ -299,8 +299,8 @@ test.describe("Shop & Category Catalog Page", () => {
   }) => {
     await page.setViewportSize({ width: 1280, height: 850 });
     // Go to filtered URL
-    await page.goto("/shop?category=jeans&minPrice=100&sort=newest");
-    await expect(page.getByText("Skinny Fit Jeans").first()).toBeVisible();
+    await page.goto("/shop?dressStyle=Casual&minPrice=100&sort=newest");
+    await expect(page.getByText("Faded Skinny Jeans").first()).toBeVisible();
 
     // Click Shop in navbar
     const shopNavBtn = page.getByRole("button", { name: "Shop", exact: true });

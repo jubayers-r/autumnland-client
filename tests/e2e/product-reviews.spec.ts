@@ -80,7 +80,7 @@ test.describe("Product Tabs, Reviews & Filter Functionality", () => {
 
     const dialog = page.getByRole("dialog");
     await expect(dialog).toBeVisible();
-    await expect(page.getByRole("heading", { name: /Filter & Sort Reviews/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Filter [&-] Sort Reviews/i })).toBeVisible();
 
     // Select 5 Stars filter
     await page.getByRole("button", { name: "5 Stars" }).click();

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowRight, ChevronRight } from "lucide-react";
 import { BRANDS } from "@/lib/brands-data";
 import { CATALOG_PRODUCTS } from "@/lib/catalog-data";
+import { renderHeadingText } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "Featured Brands | AUTUMN LAND",
@@ -76,7 +77,7 @@ export default function BrandsPage() {
                   {/* Brand Info */}
                   <div className="flex items-center justify-between mb-2">
                     <h2 className="font-heading font-bold text-xl sm:text-2xl text-white dark:text-foreground">
-                      {brand.name}
+                      {renderHeadingText(brand.name)}
                     </h2>
                     <span className="text-2xs sm:text-xs font-semibold uppercase tracking-wider px-2.5 py-1 rounded-full bg-white/10 dark:bg-white/10 text-white/90">
                       {count} {count === 1 ? "Product" : "Products"}

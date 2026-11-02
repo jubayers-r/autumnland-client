@@ -1,6 +1,6 @@
 import * as React from "react";
 import Link from "next/link";
-import { cn } from "@/lib/utils";
+import { cn, renderHeadingText } from "@/lib/utils";
 import type { Product } from "./products-data";
 import { ProductCard } from "./ProductCard";
 
@@ -41,7 +41,7 @@ export function ProductSection({
           titleClassName
         )}
       >
-        {title}
+        {renderHeadingText(title)}
       </h2>
 
       {/* Product List: 2 cards per row on mobile (2 rows = 4 cards), 4-column Grid on Desktop */}

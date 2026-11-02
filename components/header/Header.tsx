@@ -9,7 +9,7 @@ interface HeaderProps {
 
 export function Header({ className }: HeaderProps) {
   return (
-    <header className={cn("w-full relative md:sticky md:top-0 md:z-40 flex flex-col", className)}>
+    <header className={cn("w-full relative lg:sticky lg:top-0 lg:z-40 flex flex-col", className)}>
       <TopBanner />
       <Navbar />
     </header>

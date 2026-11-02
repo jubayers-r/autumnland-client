@@ -1,7 +1,7 @@
+import { NEW_ARRIVALS, ProductSection, TOP_SELLING } from "@/components/home";
 import { BrandBanner } from "@/components/home/BrandBanner";
 import { BrowseByDressStyle } from "@/components/home/BrowseByDressStyle";
 import { HeroSection } from "@/components/home/HeroSection";
-import { NEW_ARRIVALS, ProductSection, TOP_SELLING } from "@/components/home";
 import { TestimonialsSection } from "@/components/home/TestimonialsSection";
 
 export default function Home() {
@@ -10,10 +10,10 @@ export default function Home() {
       <HeroSection />
       <BrandBanner />
       <ProductSection
-        id="new-arrivals"
+        id="newest"
         title="NEW ARRIVALS"
         products={NEW_ARRIVALS}
-        viewAllHref="/shop?category=new-arrivals"
+        viewAllHref="/shop?sort=newest"
         priority
       />
       <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12">
@@ -23,7 +23,7 @@ export default function Home() {
         id="top-selling"
         title="TOP SELLING"
         products={TOP_SELLING}
-        viewAllHref="/shop?category=top-selling"
+        viewAllHref="/shop"
       />
       <BrowseByDressStyle />
       <TestimonialsSection />
