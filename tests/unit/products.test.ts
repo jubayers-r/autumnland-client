@@ -159,4 +159,12 @@ describe("Product showcase components and datasets", () => {
     const nonExistent = await getProductById("unknown-product-xyz");
     expect(nonExistent).toBeNull();
   });
+
+  it("contains valid sales count numbers across all product showcases matching mock data", () => {
+    const allProducts = [...NEW_ARRIVALS, ...TOP_SELLING, ...YOU_MIGHT_ALSO_LIKE];
+    for (const p of allProducts) {
+      expect(typeof p.salesCount).toBe("number");
+      expect(p.salesCount).toBeGreaterThan(0);
+    }
+  });
 });

@@ -27,3 +27,8 @@ if (!parsed.success) {
 }
 
 export const env = parsed.data;
+
+export const isDevelopment =
+  env.NODE_ENV === "development" || process.env.NODE_ENV === "development";
+export const isProduction = env.NODE_ENV === "production" || process.env.NODE_ENV === "production";
+export const isTest = env.NODE_ENV === "test" || process.env.NODE_ENV === "test";

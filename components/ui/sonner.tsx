@@ -16,13 +16,14 @@ const Toaster = ({ ...props }: ToasterProps) => {
   return (
     <Sonner
       theme={theme as ToasterProps["theme"]}
-      className="toaster group"
+      className="toaster group select-none"
+      visibleToasts={1}
       icons={{
-        success: <CircleCheckIcon className="size-4 text-foreground" />,
-        info: <InfoIcon className="size-4 text-foreground" />,
-        warning: <TriangleAlertIcon className="size-4 text-foreground" />,
-        error: <OctagonXIcon className="size-4 text-foreground" />,
-        loading: <Loader2Icon className="size-4 animate-spin text-foreground" />,
+        success: <CircleCheckIcon className="size-4 text-foreground select-none" />,
+        info: <InfoIcon className="size-4 text-foreground select-none" />,
+        warning: <TriangleAlertIcon className="size-4 text-foreground select-none" />,
+        error: <OctagonXIcon className="size-4 text-foreground select-none" />,
+        loading: <Loader2Icon className="size-4 animate-spin text-foreground select-none" />,
       }}
       style={
         {
@@ -30,6 +31,8 @@ const Toaster = ({ ...props }: ToasterProps) => {
           "--normal-text": "var(--foreground)",
           "--normal-border": "var(--border)",
           "--border-radius": "16px",
+          userSelect: "none",
+          WebkitUserSelect: "none",
         } as React.CSSProperties
       }
       toastOptions={{
@@ -49,17 +52,20 @@ const Toaster = ({ ...props }: ToasterProps) => {
           cursor: "pointer",
           border: "none",
           boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+          userSelect: "none",
         },
         classNames: {
           toast:
-            "group toast group-[.toaster]:bg-background group-[.toaster]:text-foreground group-[.toaster]:border-border group-[.toaster]:shadow-lg group-[.toaster]:rounded-[16px] font-sans p-4",
-          description: "group-[.toast]:text-muted-foreground font-sans text-xs sm:text-sm",
+            "group toast group-[.toaster]:bg-background group-[.toaster]:text-foreground group-[.toaster]:border-border group-[.toaster]:shadow-lg group-[.toaster]:rounded-[16px] font-sans p-4 select-none",
+          title: "select-none font-medium text-sm text-foreground",
+          description:
+            "group-[.toast]:text-muted-foreground font-sans text-xs sm:text-sm select-none",
           actionButton:
-            "!h-9 !px-4 !rounded-full !bg-black !text-white dark:!bg-white dark:!text-black hover:opacity-85 font-medium text-xs sm:text-sm cursor-pointer shadow-xs shrink-0 transition-opacity",
+            "!h-9 !px-4 !rounded-full !bg-black !text-white dark:!bg-white dark:!text-black hover:opacity-85 font-medium text-xs sm:text-sm cursor-pointer shadow-xs shrink-0 transition-opacity select-none",
           cancelButton:
-            "group-[.toast]:bg-muted group-[.toast]:text-muted-foreground group-[.toast]:rounded-full",
+            "group-[.toast]:bg-muted group-[.toast]:text-muted-foreground group-[.toast]:rounded-full select-none",
           closeButton:
-            "group-[.toast]:border-border group-[.toast]:bg-background group-[.toast]:text-foreground",
+            "group-[.toast]:border-border group-[.toast]:bg-background group-[.toast]:text-foreground select-none",
         },
       }}
       {...props}

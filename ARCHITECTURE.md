@@ -27,9 +27,12 @@ The repository follows a clean Next.js App Router structure:
 │   ├── globals.css         # Tailwind v4 configuration, theme tokens (light/dark)
 │   ├── layout.tsx          # RootLayout with Satoshi & Integral CF fonts, ThemeProvider, QueryProvider, Header, Toaster
 │   ├── page.tsx            # Starter home page & component showcase
+│   ├── brands/
+│   │   └── page.tsx        # Brand partner showcase with marquee logos and direct catalog filtering
 │   ├── cart/
 │   │   └── page.tsx        # Shopping cart view with item list and order summary
 │   ├── shop/
+│   │   ├── page.tsx        # Shop & category catalog page with dynamic filters and pagination
 │   │   └── product/[id]/   # Product detail page with dynamic routing & SSG/PPR
 │   ├── error.tsx           # Global error boundary (client component)
 │   ├── not-found.tsx       # 404 handler (server component)
@@ -37,19 +40,23 @@ The repository follows a clean Next.js App Router structure:
 │   ├── sitemap.ts          # Dynamic SEO sitemap.xml generator
 │   └── icon.svg            # Favicon SVG
 ├── components/
-│   ├── cart/               # Shopping cart components (CartItemCard, CartItemList, OrderSummary)
+│   ├── cart/               # Shopping cart components (CartItemCard, CartItemList, OrderSummary, CartMobileFooter)
 │   ├── footer/             # Footer components (Footer, Newsletter, PaymentBadges, SocialLinks)
 │   ├── header/             # Header components (TopBanner, Navbar, Header)
 │   ├── home/               # Homepage components (HeroSection, BrandBanner, ProductSection, ProductCard, BrowseByDressStyle, TestimonialsSection)
 │   ├── product/            # Product detail components (ProductDetailGallery, ProductDetailOrder, ProductSectionTabs, ProductReviewsSection, ProductDetailsContent, ProductFaqsContent)
 │   │   ├── reviews/        # Product review primitives (ProductReviewsSection, ReviewCard, ReviewFilterDialog, WriteReviewDialog, ReviewStarRating)
 │   │   └── tabs/           # Product info tabs (ProductSectionTabs, ProductDetailsContent, ProductFaqsContent)
+│   ├── shop/               # Shop catalog components (ShopView, FilterSidebar, MobileFilterSheet, FilterContent, ShopHeader, ShopPagination, ShopProductGrid)
 │   ├── providers/          # Application providers (QueryProvider, ThemeProvider)
-│   ├── ui/                 # Atomic shadcn/ui primitives (Button, Dialog, Card, Input, etc.)
+│   ├── ui/                 # Atomic shadcn/ui primitives (Button, Dialog, Card, Input, Slider, etc.)
 │   └── ErrorBoundary.tsx   # Isolated component error boundary with retry fallback
 ├── lib/
 │   ├── api.ts              # Native fetcher with typed ApiError handling
+│   ├── brands-data.ts      # Partner fashion brand metadata and marquee logo assets
 │   ├── cart-store.ts       # Shopping cart Zustand store (items, promo codes, subtotal/total calculations)
+│   ├── catalog-data.ts     # Curated catalog dataset matching design mockups (Casual, Formal, Party, Gym)
+│   ├── catalog-service.ts  # Decoupled catalog service layer with filters, sorting, and pagination
 │   ├── env.ts              # Runtime environment validation with Zod
 │   ├── products.ts         # Product data service & backend-ready API abstraction
 │   ├── reviews-data.ts     # Curated reference reviews matching design specifications
@@ -57,8 +64,8 @@ The repository follows a clean Next.js App Router structure:
 │   ├── store.ts            # Global client UI store (Zustand)
 │   └── utils.ts            # Core cn() class merger (clsx + tailwind-merge)
 ├── tests/
-│   ├── unit/               # Instant Bun test specs (state, api, env, products, reviews validation)
-│   └── e2e/                # Playwright end-to-end browser test specs (cart, header, footer, home, product-detail, product-reviews)
+│   ├── unit/               # Instant Bun test specs (state, api, env, products, reviews, catalog validation)
+│   └── e2e/                # Playwright end-to-end browser test specs (cart, header, footer, home, product-detail, product-reviews, shop)
 ├── types/
 │   ├── index.ts            # Shared application types
 │   ├── product.ts          # Product domain models & interfaces

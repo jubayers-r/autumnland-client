@@ -30,6 +30,8 @@ export function ProductDetailOrder({ product }: ProductDetailOrderProps) {
       productId: product.id,
       title: product.title,
       price: product.price,
+      originalPrice: product.originalPrice,
+      discount: product.discount,
       imageSrc: product.images[0],
       size: selectedSize,
       color: selectedColor.name,
@@ -37,6 +39,7 @@ export function ProductDetailOrder({ product }: ProductDetailOrderProps) {
     });
     toast.success("Added to Cart!", {
       description: `${title} (${selectedSize}, ${selectedColor.name}) × ${quantity}`,
+      duration: 3000,
       action: {
         label: "View Cart",
         onClick: () => router.push("/cart"),

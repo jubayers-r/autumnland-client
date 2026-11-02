@@ -32,8 +32,8 @@ export async function fetchProductReviews(params: ReviewFilterParams): Promise<R
   // In API mode, this would be: const res = await fetch(`/api/products/${productId}/reviews?${new URLSearchParams(...)}`);
   const allReviews = getInMemoryReviews();
 
-  // 1. Filter by productId (or use fallback for demonstration if no product reviews exist)
-  let filtered = allReviews.filter((rev) => !productId || rev.productId === productId || true);
+  // 1. Filter strictly by productId
+  let filtered = allReviews.filter((rev) => !productId || rev.productId === productId);
 
   // 2. Filter by rating (e.g., 5, 4, 3, etc.)
   if (rating !== null && rating !== undefined) {

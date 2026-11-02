@@ -49,8 +49,13 @@ test.describe("Header & Navigation Component", () => {
 
     await shopBtn.hover();
     await expect(page.getByRole("link", { name: "All Collections" })).toBeVisible();
-    await expect(page.getByRole("link", { name: "Casual Style" })).toBeVisible();
-    await expect(page.getByRole("link", { name: "Formal Style" })).toBeVisible();
+    const casualLink = page.getByRole("link", { name: "Casual Style" });
+    await expect(casualLink).toBeVisible();
+    await expect(casualLink).toHaveAttribute("href", "/shop?dressStyle=Casual");
+    await expect(page.getByRole("link", { name: "Formal Style" })).toHaveAttribute(
+      "href",
+      "/shop?dressStyle=Formal"
+    );
   });
 
   test("renders mobile navigation with search bar and transitions on scroll", async ({ page }) => {

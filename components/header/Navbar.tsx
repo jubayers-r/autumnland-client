@@ -2,9 +2,20 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { Menu, Search, ShoppingCart, CircleUser, ChevronDown, Sparkles } from "lucide-react";
+import { useRouter, usePathname } from "next/navigation";
+import {
+  Menu,
+  Search,
+  ShoppingCart,
+  CircleUser,
+  ChevronDown,
+  Sparkles,
+  Check,
+  Trash2,
+} from "lucide-react";
+import { toast } from "sonner";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetClose } from "@/components/ui/sheet";
+import { useCartStore } from "@/lib/cart-store";
 import { cn } from "@/lib/utils";
 
 interface NavbarProps {
@@ -13,19 +24,42 @@ interface NavbarProps {
 
 export function Navbar({ className }: NavbarProps) {
   const router = useRouter();
+  const pathname = usePathname();
+  const isCartPage = pathname === "/cart";
+
   const [searchQuery, setSearchQuery] = React.useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
   const [showFloatingSearch, setShowFloatingSearch] = React.useState(false);
   const staticNavRef = React.useRef<HTMLDivElement>(null);
 
+  // Cart store subscriptions for mobile cart sticky header
+  const cartItems = useCartStore((state) => state.items);
+  const selectedItemIds = useCartStore((state) => state.selectedItemIds);
+  const toggleSelectAll = useCartStore((state) => state.toggleSelectAll);
+  const removeSelectedItems = useCartStore((state) => state.removeSelectedItems);
+  const getTotal = useCartStore((state) => state.getTotal);
+  const getSelectedOriginalSubtotal = useCartStore((state) => state.getSelectedOriginalSubtotal);
+
+  const selectedCount = selectedItemIds === null ? cartItems.length : selectedItemIds.length;
+  const allSelected = cartItems.length > 0 && selectedCount === cartItems.length;
+  const payableTotal = getTotal();
+  const originalSubtotal = getSelectedOriginalSubtotal();
+
+  const handleDeleteSelected = () => {
+    if (selectedCount === 0) return;
+    removeSelectedItems();
+    toast.success(`Removed ${selectedCount} item${selectedCount > 1 ? "s" : ""} from cart`);
+  };
+
   React.useEffect(() => {
     const checkVisibility = () => {
-      if (staticNavRef.current) {
+      if (staticNavRef.current && window.innerWidth < 768) {
         const rect = staticNavRef.current.getBoundingClientRect();
         // When rect.bottom <= 0, both the static navbar and search bar are invisible (scrolled past)
         setShowFloatingSearch(rect.bottom <= 0);
       } else {
-        setShowFloatingSearch(window.scrollY > 130);
+        // Tablet and desktop scroll detection past navbar height
+        setShowFloatingSearch(window.scrollY > 80);
       }
     };
 
@@ -69,7 +103,7 @@ export function Navbar({ className }: NavbarProps) {
           </SheetClose>
           <SheetClose asChild>
             <Link
-              href="/shop?category=casual"
+              href="/shop?dressStyle=Casual"
               className="px-3 py-2 text-base font-medium rounded-lg hover:bg-secondary transition-colors"
             >
               Casual
@@ -77,7 +111,7 @@ export function Navbar({ className }: NavbarProps) {
           </SheetClose>
           <SheetClose asChild>
             <Link
-              href="/shop?category=formal"
+              href="/shop?dressStyle=Formal"
               className="px-3 py-2 text-base font-medium rounded-lg hover:bg-secondary transition-colors"
             >
               Formal
@@ -85,7 +119,7 @@ export function Navbar({ className }: NavbarProps) {
           </SheetClose>
           <SheetClose asChild>
             <Link
-              href="/shop?category=party"
+              href="/shop?dressStyle=Party"
               className="px-3 py-2 text-base font-medium rounded-lg hover:bg-secondary transition-colors"
             >
               Party
@@ -93,7 +127,7 @@ export function Navbar({ className }: NavbarProps) {
           </SheetClose>
           <SheetClose asChild>
             <Link
-              href="/shop?category=gym"
+              href="/shop?dressStyle=Gym"
               className="px-3 py-2 text-base font-medium rounded-lg hover:bg-secondary transition-colors"
             >
               Gym & Fitness
@@ -129,7 +163,7 @@ export function Navbar({ className }: NavbarProps) {
           </SheetClose>
           <SheetClose asChild>
             <Link
-              href="/#brands"
+              href="/brands"
               className="px-3 py-2 text-base font-medium rounded-lg hover:bg-secondary transition-colors"
             >
               Top Brands
@@ -167,46 +201,103 @@ export function Navbar({ className }: NavbarProps) {
       <div
         data-testid="floating-mobile-nav"
         className={cn(
-          "fixed top-0 left-0 right-0 z-50 md:hidden bg-background/95 backdrop-blur-md border-b border-border/40 shadow-xs transition-all duration-300 ease-in-out",
+          "fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-b border-border/40 shadow-xs transition-all duration-300 ease-in-out",
+          isCartPage ? "lg:hidden" : "md:hidden",
           showFloatingSearch
             ? "translate-y-0 opacity-100 visible pointer-events-auto"
             : "-translate-y-full opacity-0 invisible pointer-events-none"
         )}
       >
-        <div className="h-14 px-3.5 flex items-center gap-3 justify-between">
-          <button
-            type="button"
-            onClick={() => setMobileMenuOpen(true)}
-            aria-label="Open navigation menu"
-            className="p-1.5 -ml-1 text-foreground hover:bg-secondary rounded-full shrink-0 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-          >
-            <Menu className="size-6" />
-          </button>
+        {isCartPage && cartItems.length > 0 ? (
+          /* Mobile Scrolled Cart Header with Select All, Trash & Payable Total */
+          <div className="h-14 px-3 sm:px-4 flex items-center justify-between gap-2 w-full">
+            {/* Left: Checkbox + Select All ( X/Y Items ) + Trash icon */}
+            <div className="flex items-center gap-2 sm:gap-2.5 min-w-0">
+              <button
+                type="button"
+                role="checkbox"
+                aria-checked={allSelected}
+                aria-label="Select or deselect all items"
+                onClick={toggleSelectAll}
+                className={cn(
+                  "w-5 h-5 rounded-[4px] border flex items-center justify-center shrink-0 transition-colors cursor-pointer focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring",
+                  allSelected
+                    ? "bg-black text-white dark:bg-white dark:text-black border-black dark:border-white"
+                    : "border-black/40 dark:border-white/40 bg-background hover:border-black dark:hover:border-white"
+                )}
+              >
+                {allSelected && <Check className="w-3.5 h-3.5 stroke-[3]" />}
+              </button>
 
-          {/* Expanded Search Bar */}
-          <form
-            onSubmit={handleSearchSubmit}
-            className="flex-1 flex items-center gap-2.5 bg-[#F0F0F0] dark:bg-muted/80 rounded-full px-3.5 py-1.5 focus-within:ring-2 focus-within:ring-foreground/20"
-          >
-            <Search className="size-4 text-muted-foreground shrink-0" />
-            <input
-              type="search"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search for products..."
-              className="w-full bg-transparent text-sm placeholder:text-muted-foreground focus:outline-none border-none text-foreground"
-            />
-          </form>
+              <span className="text-xs sm:text-sm font-semibold text-foreground truncate select-none">
+                Select All ({selectedCount}/{cartItems.length} Items)
+              </span>
 
-          {/* Right Cart Icon */}
-          <Link
-            href="/cart"
-            aria-label="Shopping Cart"
-            className="relative p-1.5 text-foreground hover:opacity-75 shrink-0 transition-opacity rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-          >
-            <ShoppingCart className="size-6" />
-          </Link>
-        </div>
+              <button
+                type="button"
+                onClick={handleDeleteSelected}
+                disabled={selectedCount === 0}
+                aria-label="Remove selected items from cart"
+                className="p-1.5 text-muted-foreground hover:text-[#FF3333] disabled:opacity-30 disabled:cursor-not-allowed transition-colors shrink-0 cursor-pointer focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring rounded-md"
+              >
+                <Trash2 className="w-4 h-4 sm:w-4.5 sm:h-4.5 stroke-[1.8]" />
+              </button>
+            </div>
+
+            {/* Right: Your Payable Total */}
+            <div className="flex flex-col items-end shrink-0 pl-1">
+              <span className="text-[10px] sm:text-[11px] text-muted-foreground font-medium leading-tight">
+                Your Payable Total:
+              </span>
+              <div className="flex items-baseline gap-1 sm:gap-1.5 leading-tight">
+                {payableTotal > 0 && originalSubtotal > payableTotal && (
+                  <span className="text-xs sm:text-sm text-muted-foreground line-through font-semibold">
+                    ${originalSubtotal}
+                  </span>
+                )}
+                <span className="text-sm sm:text-base font-bold text-foreground font-sans">
+                  ${payableTotal}
+                </span>
+              </div>
+            </div>
+          </div>
+        ) : (
+          /* Standard Floating Mobile Search & Icons */
+          <div className="h-14 px-3.5 flex items-center gap-3 justify-between">
+            <button
+              type="button"
+              onClick={() => setMobileMenuOpen(true)}
+              aria-label="Open navigation menu"
+              className="p-1.5 -ml-1 text-foreground hover:bg-secondary rounded-full shrink-0 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              <Menu className="size-6" />
+            </button>
+
+            {/* Expanded Search Bar */}
+            <form
+              onSubmit={handleSearchSubmit}
+              className="flex-1 flex items-center gap-2.5 bg-[#F0F0F0] dark:bg-muted/80 rounded-full px-3.5 py-1.5 focus-within:ring-2 focus-within:ring-foreground/20"
+            >
+              <Search className="size-4 text-muted-foreground shrink-0" />
+              <input
+                type="search"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search for products..."
+                className="w-full bg-transparent text-sm placeholder:text-muted-foreground focus:outline-none border-none text-foreground"
+              />
+            </form>
+
+            {/* Right Cart Icon */}
+            <Link
+              href="/cart"
+              aria-label="Shopping Cart"
+              className="relative p-1.5 text-foreground hover:opacity-75 shrink-0 transition-opacity rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              <ShoppingCart className="size-6" />
+            </Link>
+          </div>
+        )}
       </div>
 
       <nav
@@ -301,13 +392,14 @@ export function Navbar({ className }: NavbarProps) {
           <div className="flex items-center gap-5 lg:gap-8 text-sm lg:text-base font-normal text-foreground shrink-0">
             {/* Shop Hover Dropdown */}
             <div className="relative group py-2">
-              <button
-                type="button"
+              <Link
+                href="/shop"
+                role="button"
                 className="flex items-center gap-1 hover:text-muted-foreground transition-colors focus:outline-none rounded px-1 text-sm lg:text-base font-normal text-foreground"
               >
                 <span>Shop</span>
                 <ChevronDown className="size-4 text-foreground/70 transition-transform duration-200 group-hover:rotate-180" />
-              </button>
+              </Link>
 
               {/* Bridge & Dropdown Menu Container */}
               <div className="absolute top-full left-0 pt-2 opacity-0 translate-y-1 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto transition-all duration-200 z-50">
@@ -323,25 +415,25 @@ export function Navbar({ className }: NavbarProps) {
                       All Collections
                     </Link>
                     <Link
-                      href="/shop?category=casual"
+                      href="/shop?dressStyle=Casual"
                       className="px-3 py-2 text-sm font-medium rounded-lg hover:bg-secondary transition-colors text-foreground block"
                     >
                       Casual Style
                     </Link>
                     <Link
-                      href="/shop?category=formal"
+                      href="/shop?dressStyle=Formal"
                       className="px-3 py-2 text-sm font-medium rounded-lg hover:bg-secondary transition-colors text-foreground block"
                     >
                       Formal Style
                     </Link>
                     <Link
-                      href="/shop?category=party"
+                      href="/shop?dressStyle=Party"
                       className="px-3 py-2 text-sm font-medium rounded-lg hover:bg-secondary transition-colors text-foreground block"
                     >
                       Party Style
                     </Link>
                     <Link
-                      href="/shop?category=gym"
+                      href="/shop?dressStyle=Gym"
                       className="px-3 py-2 text-sm font-medium rounded-lg hover:bg-secondary transition-colors text-foreground block"
                     >
                       Gym & Athletic
@@ -363,7 +455,7 @@ export function Navbar({ className }: NavbarProps) {
             >
               New Arrivals
             </Link>
-            <Link href="/#brands" className="hover:text-muted-foreground transition-colors">
+            <Link href="/brands" className="hover:text-muted-foreground transition-colors">
               Brands
             </Link>
           </div>

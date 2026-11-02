@@ -1,48 +1,11 @@
 import * as React from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import { BRANDS } from "@/lib/brands-data";
 
 interface BrandBannerProps {
   className?: string;
 }
-
-const BRANDS = [
-  {
-    name: "Versace",
-    src: "/assets/header/header-brand-logos/Group.png",
-    width: 166,
-    height: 33,
-    logoClass: "h-5 sm:h-6 lg:h-7",
-  },
-  {
-    name: "Zara",
-    src: "/assets/header/header-brand-logos/zara-logo-1 1.png",
-    width: 91,
-    height: 38,
-    logoClass: "h-5.5 sm:h-7 lg:h-8.5",
-  },
-  {
-    name: "Gucci",
-    src: "/assets/header/header-brand-logos/gucci-logo-1 1.png",
-    width: 156,
-    height: 36,
-    logoClass: "h-5 sm:h-6 lg:h-7",
-  },
-  {
-    name: "Prada",
-    src: "/assets/header/header-brand-logos/prada-logo-1 1.png",
-    width: 194,
-    height: 32,
-    logoClass: "h-4.5 sm:h-5.5 lg:h-6.5",
-  },
-  {
-    name: "Calvin Klein",
-    src: "/assets/header/header-brand-logos/Group-1.png",
-    width: 207,
-    height: 33,
-    logoClass: "h-4.5 sm:h-5.5 lg:h-6.5",
-  },
-];
 
 // Double the items per set to ensure continuous, seamlessly spaced coverage (8 logos visible on biggest screens)
 const BRAND_SET = [...BRANDS, ...BRANDS];

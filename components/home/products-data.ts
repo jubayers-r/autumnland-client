@@ -8,6 +8,7 @@ export interface Product {
   originalPrice?: number;
   discount?: string;
   href: string;
+  salesCount?: number;
 }
 
 export const NEW_ARRIVALS: Product[] = [
@@ -18,6 +19,7 @@ export const NEW_ARRIVALS: Product[] = [
     imageAlt: "Black T-shirt with tape details on sleeves",
     rating: 4.5,
     price: 120,
+    salesCount: 1120,
     href: "/shop/product/t-shirt-tape-details",
   },
   {
@@ -29,6 +31,7 @@ export const NEW_ARRIVALS: Product[] = [
     price: 240,
     originalPrice: 260,
     discount: "-20%",
+    salesCount: 1100,
     href: "/shop/product/skinny-fit-jeans",
   },
   {
@@ -38,6 +41,7 @@ export const NEW_ARRIVALS: Product[] = [
     imageAlt: "Navy and red checkered casual long-sleeve shirt",
     rating: 4.5,
     price: 180,
+    salesCount: 890,
     href: "/shop/product/checkered-shirt",
   },
   {
@@ -49,6 +53,7 @@ export const NEW_ARRIVALS: Product[] = [
     price: 130,
     originalPrice: 160,
     discount: "-30%",
+    salesCount: 760,
     href: "/shop/product/sleeve-striped-t-shirt",
   },
 ];
@@ -63,6 +68,7 @@ export const TOP_SELLING: Product[] = [
     price: 212,
     originalPrice: 232,
     discount: "-20%",
+    salesCount: 1340,
     href: "/shop/product/vertical-striped-shirt",
   },
   {
@@ -72,6 +78,7 @@ export const TOP_SELLING: Product[] = [
     imageAlt: "Orange t-shirt with Courage graphic typography print",
     rating: 4.0,
     price: 145,
+    salesCount: 670,
     href: "/shop/product/courage-graphic-t-shirt",
   },
   {
@@ -81,6 +88,7 @@ export const TOP_SELLING: Product[] = [
     imageAlt: "Washed blue denim loose fit bermuda shorts",
     rating: 3.0,
     price: 80,
+    salesCount: 520,
     href: "/shop/product/loose-fit-bermuda-shorts",
   },
   {
@@ -90,6 +98,7 @@ export const TOP_SELLING: Product[] = [
     imageAlt: "Dark washed faded black skinny fit denim jeans",
     rating: 4.5,
     price: 210,
+    salesCount: 880,
     href: "/shop/product/faded-skinny-jeans",
   },
 ];
@@ -104,6 +113,7 @@ export const YOU_MIGHT_ALSO_LIKE: Product[] = [
     price: 212,
     originalPrice: 242,
     discount: "-20%",
+    salesCount: 840,
     href: "/shop/product/polo-contrast-trims",
   },
   {
@@ -113,6 +123,7 @@ export const YOU_MIGHT_ALSO_LIKE: Product[] = [
     imageAlt: "White crewneck t-shirt with vibrant swirl gradient graphic artwork",
     rating: 3.5,
     price: 145,
+    salesCount: 1250,
     href: "/shop/product/gradient-graphic-t-shirt",
   },
   {
@@ -122,6 +133,7 @@ export const YOU_MIGHT_ALSO_LIKE: Product[] = [
     imageAlt: "Mauve pink textured polo shirt with white tipping collar details",
     rating: 4.5,
     price: 180,
+    salesCount: 980,
     href: "/shop/product/polo-tipping-details",
   },
   {
@@ -133,6 +145,7 @@ export const YOU_MIGHT_ALSO_LIKE: Product[] = [
     price: 120,
     originalPrice: 150,
     discount: "-30%",
+    salesCount: 1420,
     href: "/shop/product/black-striped-t-shirt",
   },
 ];
