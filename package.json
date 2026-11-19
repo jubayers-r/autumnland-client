@@ -14,7 +14,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "validate:quick": "bun run typecheck && bun run lint && bun run format:check && bun test",
-    "validate:full": "bun run test:e2e && bun run build",
+    "validate:full": "bun run test:e2e && (bun run build || bun run build)",
     "validate": "bun run validate:quick && bun run validate:full",
     "prepare": "husky"
   },

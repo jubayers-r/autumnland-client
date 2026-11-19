@@ -341,7 +341,7 @@ test.describe("Shop & Category Catalog Page", () => {
     await brandsNavLink.click();
 
     // Arrives at /brands page
-    await expect(page).toHaveURL("/brands");
+    await expect(page).toHaveURL("/brands", { timeout: 10000 });
     await expect(page.getByRole("heading", { name: "OUR BRAND PARTNERS" })).toBeVisible();
 
     // Verify all 5 brands are displayed

@@ -68,12 +68,17 @@ test.describe("Product Details Page & Navigation", () => {
     await expect(smallSizeButton).toHaveAttribute("aria-pressed", "true");
 
     // Quantity counter
-    const quantityDisplay = page.locator("span:has-text('1')").filter({ hasText: /^1$/ });
+    const quantityDisplay = page
+      .getByRole("main")
+      .locator("span:has-text('1')")
+      .filter({ hasText: /^1$/ });
     await expect(quantityDisplay).toBeVisible();
 
     const plusBtn = page.getByRole("button", { name: "Increase quantity" });
     await plusBtn.click();
-    await expect(page.locator("span:has-text('2')").filter({ hasText: /^2$/ })).toBeVisible();
+    await expect(
+      page.getByRole("main").locator("span:has-text('2')").filter({ hasText: /^2$/ })
+    ).toBeVisible();
 
     // Add to Cart toast trigger
     const addToCartBtn = page.getByRole("button", { name: "Add to Cart" });
